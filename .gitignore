@@ -3,6 +3,9 @@
 .env.local
 .env.*.local
 
+# Node (raiz do monorepo)
+node_modules/
+
 # .NET
 backend/**/bin/
 backend/**/obj/

@@ -25,9 +25,14 @@ O navegador fala com `localhost`. Os contêineres falam entre si pela rede do Co
 
 ## Inicialização sem Docker (desenvolvimento)
 
-- **PostgreSQL:** `docker compose up postgres`
-- **API:** `dotnet run --project backend/src/MusicApp.Api` → http://localhost:5080
-- **Frontend:** `pnpm --dir frontend dev` → http://localhost:3000
+O Compose empacota imagens prontas (sem recarga ao editar). No dia a dia, na raiz:
+
+```bash
+pnpm install
+pnpm dev
+```
+
+`pnpm install` instala o frontend e restaura os pacotes .NET. `pnpm dev` sobe o PostgreSQL no Docker e, no host, a API (`dotnet watch`, http://localhost:5080) e o frontend (`next dev`, http://localhost:3000). Ctrl+C para a API e o frontend; o banco no Docker continua até `docker compose stop postgres`.
 
 ## Testes da API
 
