@@ -1,0 +1,47 @@
+{
+  "skill_name": "auditoria-acessibilidade",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "audita esse formulário aqui pra mim ó: ```tsx\nexport function FormCadastro() {\n  return (\n    <form>\n      <div>Nome *</div>\n      <input placeholder=\"Seu nome\" />\n      <div>E-mail *</div>\n      <input placeholder=\"exemplo@email.com\" />\n      <div>Mensagem</div>\n      <textarea rows={4} />\n      <div onClick={enviar} style={{background: 'red', color: 'red', padding: 10}}>Enviar</div>\n      {erro && <span style={{color: 'red'}}>Erro!</span>}\n    </form>\n  );\n}\n```\nestá rodando em um site público",
+      "expected_output": "Auditoria identificando: falta de labels reais, placeholder como label, div com onClick em vez de button, contraste vermelho-em-vermelho impossível, mensagem de erro vaga e sem aria-live, falta de aria-required, problema com 'enviar' sem type",
+      "expectations": [
+        "Aponta que <div>Nome *</div> não é um label real e propõe <label htmlFor=>",
+        "Aponta que placeholder não substitui label",
+        "Aponta que <div onClick={enviar}> deve ser <button type=\"submit\">",
+        "Aponta o problema de contraste extremo (texto vermelho em fundo vermelho)",
+        "Aponta a falta de aria-required ou required nos campos obrigatórios",
+        "Aponta que 'Erro!' não é descritivo e deve usar role=\"alert\" ou aria-live",
+        "Cita pelo menos 2 critérios WCAG específicos (ex: 1.4.3, 3.3.2, 4.1.2)",
+        "Fornece código corrigido seguindo o padrão acessível"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "queremos saber se nosso site está em wcag aa. é um saas com login, dashboard e relatórios. monta um plano de auditoria do que precisamos checar manualmente e o que pode ser automatizado",
+      "expected_output": "Plano dividido em: testes automatizados (axe, lighthouse, pa11y) e testes manuais (teclado, screen reader, zoom, contraste), com priorização por área crítica (login = jornada principal)",
+      "expectations": [
+        "Distingue claramente automatizado vs manual",
+        "Lista pelo menos 3 ferramentas automatizadas com comandos/uso",
+        "Lista pelo menos 4 testes manuais com instruções (ex: navegar só por teclado, NVDA, zoom 200%)",
+        "Indica que automação só apanha ~30-40% e manual é essencial",
+        "Prioriza a auditoria começando pelo login (jornada crítica)",
+        "Menciona alvos WCAG 2.2 AA específicos (contraste 4.5:1, alvos 24x24px, etc.)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "minha modal de confirmação tem problema, o usuário cego não consegue usar bem. usei um div com display none/block. ```tsx\n<div className={open ? 'modal-aberta' : 'modal-fechada'}>\n  <p>Tem certeza?</p>\n  <button onClick={confirmar}>Sim</button>\n  <button onClick={fechar}>Não</button>\n</div>\n```",
+      "expected_output": "Diagnóstico: modal não captura foco, sem aria, sem Esc, sem restauração de foco. Proposta: usar Radix Dialog ou implementar o padrão completo (focus trap, role=dialog, aria-modal, aria-labelledby, Esc, restauração)",
+      "expectations": [
+        "Identifica que a modal não captura foco (Tab sai para trás)",
+        "Identifica que falta role=\"dialog\" e aria-modal=\"true\"",
+        "Identifica que falta tratamento da tecla Esc",
+        "Identifica que falta restauração de foco ao fechar",
+        "Identifica que falta foco automático ao abrir (geralmente no primeiro elemento ou no botão de fechar)",
+        "Recomenda Radix Dialog ou similar como alternativa pronta (não reinventar)",
+        "Fornece código corrigido completo se for implementar à mão"
+      ]
+    }
+  ]
+}

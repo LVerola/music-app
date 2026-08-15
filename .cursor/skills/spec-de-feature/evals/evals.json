@@ -1,0 +1,48 @@
+{
+  "skill_name": "spec-de-feature",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "quero especificar uma feature nova antes de implementar: uma tela de extrato de pontos do programa de fidelidade. o cliente logado vê a lista de movimentos (ganhou/gastou pontos) com data, descrição e saldo. o endpoint ainda não existe, o back é .NET. me entrevista e gera a spec",
+      "expected_output": "Entrevista com perguntas relevantes (estados da tela, contrato do endpoint a criar, paginação, regras) seguida de Specs/SPEC-extrato-pontos.md com as 8 secções do template",
+      "expectations": [
+        "O agente entrevista o utilizador antes de escrever a spec (faz perguntas e espera respostas)",
+        "O ficheiro final está em Specs/ com nome SPEC-<slug>.md",
+        "A spec contém critérios de aceitação em formato Gherkin (Given/When/Then) em PT-BR",
+        "A spec define o contrato do endpoint com exemplo de JSON de request/response e códigos de status",
+        "A spec tem tabela/secção de estados da tela (loading, erro, vazio, sucesso)",
+        "A spec tem secção de fora de escopo",
+        "A spec tem plano de implementação com passos ordenados e caminhos de ficheiros",
+        "Dependência do endpoint inexistente aparece registada (dependências ou questões em aberto)",
+        "A spec inteira está em português brasileiro"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "monta a spec do endpoint de cancelamento de assinatura. POST /assinaturas/{id}/cancelar, só o próprio dono ou admin pode cancelar, se faltar menos de 7 dias pra renovação cobra multa de 10% do valor mensal, tem que mandar email de confirmação. já tenho tudo definido, não precisa perguntar muito, só formaliza",
+      "expected_output": "Spec de backend em Specs/SPEC-cancelamento-assinatura.md com contrato HTTP completo, regra da multa como cenário Gherkin, efeito colateral do email, e códigos de erro por cenário (401/403/404/409/422)",
+      "expectations": [
+        "O agente respeita o pedido de entrevista mínima (no máximo poucas perguntas de lacunas reais, sem interrogatório longo)",
+        "A regra da multa de 10% aparece como requisito verificável e como cenário Gherkin",
+        "A autorização (dono ou admin) aparece nos contratos com códigos 401/403",
+        "O envio de email aparece como efeito colateral explícito",
+        "Há mapeamento de códigos de status por cenário de erro",
+        "Há secção de estratégia de testes cobrindo caminho feliz, multa e autorização",
+        "O ficheiro está em Specs/ em português brasileiro"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "preciso de uma spec pra IA implementar um formulário de solicitação de férias no portal do colaborador. sei que tem que ter data início, data fim e um campo de observação, mas não sei ainda como o RH aprova nem qual endpoint usar",
+      "expected_output": "Entrevista que tenta fechar lacunas; spec gerada com o que se sabe e secção 'Questões em aberto' registando aprovação do RH e endpoint indefinidos, sem inventar contratos",
+      "expectations": [
+        "O agente pergunta sobre as lacunas (fluxo de aprovação, endpoint, regras de datas)",
+        "A spec NÃO inventa um contrato de endpoint como se fosse confirmado — marca como pendente ou proposta a validar",
+        "A secção Questões em aberto lista as dúvidas não resolvidas",
+        "As validações óbvias de formulário (fim >= início, campos obrigatórios) aparecem como requisitos",
+        "Há cenários Gherkin para validação de datas",
+        "O ficheiro está em Specs/SPEC-<slug>.md em português brasileiro"
+      ]
+    }
+  ]
+}

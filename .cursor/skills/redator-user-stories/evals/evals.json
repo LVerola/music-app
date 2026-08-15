@@ -1,0 +1,44 @@
+{
+  "skill_name": "redator-user-stories",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "preciso escrever uma user story para o seguinte: o cliente do e-commerce deve poder cancelar o pedido. limite é 24h depois do pagamento confirmado e o reembolso é integral. se passar das 24h, ele precisa abrir um ticket. faz aí no padrão da equipa por favor",
+      "expected_output": "US com narrativa 'Como cliente...', critérios Gherkin cobrindo dentro/fora da janela de 24h, regras de negócio explícitas, DoR/DoD, estimativa preliminar e suposições marcadas",
+      "expectations": [
+        "A US tem narrativa no formato 'Como <papel>, quero <ação>, para que <valor>'",
+        "Há pelo menos 2 cenários Gherkin (caminho feliz dentro da janela + bloqueio fora da janela)",
+        "Limite de 24h aparece explicitamente em pelo menos um critério",
+        "Há uma secção de Regras de Negócio listadas como RN1, RN2...",
+        "Há uma estimativa preliminar em Story Points com tradução para horas",
+        "Há secção 'Fora do escopo' presente",
+        "Há DoR (Definição de Pronto) e DoD (Definição de Concluído)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "olha só tô com esse épico aqui de 'plataforma de pagamentos' e o gerente quer um backlog inicial. o que a gente precisa é aceitar cartão de crédito (visa/master), pix, e boleto. tem que ter painel pra admin ver transações, conciliação automática, alerta de fraude, e exportação em csv. divide isso pra mim em user stories que dêem pra entregar em sprints de 2 semanas",
+      "expected_output": "5-10 user stories independentes (slices verticais), priorizadas, com dependências mapeadas, cada uma estimável em ≤ 8 SP",
+      "expectations": [
+        "Foram geradas pelo menos 5 user stories separadas",
+        "Cada user story segue o template completo (narrativa + Gherkin + DoR/DoD)",
+        "As stories estão em slices verticais (não 'frontend' / 'backend' separados)",
+        "As dependências entre as stories estão explicitamente mapeadas",
+        "Nenhuma story tem estimativa preliminar acima de 8 SP",
+        "Há sugestão de ordem de execução baseada em dependências e valor"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "essa user story tá uma porcaria, dá uma melhorada: 'Como user, eu quero fazer login, pra poder logar. Critério: o sistema deve permitir login com email e senha, ou google, ou facebook, ou apple, e validar se a senha tá certa e bloquear depois de tentativas erradas e enviar email de bloqueio'",
+      "expected_output": "Crítica da US original (apontar problemas) + reescrita seguindo o template, possivelmente dividida em múltiplas stories porque mistura muitas responsabilidades",
+      "expectations": [
+        "A skill aponta explicitamente que a US original mistura múltiplas responsabilidades e deve ser dividida",
+        "A skill aponta a tautologia ('quero fazer login pra poder logar')",
+        "A skill aponta a falta de papel concreto ('user' genérico)",
+        "São geradas pelo menos 2 user stories separadas no resultado",
+        "Pelo menos uma das US geradas tem cenário Gherkin cobrindo o bloqueio após N tentativas com número explícito"
+      ]
+    }
+  ]
+}

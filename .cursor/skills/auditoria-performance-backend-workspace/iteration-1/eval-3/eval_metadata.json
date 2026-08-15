@@ -1,0 +1,12 @@
+{
+  "eval_id": 3,
+  "eval_name": "sintoma-sem-codigo-medir-primeiro",
+  "prompt": "Meu endpoint de relatório de vendas está com p95 horrível em produção, uns 6 segundos. Não sei onde está o gargalo. Como eu ataco isso?",
+  "assertions": [
+    "Não dá uma correção definitiva sem dados; deixa claro que é preciso medir primeiro",
+    "Orienta a instrumentar/medir: trace por camada (APM/OpenTelemetry) e/ou contar queries com log do EF e/ou dotnet-counters/dotnet-trace",
+    "Pergunta ou define a métrica alvo (ex.: qual p95 é aceitável) em vez de aceitar 'horrível'",
+    "Apresenta uma abordagem sistemática para localizar o gargalo dominante antes de optimizar",
+    "Lista os suspeitos prováveis (N+1, paginação, sync-over-async, etc.) como hipóteses a confirmar, não como diagnóstico fechado"
+  ]
+}

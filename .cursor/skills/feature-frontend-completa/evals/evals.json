@@ -1,0 +1,48 @@
+{
+  "skill_name": "feature-frontend-completa",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "preciso criar uma tela de listagem de clientes no portal admin. é uma rota nova em /portal/clientes. o endpoint do back é GET /clientes que devolve uma lista com id, nome, documento (cpf/cnpj) e email. tem que ter um botão 'Novo cliente' que abre um form. faz a fatia toda do front por favor",
+      "expected_output": "Estrutura completa: types, service, queries, schema Zod, componente de listagem com 4 estados, formulário RHF+Zod, rota App Router, testes unitários do form",
+      "expectations": [
+        "Foi criado um arquivo de tipos em src/types/ com a interface Cliente",
+        "Foi criado um service em src/services/cliente/ separado do componente",
+        "Foi criado um hook useQuery (TanStack Query) para listar clientes",
+        "Foi criado um schema Zod para validar o formulário com mensagem em PT-BR",
+        "O componente de listagem trata os 4 estados: loading, erro, vazio e sucesso",
+        "O formulário usa React Hook Form com zodResolver, nunca useState para campos",
+        "Foi criado pelo menos 1 teste unitário do formulário (Jest + Testing Library)",
+        "A page.tsx é fina e delega para subcomponentes",
+        "Nenhum componente faz fetch direto via useEffect"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "tô com esse componente aqui, dá uma refatorada usando o padrão da equipa: ```tsx\nexport function Produtos() {\n  const [produtos, setProdutos] = useState<any[]>([]);\n  const [loading, setLoading] = useState(true);\n  useEffect(() => {\n    fetch('/api/produtos').then(r => r.json()).then(d => { setProdutos(d); setLoading(false); });\n  }, []);\n  if (loading) return <div>Carregando...</div>;\n  return <div>{produtos.map(p => <div key={p.id}>{p.nome}</div>)}</div>;\n}\n```",
+      "expected_output": "Componente refatorado com: tipo Produto, service separado, hook useQuery, tratamento dos 4 estados, sem any",
+      "expectations": [
+        "O any foi substituído por tipo concreto (interface Produto ou similar)",
+        "O fetch dentro do componente foi removido e movido para um service em src/services/",
+        "O componente passou a usar useQuery do TanStack Query (não useEffect+useState)",
+        "Há tratamento explícito para estado de erro (não só loading e sucesso)",
+        "Há tratamento explícito para estado vazio (lista sem produtos)",
+        "A skill aponta os problemas do código original (any, fetch no componente, sem error handling)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "monta pra mim a feature de upload de comprovante de pagamento. precisa de uma tela com drag-and-drop, validação de tipo (só pdf/jpg/png) e tamanho máximo 5MB, preview antes de enviar, e endpoint POST /comprovantes que aceita multipart/form-data. quando subir tem que mostrar progresso",
+      "expected_output": "Componente client com drag-and-drop, validação Zod do arquivo, mutation com onProgress, preview, mensagens de erro em PT-BR, testes",
+      "expectations": [
+        "Há validação de tipo de arquivo (pdf/jpg/png) com mensagem de erro em PT-BR",
+        "Há validação de tamanho máximo (5MB) com mensagem de erro em PT-BR",
+        "O componente está marcado como client component (use client)",
+        "Há um useMutation do TanStack Query para o upload",
+        "Há preview da imagem antes de enviar quando o tipo é imagem",
+        "Há indicação de progresso de upload (não apenas loading binário)",
+        "O service de upload está separado do componente"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "skill_name": "arquiteto-de-projeto",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "tenho uma ideia de um saas de gestão de consultas para clínicas pequenas. no mvp quero agendamento online pelo paciente, agenda do médico, e lembrete por email/whatsapp. no futuro quero app mobile pro paciente e integração com convénios. somos 2 devs que mandam bem em c# e react, orçamento apertado de infra, queremos lançar em 3 meses. arquiteta isso pra mim",
+      "expected_output": "Manual do projeto + roadmap faseado. Como há quase toda a informação, faz no máximo perguntas pontuais e avança. Deve recomendar a stack padrão (.NET + Next/React + PostgreSQL) justificando pelo skill da equipa, propor monólito modular (não micro), tratar a 'visão futura' (app mobile → API mobile-friendly; convénios → integração), preencher NFRs (LGPD para dados de saúde!), riscos, e um roadmap em fatias verticais de valor. Grava em Arquitetura/manual-do-projeto.md e Arquitetura/roadmap.md.",
+      "expectations": [
+        "Gera Arquitetura/manual-do-projeto.md e Arquitetura/roadmap.md",
+        "Recomenda .NET + Next/React + PostgreSQL e justifica pela competência da equipa (c#/react)",
+        "Escolhe monólito modular em vez de microsserviços, com justificativa",
+        "Trata explicitamente a visão futura (app mobile e convénios) condicionando decisões de hoje",
+        "Identifica LGPD/dados sensíveis de saúde nos requisitos não-funcionais",
+        "O roadmap tem fases verticais de valor com critérios de saída, não fases por camada técnica",
+        "Há matriz de riscos preenchida e secção de cuidados/dívidas",
+        "Sugere ADRs para decisões-chave e handoff para @redator-user-stories"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "quero montar uma plataforma. me ajuda a arquitetar?",
+      "expected_output": "A skill NÃO deve inventar arquitetura. Deve fazer a entrevista bloqueante de uma só vez, agrupando perguntas por tema (visão/valor, escopo MVP vs futuro, escala/NFRs, restrições de equipa/orçamento/prazo, operação). Só avança depois de respostas.",
+      "expectations": [
+        "A skill não produz manual de imediato — pede contexto primeiro",
+        "Faz as perguntas agrupadas por tema num único bloco (não uma a uma)",
+        "Cobre pelo menos: problema/personas, escopo MVP vs futuro, escala/NFRs, restrições (equipa/orçamento/prazo)",
+        "Deixa claro que não vai assumir decisões críticas sem resposta"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "preciso arquitetar um sistema grande: um marketplace com catálogo, carrinho, pagamentos, logística, painel de vendedores e BI. equipa de ~12 pessoas divididas em squads, esperamos picos enormes na black friday, e já temos time de devops com kubernetes. monta a arquitetura completa e quero documentação separada por área porque é complexo",
+      "expected_output": "Por ser complexo (vários subsistemas + squads + escala), deve gerar o manual consolidado E quebrar em etapas/NN-<area>.md. Aqui microsserviços/serviços por domínio passam a ser defensáveis (squads autónomas, picos isolados, devops maduro) — deve justificar. Deve tratar picos (autoscaling/filas), consistência, e BI separado.",
+      "expectations": [
+        "Gera manual-do-projeto.md consolidado e múltiplos ficheiros em Arquitetura/etapas/",
+        "Considera microsserviços/serviços por domínio e justifica pela presença de squads + escala + devops k8s",
+        "Trata os picos de Black Friday (autoscaling, filas, cache) explicitamente",
+        "Cada ficheiro de etapa tem critérios de saída e candidatos a US",
+        "O manual aponta para os ficheiros de etapa na secção de roadmap",
+        "Sinaliza decisões pesadas (mensageria, estilo de API, pagamentos) como ADRs"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "vou construir um pipeline que ingere uns 5TB de logs por dia, faz feature engineering e treina modelos de ML pra detecção de fraude. quase tudo é processamento batch e streaming. que stack e arquitetura?",
+      "expected_output": "Caso que justifica SAIR do default do repo (.NET/Next). Deve recomendar ecossistema de dados/ML (Python, frameworks de streaming/batch) e explicar POR QUE desvia do padrão e qual o custo. Estilo provavelmente event-driven/pipeline de dados, não CRUD web. Deve tratar volume/escala seriamente.",
+      "expectations": [
+        "Recomenda stack de dados/ML (ex.: Python) e justifica explicitamente o desvio do padrão .NET/Next do repo",
+        "Nomeia o custo/trade-off de sair da stack padrão",
+        "Propõe arquitetura adequada a dados (streaming/batch, pipeline/event-driven), não CRUD web genérico",
+        "Trata o volume (5TB/dia) nos requisitos não-funcionais e nas decisões de armazenamento/processamento"
+      ]
+    }
+  ]
+}

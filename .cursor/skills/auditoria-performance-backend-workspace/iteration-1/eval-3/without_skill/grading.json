@@ -1,0 +1,10 @@
+{
+  "expectations": [
+    {"text": "Não dá uma correção definitiva sem dados; deixa claro que é preciso medir primeiro", "passed": true, "evidence": "Secção 1 'medir antes de mexer'; secção 6 armadilha 'optimizar sem medir'"},
+    {"text": "Orienta a instrumentar/medir: trace por camada (APM/OpenTelemetry) e/ou contar queries com log do EF e/ou dotnet-counters/dotnet-trace", "passed": true, "evidence": "Secção 2: Stopwatch, OpenTelemetry/App Insights, MiniProfiler, EF LogTo"},
+    {"text": "Pergunta ou define a métrica alvo (ex.: qual p95 é aceitável) em vez de aceitar 'horrível'", "passed": false, "evidence": "Mede p50/p95/p99 e confirma o p95 com a fonte real, mas NÃO pergunta nem define qual o alvo aceitável (ex.: p95 < Xms) — aceita os 6s como ponto de partida sem fixar a meta"},
+    {"text": "Apresenta uma abordagem sistemática para localizar o gargalo dominante antes de optimizar", "passed": true, "evidence": "Fases 1-3 + 'os quatro baldes'; 'ataca o maior balde'"},
+    {"text": "Lista os suspeitos prováveis (N+1, paginação, sync-over-async, etc.) como hipóteses a confirmar, não como diagnóstico fechado", "passed": true, "evidence": "Secção 3 'os suspeitos do costume (e como confirmar cada um)'"}
+  ],
+  "summary": {"passed": 4, "failed": 1, "total": 5, "pass_rate": 0.8}
+}

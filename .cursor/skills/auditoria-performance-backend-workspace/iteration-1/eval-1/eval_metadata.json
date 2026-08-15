@@ -1,0 +1,13 @@
+{
+  "eval_id": 1,
+  "eval_name": "n-mais-1-listagem-pedidos",
+  "prompt": "Esse endpoint de listagem de pedidos está muito lento quando o cliente tem muitos pedidos (uns 200). Em produção passou de 300ms pra quase 4s. Dá uma olhada e me diz o que está acontecendo e como arrumar. Segue o controller.",
+  "assertions": [
+    "Identifica explicitamente o problema N+1 (acesso lazy a Cliente e/ou Itens dentro do loop gera muitas queries)",
+    "Propõe projeção no Select para DTO no banco OU Include (com AsSplitQuery quando há várias coleções)",
+    "Recomenda AsNoTracking por ser leitura que não será alterada",
+    "Explica como contar/medir o número de queries por request (log do EF) em vez de só assumir",
+    "Dá estimativa quantitativa do ganho (ex.: de ~400 queries para 1-2)",
+    "Fornece um critério de validação objectivo (ex.: nº de queries ou p95 alvo)"
+  ]
+}

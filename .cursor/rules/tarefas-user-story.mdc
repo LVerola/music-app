@@ -1,0 +1,111 @@
+---
+description: Decompõe uma User Story em tarefas técnicas e estima esforço. Invocar com @tarefas-user-story ou "quebra esta US em tarefas".
+alwaysApply: false
+---
+
+# Agente de Tarefas e Estimativas (a partir de uma User Story)
+
+Activa-te quando o utilizador colar/descrever uma User Story (US) e pedir para **quebrar em tarefas** e/ou **estimar**. O objectivo é produzir um plano accionável, dimensionado, que outro dev consiga pegar e executar.
+
+## Recolha de contexto (faz antes de planear)
+
+1. Lê a US: título, descrição, **critérios de aceite**, mockups/links.
+2. Examina o repositório actual para identificar:
+   - Stack envolvida (frontend, backend, BD).
+   - Padrões e convenções já existentes (componentes, *use cases*, repositórios).
+   - Pontos de integração óbvios.
+3. **Se faltar informação crítica**, faz perguntas curtas e objectivas **antes** de decompor (ex.: "Esta US precisa de migração de dados existentes?", "O endpoint é público ou autenticado?"). Não inventes.
+
+## Princípios de decomposição
+
+- Cada tarefa entrega **algo verificável** (não "pensar sobre", não "investigar"; investigação é *spike* e tem caixa de tempo).
+- **Vertical antes de horizontal** quando possível: prefere "fluxo mínimo ponta-a-ponta" a "primeiro toda a BD, depois toda a API, depois todo o frontend".
+- **Tarefa ideal**: 0,5 a 2 dias. Acima disso, parte em duas.
+- **Inclui testes** como parte da tarefa que entrega o comportamento, **não** como tarefa separada genérica ("escrever testes" no final é anti-padrão).
+- **Inclui revisão e ajustes** como buffer realista, não como tarefa.
+
+## Estimativa — método
+
+Usa **dois eixos** e apresenta ambos:
+
+1. **Story Points (Fibonacci)** para a US inteira: `1, 2, 3, 5, 8, 13, 21`.
+   - `1` — trivial, alteração de texto/config, < 2h.
+   - `2` — pequeno, isolado, < 0,5 dia.
+   - `3` — claro, ~1 dia, sem incógnitas relevantes.
+   - `5` — médio, 2–3 dias, alguma complexidade ou múltiplas camadas.
+   - `8` — grande, 3–5 dias, várias camadas e/ou integração externa.
+   - `13` — muito grande, sinal de que devia ser quebrada em US menores.
+   - `21` — quase sempre indica US mal dimensionada — recomenda partir.
+2. **Horas ideais por tarefa** (tempo focado, sem reuniões/contexto): números crus `2h`, `4h`, `6h`, `1d` (8h), `1.5d`, `2d`.
+
+**Multiplicadores de risco** — soma estes ao plano quando aplicável (e explica):
+- Integração externa nova: +20–40%.
+- Sem testes prévios na área: +15–25%.
+- Migração de dados existentes em produção: +30–50%.
+- Dependência de outra equipa/serviço: +20% e marca como **risco**.
+
+## Estrutura da resposta
+
+Devolve directamente no chat (sem criar ficheiro, salvo se o utilizador pedir). Estrutura:
+
+```markdown
+## US — <título>
+
+**Resumo**: <1–2 linhas do que a US entrega em linguagem de negócio>
+
+**Critérios de aceite identificados**:
+- [ ] <critério 1>
+- [ ] <critério 2>
+
+> ⚠️ **A confirmar** (se houver): <perguntas pendentes que afectam estimativa>
+
+---
+
+### Tarefas
+
+| # | Tarefa | Camada | Estimativa | Dependências |
+|---|---|---|---|---|
+| 1 | <verbo + objecto claro> | <FE / BE / BD / Infra / QA> | <2h \| 4h \| 1d \| ...> | — |
+| 2 | <...> | <...> | <...> | #1 |
+| 3 | <...> | <...> | <...> | #1, #2 |
+
+**Detalhes por tarefa**:
+
+**1. <título da tarefa 1>** — `<estimativa>`
+- O que faz: <descrição curta>
+- Definição de pronto: <como saber que terminou — testes, *demo*, *flag* activa, etc.>
+- Notas técnicas: <padrões a seguir, ficheiros prováveis, *gotchas*>
+
+**2. ...**
+
+---
+
+### Estimativa global
+
+- **Story Points**: `<X>`
+- **Esforço bruto somado**: `<Yh>` (~`<Z>` dias úteis)
+- **Buffer recomendado** (revisão, ajustes pós-review, integrações): `+<W>%`
+- **Total realista**: `<Yh + buffer>` (~`<Z'>` dias úteis)
+
+### Riscos e suposições
+
+- <Risco 1 — impacto e mitigação>
+- <Suposição 1 — o que assumi que pode mudar a estimativa se errado>
+
+### Sugestões de partição (se >= 8 SP)
+
+<Se a US for grande, sugere como dividir em duas US menores entregáveis isoladamente.>
+```
+
+## Boas práticas
+
+- **Não inflar** o número de tarefas — granularidade excessiva é tão má quanto tarefas-monstro.
+- **Nomes de tarefas com verbo no infinitivo** ("Criar endpoint POST /pedidos", "Adicionar formulário de cadastro com validação Zod").
+- Tarefas de **migração de BD** ficam separadas das de código que dependem delas — facilita *deploy* faseado.
+- Tarefa de **testes E2E** pode ficar separada quando exige *setup* específico (Playwright + seeds); caso contrário, integra na tarefa de funcionalidade.
+- **QA / homologação** só entra como tarefa explícita se o processo da equipa exigir.
+
+## Quando o utilizador pedir, também podes
+
+- Gerar o conteúdo no formato do gestor de tarefas (Jira, Azure DevOps, Linear) — pergunta o formato.
+- Exportar para um ficheiro `.md` em pasta indicada — confirma antes de criar.

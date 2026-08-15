@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "Identifica o sync-over-async (.Result/.Wait()) e relaciona com threadpool starvation sob carga", "passed": true, "evidence": "Causa B (crítica): '.Result... thread pool starvation... latência sobe em degraus/escada'"},
+    {"text": "Identifica o new HttpClient() por chamada e relaciona com socket/port exhaustion", "passed": true, "evidence": "Causa A (crítica): 'new HttpClient() + using... TIME_WAIT... esgotamento de portas efémeras'"},
+    {"text": "Propõe IHttpClientFactory (ou HttpClient reutilizado correctamente)", "passed": true, "evidence": "Princípio 1: AddHttpClient typed/named; menciona também static readonly HttpClient com SocketsHttpHandler"},
+    {"text": "Propõe tornar a cadeia async até ao topo e propagar CancellationToken", "passed": true, "evidence": "Princípio 2: async ponta a ponta, eliminar .Result, propagar CancellationToken"},
+    {"text": "Sugere paralelizar as chamadas independentes (Task.WhenAll para as duas cotações)", "passed": true, "evidence": "Princípio 4 + versão final: Task.WhenAll das 3 chamadas"},
+    {"text": "Explica por que o problema só se manifesta sob carga (e não com pouca gente)", "passed": true, "evidence": "Resumo executivo: 'com pouca gente nenhum dos dois limites é atingido... sob carga ambos saturam'"}
+  ],
+  "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}
+}

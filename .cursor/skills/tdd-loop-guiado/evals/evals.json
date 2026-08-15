@@ -1,0 +1,49 @@
+{
+  "skill_name": "tdd-loop-guiado",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "preciso implementar uma calculadora de desconto. as regras são: cliente comum 0%, premium 5%, vip 10%, bloqueado lança excepção. valor mínimo aplicável é R$ 50 (abaixo disso, sem desconto, mesmo VIP). faz comigo no tdd em c# (xunit + fluentassertions)",
+      "expected_output": "Plano TDD em ciclos micro: primeiro teste cliente comum, depois generaliza para premium, vip, bloqueado e por último a regra dos R$ 50. Cada ciclo mostra RED (teste + mensagem de falha), GREEN (código mínimo), REFACTOR.",
+      "expectations": [
+        "Plano tem pelo menos 4 ciclos separados",
+        "O primeiro ciclo é o caso mais simples (comum) com código mínimo no GREEN (pode até ser hardcoded)",
+        "Cada teste tem nome descritivo em PT-BR no padrão DeveFazerXQuandoY",
+        "Cada teste usa AAA explicito (Arrange, Act, Assert)",
+        "Cliente bloqueado tem teste que verifica excepção tipada (não Exception genérica)",
+        "Regra dos R$ 50 vem em ciclo separado, não junto com os outros",
+        "Há pelo menos uma sessão de REFACTOR no plano",
+        "Testes usam FluentAssertions (.Should().Be(...))",
+        "Sugere uso de Builder para criar Cliente nos testes (legibilidade)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "tenho que validar um cpf em typescript. as regras são: tem que ter 11 dígitos, não pode ser todos iguais (111.111.111-11 inválido), e os dígitos verificadores tem que bater. me ajuda no tdd com jest",
+      "expected_output": "Plano TDD em micro-passos: primeiro caso obviamente inválido (tamanho errado), depois todos iguais, depois dv inválido, depois caso válido. Cada ciclo com red-green-refactor.",
+      "expectations": [
+        "Plano tem pelo menos 4 ciclos cobrindo: tamanho, todos iguais, DV inválido, caso válido",
+        "Os testes estão em PT-BR descrevendo comportamento",
+        "Cada GREEN é o mínimo para fazer o teste passar (não implementa lógica não-testada)",
+        "Testes usam describe/it ou test do Jest",
+        "Há pelo menos 1 cenário em formato data-driven (test.each ou tabela) para múltiplos CPFs inválidos",
+        "Há REFACTOR explícito quando a estrutura ficar clara",
+        "Testes incluem casos válidos REAIS (não 111.111.111-11 — usar CPF válido fictício mas matematicamente correcto)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "tô com um bug numa função antiga sem nenhum teste, e o pessoal pediu pra eu corrigir agora urgente. é melhor eu corrigir direto e depois faço os testes, certo?",
+      "expected_output": "A skill deve recusar 'corrigir antes de testar'. Explicar que TDD para bugfix significa: escrever teste de regressão que reproduz o bug (RED), corrigir (GREEN), refatorar se aplicável. Sem teste primeiro, não há garantia que o bug não volta.",
+      "expectations": [
+        "A skill NÃO concorda com 'corrige primeiro, depois testa'",
+        "Explica que sem teste primeiro não há garantia que o bug volte",
+        "Propõe sequência: 1) escrever teste que reproduz o bug, 2) confirmar que falha pelo motivo certo, 3) corrigir, 4) confirmar verde, 5) testes vizinhos passam",
+        "Explica o valor do teste de regressão (evita o bug voltar no futuro)",
+        "Aborda a questão da 'urgência' — escrever 1 teste leva 10 minutos, não dias",
+        "Sugere também adicionar 1-2 testes complementares para casos próximos enquanto está ali",
+        "Cita os 5 porquês ou método de debug sistemático para entender causa-raiz antes de fixar"
+      ]
+    }
+  ]
+}

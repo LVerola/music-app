@@ -1,0 +1,48 @@
+{
+  "skill_name": "auditoria-performance-web",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "minha home no next.js tá com lighthouse 38 de performance no mobile. LCP é 4.8s, CLS 0.32, INP tá ok em 180ms. é uma página com hero (foto grande), 3 cards, e um carousel de produtos. usamos pages router ainda. me ajuda a auditar e melhorar",
+      "expected_output": "Auditoria estruturada apontando LCP (provavelmente hero sem priority + sem next/image), CLS (provavelmente carousel sem reservar espaço), plano priorizado por impacto/esforço, validação com 3 medições",
+      "expectations": [
+        "Identifica que LCP element é provavelmente o hero",
+        "Sugere usar next/image com priority no hero",
+        "Sugere converter imagens para formato moderno (WebP/AVIF)",
+        "Identifica que CLS provavelmente vem de elemento que carrega depois (carousel, fonts, banner)",
+        "Propõe reservar espaço para o carousel com aspect-ratio ou min-height",
+        "Aponta que INP em 180ms está OK (não tentar 'otimizar' o que está bom)",
+        "Plano prioriza acções por impacto/esforço",
+        "Inclui critério de validação (Lighthouse em mobile slow 4G, 3 execuções)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "tô preocupado com bundle. o npm run build tá mostrando 580KB de First Load JS pra home. é next.js 15 app router. fiz `import * as Icons from 'react-icons'` na home porque uso vários. e tem um chart.js que só aparece em /dashboard mas tá no shared bundle parece. ajuda a reduzir",
+      "expected_output": "Diagnóstico identificando os 2 problemas óbvios (import * de ícones, chart.js em shared), proposta de dynamic import e tree-shaking, estimativa de redução de bundle",
+      "expectations": [
+        "Identifica imediatamente o problema do import * de react-icons",
+        "Propõe import individual de cada ícone como solução",
+        "Identifica que chart.js no shared bundle vai ser carregado em todas as rotas",
+        "Propõe dynamic import (next/dynamic) para o Chart com ssr: false",
+        "Sugere usar @next/bundle-analyzer para confirmar o diagnóstico",
+        "Estima a redução esperada de bundle em cada acção",
+        "Aponta o target adequado de First Load JS para mobile (<200KB gzipped)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "tô usando next.js 15 app router. minha rota /produtos é uma listagem de 200 produtos. fiz tudo como client component pra usar react-query (useEffect+fetch antes era um caos). página carrega em 5s, lighthouse marca tudo vermelho. tô sentindo que esse 'use client' no topo da page.tsx não é o melhor caminho. confirma e me ajuda a refazer",
+      "expected_output": "Confirmar diagnóstico, explicar que 'use client' no topo arrasta tudo, refactor mantendo client só onde precisa de interatividade (filtros), listagem como server component com cache de RSC",
+      "expectations": [
+        "Confirma que 'use client' no topo da page.tsx é o problema principal",
+        "Explica que arrasta toda a árvore para o client bundle",
+        "Propõe arquitetura: page.tsx server + filtros como client component pequeno + listagem como server",
+        "Explica como fazer fetch no server component (sem useEffect, sem react-query)",
+        "Mostra como o utilizador pode manter react-query para mutations (form, criar, editar) mantendo a listagem server",
+        "Aponta benefícios além de performance (segredo no servidor, menos JS no cliente)",
+        "Sugere usar Suspense para streaming da listagem"
+      ]
+    }
+  ]
+}

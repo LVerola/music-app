@@ -1,0 +1,14 @@
+{
+  "eval_id": 2,
+  "eval_name": "foto-perfil",
+  "prompt": "adiciona no app uma feature de foto de perfil: o utilizador toca no avatar, escolhe tirar foto ou pegar da galeria, faz crop quadrado e sobe pro endpoint POST /perfil/foto (multipart). lembra que precisa funcionar direito tanto no android quanto no ios",
+  "assertions": [
+    "Usa módulos Expo (expo-image-picker ou similar), não biblioteca nativa avulsa sem justificação",
+    "A permissão é pedida no momento do uso e a recusa tem tratamento próprio na UI",
+    "Menciona/configura textos de justificação de permissão para as lojas (infoPlist/permissions no app.config)",
+    "O upload usa mutation com estados de progresso/loading e erro",
+    "Há consideração explícita de paridade Android/iOS",
+    "O service de upload está separado do componente",
+    "Alvo de toque do avatar respeita tamanho mínimo ou usa hitSlop"
+  ]
+}

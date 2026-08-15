@@ -1,0 +1,31 @@
+---
+description: Workflow obrigatório discovery → domínio → architecture-check antes de criar ou alterar ficheiros. Limiar de confiança ≥ 90%.
+alwaysApply: true
+---
+
+# Workflow discovery (obrigatório)
+
+Antes de **criar ou alterar ficheiros**, invoca nesta ordem:
+
+1. `@discovery` — classifica, desambigua, declara confiança, bloqueia alucinação.
+2. Discovery de domínio da área afectada:
+   - UI / Next.js / React → `@discovery-frontend`
+   - API / .NET / EF → `@discovery-backend`
+   - Este repo Agents (skills, regras, pastas de ferramenta, scripts) → `@discovery-biblioteca`
+3. `@architecture-check` — antes de **criar** ficheiro novo.
+
+Pular só em perguntas **read-only** (explicação, busca, status). Em dúvida se o pedido está totalmente especificado, **invoca `discovery` e deixa a skill decidir**.
+
+## Limiar de confiança
+
+- **≥ 90%** → implementa
+- **70–89%** → pergunta e depois implementa
+- **&lt; 70%** → recusa; reinicia discovery
+
+## Modo vibe
+
+Ajustes **pequenos** de UI/copy/estilo local: ver `@vibe`. Fronteiras de camada e diff mínimo continuam a valer. Em dúvida, ainda invoca `discovery`.
+
+## Claude Code
+
+Hook `PreToolUse` em `.claude/hooks/require-discovery.mjs` bloqueia Edit/Write se `discovery` não tiver sido invocada na sessão.

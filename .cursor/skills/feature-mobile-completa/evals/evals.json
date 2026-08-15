@@ -1,0 +1,51 @@
+{
+  "skill_name": "feature-mobile-completa",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "cria a tela de listagem de despesas no app (React Native + Expo). endpoint GET /despesas devolve id, descricao, valorCentavos, categoria e criadaEm. precisa de pull-to-refresh e um botão pra adicionar despesa nova que abre um form com descrição, valor e categoria. faz a fatia completa",
+      "expected_output": "Fatia vertical: tipos, service, queries TanStack, schema Zod, FlatList com 4 estados + RefreshControl, form RHF+Zod com Controller, rota Expo Router, testes Jest+RNTL",
+      "expectations": [
+        "Foi criado arquivo de tipos com interface Despesa (sem any)",
+        "Service HTTP separado do componente, com hook useQuery do TanStack Query",
+        "A listagem usa FlatList (não map dentro de ScrollView)",
+        "A listagem trata os 4 estados: loading, erro, vazio, sucesso",
+        "Há pull-to-refresh (RefreshControl ou equivalente)",
+        "O formulário usa React Hook Form com zodResolver e Controller (não useState por campo)",
+        "As mensagens de validação estão em PT-BR",
+        "A rota foi criada no padrão Expo Router (arquivo em app/)",
+        "Há pelo menos 1 teste do formulário com Jest + React Native Testing Library",
+        "Valores monetários formatados por locale (toLocaleString/Intl), não concatenação manual"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "implementa o fluxo de login do app com email e senha. depois de logar guarda o token e vai pra home. atenção que no iphone o teclado tá cobrindo o botão de entrar, isso não pode acontecer. app é expo com expo router",
+      "expected_output": "Tela de login com KeyboardAvoidingView por plataforma, token em SecureStore (não AsyncStorage), validação Zod, navegação via Expo Router, acessibilidade nos inputs e botão",
+      "expectations": [
+        "O token é guardado em expo-secure-store, não em AsyncStorage",
+        "Há tratamento de teclado (KeyboardAvoidingView com behavior por plataforma ou solução equivalente)",
+        "Há validação de email e senha com mensagens em PT-BR",
+        "Inputs usam keyboardType e returnKeyType apropriados (email-address, foco encadeado)",
+        "Elementos interativos têm accessibilityRole/accessibilityLabel",
+        "O estado de submissão é tratado (botão desabilitado/loading durante o login)",
+        "Erro de credenciais inválidas tem tratamento explícito na UI",
+        "A navegação pós-login usa Expo Router"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "adiciona no app uma feature de foto de perfil: o utilizador toca no avatar, escolhe tirar foto ou pegar da galeria, faz crop quadrado e sobe pro endpoint POST /perfil/foto (multipart). lembra que precisa funcionar direito tanto no android quanto no ios",
+      "expected_output": "Feature com expo-image-picker/camera, pedido de permissão no momento do uso com tratamento de recusa, textos de permissão no app.config.ts, mutation de upload com estados, cuidados de paridade Android/iOS",
+      "expectations": [
+        "Usa módulos Expo (expo-image-picker ou similar), não biblioteca nativa avulsa sem justificação",
+        "A permissão é pedida no momento do uso e a recusa tem tratamento próprio na UI",
+        "Menciona/configura os textos de justificação de permissão para as lojas (infoPlist/permissions no app.config)",
+        "O upload usa mutation com estados de progresso/loading e erro",
+        "Há consideração explícita de paridade Android/iOS (permissões, action sheet, botão voltar ou equivalente)",
+        "O service de upload está separado do componente",
+        "Alvo de toque do avatar respeita tamanho mínimo ou usa hitSlop"
+      ]
+    }
+  ]
+}

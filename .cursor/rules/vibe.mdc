@@ -1,0 +1,32 @@
+---
+description: Modo vibe — ajustes cosméticos pequenos sem abrir todas as skills. Em dúvida, invocar discovery.
+alwaysApply: false
+---
+
+# Modo vibe (exploração)
+
+Use para tarefas **pequenas**. Não abras skill para cada mensagem.
+
+## Quando vibe basta
+
+- UI, copy, Tailwind, espaçamento local
+- Refactor local sem cruzar camadas
+- Tipagem/lint pontual
+- Explicar código existente (read-only)
+
+## Quando escalar
+
+| Se estás a… | Skill |
+|-------------|-------|
+| Feature / bug / refactor com ambiguidade | `@discovery` (obrigatório) |
+| UI com estados/contratos em falta | `@discovery` + `@discovery-frontend` |
+| API / domínio / migration | `@discovery` + `@discovery-backend` |
+| Skills/regras deste repo Agents | `@discovery` + `@discovery-biblioteca` |
+| Criar ficheiro novo | `@architecture-check` |
+| Fatia vertical front/back | `@feature-frontend-completa` / `@feature-backend-completa` |
+
+## Regras sempre (mesmo em vibe)
+
+- Diff mínimo; português brasileiro no domínio e UI
+- Sem violar fronteiras (domain↛infra; sem `fetch` em componente)
+- Em dúvida se o pedido está especificado → **ainda** `@discovery`

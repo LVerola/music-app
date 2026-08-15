@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "Identifica explicitamente o problema N+1 (acesso lazy a Cliente e/ou Itens dentro do loop gera muitas queries)", "passed": true, "evidence": "Secção 2.1 'N+1 por lazy loading (causa raiz)': 2N+1 = 401 queries"},
+    {"text": "Propõe projeção no Select para DTO no banco OU Include (com AsSplitQuery quando há várias coleções)", "passed": true, "evidence": "Secção 3.1 reescreve com Select projetando para PedidoResumoDto; secção 4 discute Include+AsSplitQuery como alternativa"},
+    {"text": "Recomenda AsNoTracking por ser leitura que não será alterada", "passed": true, "evidence": "Secção 2.3 e 3.1 usam AsNoTracking() e explicam o overhead do ChangeTracker"},
+    {"text": "Explica como contar/medir o número de queries por request (log do EF) em vez de só assumir", "passed": true, "evidence": "Secção 6: log de SQL do EF Core ou ToQueryString() para confirmar 1 comando"},
+    {"text": "Dá estimativa quantitativa do ganho (ex.: de ~400 queries para 1-2)", "passed": true, "evidence": "Tabela secção 5: ~401 → 1 query; ~4s → dezenas a poucas centenas de ms"},
+    {"text": "Fornece um critério de validação objectivo (ex.: nº de queries ou p95 alvo)", "passed": true, "evidence": "Secção 6: confirmar 1 comando SQL, benchmark antes/depois, EXPLAIN; critério objectivo de nº de queries"}
+  ],
+  "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}
+}

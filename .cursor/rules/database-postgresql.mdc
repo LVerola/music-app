@@ -1,0 +1,119 @@
+---
+description: Convenções para PostgreSQL — modelagem, migrations, queries e performance. Aplica-se a SQL e scripts de BD.
+globs: **/*.{sql,psql}
+alwaysApply: false
+---
+
+# Banco de dados — PostgreSQL
+
+Complementa `AGENTS.md` com convenções específicas para PostgreSQL. Aplica‑se a *scripts*, *migrations* e *queries* embutidas em código (EF Core, Dapper, etc.).
+
+## Nomenclatura
+
+- **`snake_case`** para tabelas, colunas, índices, constraints, funções e views. PostgreSQL faz *case-folding* para minúsculas; usar `PascalCase` força aspas no SQL e gera bugs.
+- **Tabelas no plural** (`clientes`, `pedidos`, `pedidos_itens`).
+- **Chave primária** preferida: `id` (`bigserial` ou `uuid` com `gen_random_uuid()`/`uuidv7` quando houver extensão).
+- **Foreign keys**: `<tabela_singular>_id` (`cliente_id`, `pedido_id`).
+- **Timestamps**: `criado_em`, `atualizado_em` — **sempre `timestamptz`**, nunca `timestamp` sem fuso.
+- **Booleans**: `é_*` / `tem_*` / `esta_*` (`esta_ativo`, `tem_desconto`).
+- **Índices**: `ix_<tabela>_<colunas>`; únicos: `ux_<tabela>_<colunas>`.
+- **Constraints**: `pk_<tabela>`, `fk_<tabela>_<ref>`, `ck_<tabela>_<regra>`.
+
+## Modelagem
+
+- Preferir **`text`** em vez de `varchar(n)` salvo quando o limite for **regra de negócio real** (e então usar `CHECK (char_length(...) <= N)`).
+- Tipos numéricos:
+  - Dinheiro / valores monetários → **`numeric(p, s)`** com precisão explícita; **nunca** `float`/`double`.
+  - IDs inteiros → `bigint` (`bigserial`) para crescer sem dor; `int` só se houver razão clara.
+- `enum` do PostgreSQL é rígido (ALTER complicado) — preferir tabela de domínio + FK, ou `text` com `CHECK` quando o conjunto for muito estável.
+- **Não usar nulos como "vazio semântico"**: `NULL` significa "ausente/desconhecido". Para "não preenchido", considere valor sentinela explícito ou outra modelagem.
+- Normalizar até onde fizer sentido; desnormalizar com **medição**, não palpite.
+
+## Integridade
+
+- **Foreign keys sempre declaradas**, com `ON DELETE`/`ON UPDATE` explícitos (`RESTRICT` por defeito; `CASCADE` apenas quando o domínio realmente exige).
+- **CHECK constraints** para invariantes triviais (`valor >= 0`, `data_fim >= data_inicio`).
+- **UNIQUE** para regras de unicidade de negócio (`email`, `cpf_cnpj`).
+- **NOT NULL** por defeito em colunas obrigatórias; nulável é decisão consciente.
+
+## Performance e índices
+
+- Criar índice **antes** que seja preciso? Não — meça com `EXPLAIN (ANALYZE, BUFFERS)` e crie quando justificar.
+- Indexar:
+  - Colunas usadas em `WHERE`, `JOIN`, `ORDER BY` frequentes.
+  - FKs (não são automáticas no Postgres, ao contrário do que muita gente assume).
+- **Índices compostos**: a ordem das colunas importa — coluna mais selectiva e usada em igualdade primeiro.
+- **Índices parciais** (`WHERE esta_ativo = true`) para subconjuntos quentes.
+- **Índices funcionais** (`lower(email)`) quando a query usa expressão.
+- **`GIN`/`GiST`** para `jsonb`, *full-text*, `tsvector`, arrays.
+- Cuidado com queries de paginação: `OFFSET` grande é caro; preferir **keyset pagination** (`WHERE id > :ultimo_id ORDER BY id LIMIT N`).
+
+## Queries
+
+- **`SELECT` explícito**: liste as colunas. **Nunca** `SELECT *` em código de produção.
+- **`JOIN` explícito** com `ON`; evitar vírgula no `FROM` (legado).
+- Funções de janela (`ROW_NUMBER()`, `RANK()`) > subqueries correlacionadas quando aplicável.
+- `EXISTS`/`NOT EXISTS` > `IN`/`NOT IN` quando há nulos possíveis.
+- **CTEs**: úteis para legibilidade; no Postgres 12+ não são *optimization fences* salvo `MATERIALIZED` explícito.
+
+## Transações e concorrência
+
+- Toda escrita relacionada em **transação explícita** (`BEGIN ... COMMIT`).
+- Nível de isolamento padrão (`READ COMMITTED`) costuma bastar; subir para `REPEATABLE READ`/`SERIALIZABLE` quando houver risco real de anomalia.
+- Para lock explícito de linha: `SELECT ... FOR UPDATE` / `FOR NO KEY UPDATE` conforme a granularidade.
+- **Idempotência** em operações expostas externamente (chaves naturais, *upsert* com `ON CONFLICT`).
+
+## Migrations
+
+- Toda alteração de schema vai por **migration versionada** (EF Core, Flyway, Liquibase, ou `*.sql` numeradas).
+- Migrations são **imutáveis** uma vez aplicadas — corrigir cria nova migration.
+- Operações pesadas em produção:
+  - `CREATE INDEX CONCURRENTLY` (não bloqueia gravações).
+  - `ALTER TABLE ... ADD COLUMN` sem default em coluna grande (ou usar default agora que é metadados-only em PG 11+, atenção com tipos não triviais).
+  - `DROP COLUMN` em fases: parar de ler/escrever → release → drop.
+- **Rollback plan**: pensar como reverter (raramente é só `DROP`).
+
+## Segurança
+
+- **Princípio do menor privilégio**: a aplicação não usa `superuser`. Criar utilizador dedicado com `GRANT` mínimo.
+- **Nunca** concatenar SQL com input do utilizador — usar parâmetros (`$1`, `@param`).
+- Dados sensíveis (palavras-passe, tokens) **nunca** em texto claro — usar `pgcrypto` ou guardar fora do BD quando possível.
+- *Row-Level Security* quando houver multi-tenant no mesmo BD.
+
+## Exemplos
+
+```sql
+-- ❌ BAD
+CREATE TABLE Clientes (
+    Id SERIAL PRIMARY KEY,
+    Email VARCHAR(50),
+    CriadoEm TIMESTAMP DEFAULT NOW()
+);
+
+-- ✅ GOOD
+CREATE TABLE clientes (
+    id            bigserial    PRIMARY KEY,
+    email         text         NOT NULL,
+    esta_ativo    boolean      NOT NULL DEFAULT true,
+    criado_em     timestamptz  NOT NULL DEFAULT now(),
+    atualizado_em timestamptz  NOT NULL DEFAULT now(),
+    CONSTRAINT ux_clientes_email UNIQUE (email),
+    CONSTRAINT ck_clientes_email_formato CHECK (email ~* '^.+@.+\..+$')
+);
+
+CREATE INDEX ix_clientes_ativo_criado_em
+    ON clientes (criado_em DESC)
+    WHERE esta_ativo;
+```
+
+```sql
+-- ❌ BAD — N+1, OFFSET grande, SELECT *
+SELECT * FROM pedidos OFFSET 100000 LIMIT 50;
+
+-- ✅ GOOD — colunas explícitas, keyset pagination
+SELECT id, cliente_id, valor_total, criado_em
+FROM pedidos
+WHERE id > $1
+ORDER BY id
+LIMIT 50;
+```

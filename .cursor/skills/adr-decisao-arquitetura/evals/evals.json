@@ -1,0 +1,42 @@
+{
+  "skill_name": "adr-decisao-arquitetura",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "preciso documentar a decisão da equipa: a gente vai trocar nossa fila actual (rabbitmq self-hosted) por uma solução gerenciada. as opções na mesa são: aws sqs, gcp pub/sub, ou continuar no rabbit mas com cloudamqp. context: somos 3 devs, volume actual é 2M mensagens/dia mas vai dobrar em 6 meses, já estamos na aws pro resto. faz o adr",
+      "expected_output": "ADR completo seguindo template: status proposto, contexto claro (3 dev, 2M->4M msg/dia, já AWS), 3 opções com prós/contras/custo/risco, matriz de avaliação opcional, decisão com justificativa apoiada nas forças, consequências positivas/negativas/neutras, plano de revisão, plano de adopção",
+      "expectations": [
+        "O ADR tem cabeçalho com Status, Data, Decisores",
+        "A secção de contexto cita explicitamente que a equipa tem 3 devs e volume vai dobrar",
+        "São apresentadas 3 opções (SQS, Pub/Sub, CloudAMQP) com prós, contras e custo",
+        "A decisão escolhida está apoiada em pelo menos 2 forças da secção 2",
+        "Há secção de consequências negativas (não só positivas)",
+        "Há critérios de revisão concretos (gatilhos: ex. volume X, custo Y)",
+        "Há plano de adopção com itens accionáveis"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "escreve um adr falando que a gente vai adoptar nextjs 15 com app router. é a decisão da liderança",
+      "expected_output": "A skill deve PARAR e pedir explicitamente alternativas — ADR sem alternativa é decoração. Deve perguntar contexto (de onde veem? sob que pressão? quais alternativas foram descartadas e por quê?)",
+      "expectations": [
+        "A skill recusa criar o ADR de imediato e pede pelo menos uma alternativa explicitada",
+        "A skill pergunta contexto: de onde a equipa vem (CRA? Vite? Remix? Pages Router?)",
+        "A skill explica por que ADR com uma única opção é inútil",
+        "A skill oferece sugerir alternativas comuns (Pages Router actual, Remix, Vite+React Router) para o utilizador validar"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "tenho que decidir como vamos autenticar serviços internos. as opções são: jwt assinado por chave compartilhada, mtls com certs gerenciados, ou usar o serviço de iam do nosso provedor de cloud (workload identity). são 15 microsserviços, equipa de 8 pessoas, alguns serviços rodam fora do cloud por motivos regulatórios. monta o adr",
+      "expected_output": "ADR cobrindo as 3 opções com análise honesta de cada, incluindo discussão de operabilidade (rotação de chaves, complexidade de gestão de certs), reversibilidade, e restrição dos serviços fora do cloud",
+      "expectations": [
+        "Cada opção tem prós, contras, custo e risco preenchidos honestamente",
+        "A restrição 'alguns serviços rodam fora do cloud' é tratada explicitamente em pelo menos uma opção",
+        "A secção de riscos tem pelo menos 3 riscos identificados com mitigação",
+        "Há discussão de reversibilidade (qual opção é mais difícil de desfazer)",
+        "Há critérios de revisão acionáveis (ex.: 'rever se número de serviços passar de 30')"
+      ]
+    }
+  ]
+}

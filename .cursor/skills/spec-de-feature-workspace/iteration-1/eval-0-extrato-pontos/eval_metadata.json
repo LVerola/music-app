@@ -1,0 +1,16 @@
+{
+  "eval_id": 0,
+  "eval_name": "extrato-pontos",
+  "prompt": "quero especificar uma feature nova antes de implementar: uma tela de extrato de pontos do programa de fidelidade. o cliente logado vê a lista de movimentos (ganhou/gastou pontos) com data, descrição e saldo. o endpoint ainda não existe, o back é .NET. me entrevista e gera a spec",
+  "assertions": [
+    "O agente entrevista antes de escrever a spec (perguntas documentadas)",
+    "O ficheiro final está em Specs/ com nome SPEC-<slug>.md",
+    "A spec contém critérios de aceitação em Gherkin (Given/When/Then) em PT-BR",
+    "A spec define o contrato do endpoint com JSON de exemplo e códigos de status",
+    "A spec tem secção de estados da tela (loading, erro, vazio, sucesso)",
+    "A spec tem secção de fora de escopo",
+    "A spec tem plano de implementação com passos ordenados e caminhos de ficheiros",
+    "A dependência do endpoint inexistente está registada (dependências/questões em aberto)",
+    "A spec inteira está em português brasileiro"
+  ]
+}

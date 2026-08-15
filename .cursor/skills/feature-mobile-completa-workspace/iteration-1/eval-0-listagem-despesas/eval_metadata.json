@@ -1,0 +1,17 @@
+{
+  "eval_id": 0,
+  "eval_name": "listagem-despesas",
+  "prompt": "cria a tela de listagem de despesas no app (React Native + Expo). endpoint GET /despesas devolve id, descricao, valorCentavos, categoria e criadaEm. precisa de pull-to-refresh e um botão pra adicionar despesa nova que abre um form com descrição, valor e categoria. faz a fatia completa",
+  "assertions": [
+    "Foi criado arquivo de tipos com interface Despesa (sem any)",
+    "Service HTTP separado do componente, com hook useQuery do TanStack Query",
+    "A listagem usa FlatList (não map dentro de ScrollView)",
+    "A listagem trata os 4 estados: loading, erro, vazio, sucesso",
+    "Há pull-to-refresh (RefreshControl ou equivalente)",
+    "O formulário usa React Hook Form com zodResolver e Controller (não useState por campo)",
+    "As mensagens de validação estão em PT-BR",
+    "A rota foi criada no padrão Expo Router (arquivo em app/)",
+    "Há pelo menos 1 teste do formulário com Jest + React Native Testing Library",
+    "Valores monetários formatados por locale (toLocaleString/Intl)"
+  ]
+}

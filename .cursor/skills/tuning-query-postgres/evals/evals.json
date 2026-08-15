@@ -1,0 +1,44 @@
+{
+  "skill_name": "tuning-query-postgres",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "essa query aqui tá demorando 8 segundos no dashboard de relatórios, deveria ser <300ms. ajuda aí. ```sql\nSELECT p.id, p.numero, p.criado_em, c.nome\nFROM pedidos p\nJOIN clientes c ON c.id = p.cliente_id\nWHERE p.status = 'Confirmado'\n  AND p.criado_em >= now() - interval '30 days'\nORDER BY p.criado_em DESC\nLIMIT 50;\n```\ntabela pedidos tem 12M de linhas, status confirmado é cerca de 60% delas, índices actuais: pk(id), fk(cliente_id). banco é postgres 16 em RDS.",
+      "expected_output": "Diagnóstico identificando seq scan provável, proposta de índice composto (status, criado_em DESC) ou parcial em criado_em onde status='Confirmado', estimativa de ganho, comando CREATE INDEX CONCURRENTLY, plano para validar",
+      "expectations": [
+        "Pede para o utilizador rodar EXPLAIN (ANALYZE, BUFFERS) antes de propor solução, OU monta hipótese explicitando que é hipótese",
+        "Propõe pelo menos um índice composto cobrindo (status, criado_em) ou índice parcial",
+        "O comando CREATE INDEX usa CONCURRENTLY (porque a tabela é grande e está em produção)",
+        "Aponta que selectividade de 60% pode tornar índice em status sozinho pouco útil",
+        "Estima impacto em INSERT/UPDATE da tabela pedidos",
+        "Inclui comando para validar (EXPLAIN ANALYZE pós-mudança)",
+        "Menciona que deve rodar a query 3x e comparar a 2ª e 3ª execução, não a 1ª"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "tenho essa query pra autocomplete de clientes por nome, está lentíssima quando o usuário digita coisas curtas tipo 2-3 letras: ```sql\nSELECT id, nome, email FROM clientes WHERE nome ILIKE '%' || $1 || '%' LIMIT 20;\n```\ntabela tem 800k clientes",
+      "expected_output": "Diagnóstico claro do problema (LIKE com wildcard à esquerda não usa B-tree), proposta com pg_trgm + GIN, alternativa com índice em prefixo, e cuidados de operação",
+      "expectations": [
+        "A skill identifica explicitamente que LIKE com wildcard à esquerda invalida índice B-tree",
+        "Propõe pg_trgm com índice GIN como solução principal",
+        "Propõe CREATE EXTENSION IF NOT EXISTS pg_trgm",
+        "Menciona que ILIKE com gin_trgm_ops funciona case-insensitive nativamente",
+        "Discute alternativa de busca apenas por prefixo se o produto aceitar (ILIKE 'X%' usa B-tree com text_pattern_ops)",
+        "Aponta que GIN tem custo de manutenção maior em INSERT/UPDATE"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "tô tentando paginar uma listagem e ficou muito lento na página 1000+: ```sql\nSELECT * FROM eventos ORDER BY criado_em DESC OFFSET 50000 LIMIT 50;\n```\ntabela tem 50M de linhas, com índice em criado_em",
+      "expected_output": "Identificar problema do OFFSET grande (lê e descarta), propor keyset pagination, manter compatibilidade quando possível",
+      "expectations": [
+        "A skill identifica explicitamente que OFFSET grande força o Postgres a ler e descartar todas as linhas anteriores",
+        "Propõe keyset pagination usando WHERE criado_em < $ultimo_criado_em",
+        "Demonstra como adaptar a API/UI para suportar cursor em vez de número de página",
+        "Aponta que com keyset pagination não há salto direto para página N (limitação a explicar ao utilizador)",
+        "Sugere índice composto se houver tie-breaker (criado_em, id) para garantir ordem estável"
+      ]
+    }
+  ]
+}

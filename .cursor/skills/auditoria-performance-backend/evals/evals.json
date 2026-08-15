@@ -1,0 +1,49 @@
+{
+  "skill_name": "auditoria-performance-backend",
+  "evals": [
+    {
+      "id": 1,
+      "name": "n-mais-1-listagem-pedidos",
+      "prompt": "Esse endpoint de listagem de pedidos está muito lento quando o cliente tem muitos pedidos (uns 200). Em produção passou de 300ms pra quase 4s. Dá uma olhada e me diz o que está acontecendo e como arrumar. Segue o controller.",
+      "expected_output": "Identificar N+1 (acesso lazy a Cliente e Itens dentro do loop dispara 1+N+N queries), over-fetching/falta de projeção e tracking desnecessário. Propor projeção no Select com AsNoTracking (ou Include + AsSplitQuery), explicar como contar as queries via log do EF, estimar ganho (de centenas de queries para 1-2) e dar critério de validação. Tom de Tech Lead: mede/conta antes, ataca causa-raiz.",
+      "files": ["fixtures/PedidosEndpoints.cs"],
+      "expectations": [
+        "Identifica explicitamente o problema N+1 (acesso lazy a Cliente e/ou Itens dentro do loop gera muitas queries)",
+        "Propõe projeção no Select para DTO no banco OU Include (com AsSplitQuery quando há várias coleções)",
+        "Recomenda AsNoTracking por ser leitura que não será alterada",
+        "Explica como contar/medir o número de queries por request (log do EF) em vez de só assumir",
+        "Dá estimativa quantitativa do ganho (ex.: de ~400 queries para 1-2)",
+        "Fornece um critério de validação objectivo (ex.: nº de queries ou p95 alvo)"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "sync-over-async-e-httpclient",
+      "prompt": "Na Black Friday esse serviço de câmbio fez a aplicação inteira travar — a latência subia em escada e começaram a aparecer erros de socket/conexão. Funciona normal com pouca gente. O que tem de errado aqui e como deixo isso pronto pra carga?",
+      "expected_output": "Identificar sync-over-async (.Result causa threadpool starvation sob carga) e new HttpClient() por chamada (socket exhaustion / portas em TIME_WAIT). Propor async até ao topo com CancellationToken, IHttpClientFactory, e paralelizar as duas cotações independentes com Task.WhenAll. Explicar por que o sintoma só aparece sob carga. Critério de validação (ThreadPool queue length, sockets).",
+      "files": ["fixtures/ServicoIntegracaoCambio.cs"],
+      "expectations": [
+        "Identifica o sync-over-async (.Result/.Wait()) e relaciona com threadpool starvation sob carga",
+        "Identifica o new HttpClient() por chamada e relaciona com socket/port exhaustion",
+        "Propõe IHttpClientFactory (ou HttpClient reutilizado correctamente)",
+        "Propõe tornar a cadeia async até ao topo e propagar CancellationToken",
+        "Sugere paralelizar as chamadas independentes (Task.WhenAll para as duas cotações)",
+        "Explica por que o problema só se manifesta sob carga (e não com pouca gente)"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "sintoma-sem-codigo-medir-primeiro",
+      "prompt": "Meu endpoint de relatório de vendas está com p95 horrível em produção, uns 6 segundos. Não sei onde está o gargalo. Como eu ataco isso?",
+      "expected_output": "Não chutar correções. Pedir/levantar a métrica e o alvo, e orientar a INSTRUMENTAR primeiro: trace por camada (APM/OpenTelemetry), contar queries com log do EF, dotnet-counters/dotnet-trace para CPU/alocação/threadpool, medir 2ª/3ª execução. Dar um mapa de gargalos por camada e o loop científico (medir → localizar dominante por Amdahl → hipótese → acção → medir de novo). Listar suspeitos prováveis (N+1, paginação, sync-over-async) como hipóteses a confirmar, não como conclusão.",
+      "files": [],
+      "expectations": [
+        "Não dá uma correção definitiva sem dados; deixa claro que é preciso medir primeiro",
+        "Orienta a instrumentar/medir: trace por camada (APM/OpenTelemetry) e/ou contar queries com log do EF e/ou dotnet-counters/dotnet-trace",
+        "Pergunta ou define a métrica alvo (ex.: qual p95 é aceitável) em vez de aceitar 'horrível'",
+        "Apresenta uma abordagem sistemática para localizar o gargalo dominante antes de optimizar",
+        "Lista os suspeitos prováveis (N+1, paginação, sync-over-async, etc.) como hipóteses a confirmar, não como diagnóstico fechado"
+      ]
+    }
+  ]
+}

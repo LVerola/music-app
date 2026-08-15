@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "ferias-lacunas",
+  "prompt": "preciso de uma spec pra IA implementar um formulário de solicitação de férias no portal do colaborador. sei que tem que ter data início, data fim e um campo de observação, mas não sei ainda como o RH aprova nem qual endpoint usar",
+  "assertions": [
+    "O agente pergunta sobre as lacunas (fluxo de aprovação, endpoint, regras de datas)",
+    "A spec NÃO inventa um contrato de endpoint como confirmado — marca como pendente/proposta a validar",
+    "A secção Questões em aberto lista as dúvidas não resolvidas",
+    "Validações óbvias de formulário (fim >= início, obrigatórios) aparecem como requisitos",
+    "Há cenários Gherkin para validação de datas",
+    "O ficheiro está em Specs/SPEC-<slug>.md em português brasileiro"
+  ]
+}

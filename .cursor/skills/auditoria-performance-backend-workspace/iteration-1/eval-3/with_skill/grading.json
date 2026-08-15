@@ -1,0 +1,10 @@
+{
+  "expectations": [
+    {"text": "Não dá uma correção definitiva sem dados; deixa claro que é preciso medir primeiro", "passed": true, "evidence": "Cabeçalho: 'o primeiro entregável não é um fix, é um plano para localizar o gargalo com evidência'"},
+    {"text": "Orienta a instrumentar/medir: trace por camada (APM/OpenTelemetry) e/ou contar queries com log do EF e/ou dotnet-counters/dotnet-trace", "passed": true, "evidence": "Secção 2: tabela ferramenta-por-pergunta (APM/OTel, EF LogTo, dotnet-counters, EXPLAIN)"},
+    {"text": "Pergunta ou define a métrica alvo (ex.: qual p95 é aceitável) em vez de aceitar 'horrível'", "passed": true, "evidence": "Secção 1.1: 'qual é o alvo aceitável (ex.: p95 < 800ms)? Rápido não é critério.'"},
+    {"text": "Apresenta uma abordagem sistemática para localizar o gargalo dominante antes de optimizar", "passed": true, "evidence": "Secção 5 loop científico; Amdahl 'atacar o maior %'"},
+    {"text": "Lista os suspeitos prováveis (N+1, paginação, sync-over-async, etc.) como hipóteses a confirmar, não como diagnóstico fechado", "passed": true, "evidence": "Secção 3: H1-H7 ordenadas por probabilidade, cada uma com 'como confirmar'; secção 4 'isto é hipótese, não diagnóstico'"}
+  ],
+  "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0}
+}

@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "Identifica explicitamente o problema N+1 (acesso lazy a Cliente e/ou Itens dentro do loop gera muitas queries)", "passed": true, "evidence": "Secção 2/3: 'N+1 por lazy loading... 1 + 2·N round-trips, ~401 para 200 pedidos'"},
+    {"text": "Propõe projeção no Select para DTO no banco OU Include (com AsSplitQuery quando há várias coleções)", "passed": true, "evidence": "Opção A: projeção LINQ→SQL com Select para PedidoResumoDto, Count/Sum no banco"},
+    {"text": "Recomenda AsNoTracking por ser leitura que não será alterada", "passed": true, "evidence": "Opção A usa .AsNoTracking(); secção 2 item 4 explica o overhead do change tracker"},
+    {"text": "Explica como contar/medir o número de queries por request (log do EF) em vez de só assumir", "passed": true, "evidence": "Secção 5: LogTo(Console.WriteLine, LogLevel.Information); contar 401 antes vs 1 depois; nota de que números são inferidos e devem ser confirmados"},
+    {"text": "Dá estimativa quantitativa do ganho (ex.: de ~400 queries para 1-2)", "passed": true, "evidence": "'de ~401 queries para 1 query; ~4 s → < 100-300 ms'"},
+    {"text": "Fornece um critério de validação objectivo (ex.: nº de queries ou p95 alvo)", "passed": true, "evidence": "Critério de sucesso: 1 query por request, p95 < 400 ms, tempo estável"}
+  ],
+  "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}
+}

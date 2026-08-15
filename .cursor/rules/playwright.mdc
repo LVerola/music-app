@@ -1,0 +1,133 @@
+---
+description: Convenções de testes E2E com Playwright (TypeScript). Aplica-se a specs, configuração e helpers em tests/.
+globs: tests/**/*.ts,playwright.config.ts
+alwaysApply: false
+---
+
+# Playwright — Testes E2E (TypeScript)
+
+Complementa `AGENTS.md` com convenções específicas para o repositório de automação. **Toda a base de testes é em português brasileiro** (nomes de testes, funções, variáveis e mensagens de `console.log`).
+
+## Stack assumida
+
+- **Playwright** `^1.59.x` + `@playwright/test`
+- **Node.js** `^22.x`, TypeScript estrito
+- **Browser único**: `chromium` (`headless: false`, `--start-maximized`) — definido em `playwright.config.ts`
+- **Dados**: `@faker-js/faker` (`fakerPT_BR` quando precisar de PT-BR), `faker-br` em casos específicos
+- **HTTP**: `request` nativo do Playwright + `pw-api-plugin` (`pwApi`) para logging
+- **BD**: `pg` (PostgreSQL) — ver `playwright-bd-testes.mdc`
+- **Imagens**: `jimp`, `canvas`, `sharp`, `qrcode-reader` (boletos, OCR, PIX)
+- **Email temporário**: helpers em `tests/utils/tempEmailUtils.ts`
+
+## Estrutura de pastas
+
+```
+tests/
+  <Dominio>/                   # PortalProdutor, Checkout, Coproducao, CRM, COB, Asaas, ...
+    metodos<Dominio>.ts        # POM funcional: ações via UI (ver playwright-pom.mdc)
+    metodos<Dominio>Api.ts     # Cliente HTTP para a API do domínio
+    <subfluxo>.spec.ts         # Specs próprios do domínio (opcional)
+  api/                         # Specs cross-domain de API pura
+  constants/testConstants.ts   # TIMEOUTS, DADOS_TESTE_PADRAO, CARTAO_TESTE, ...
+  fixtures/                    # PNGs e dados estáticos para upload/OCR
+  types/                       # Tipos partilhados (DTOs de pedidos, etc.)
+  utils/
+    utils.ts                   # executarComandoBancoDeDados, gerarCnpj, ordenarCampanhas
+    dbUtils.ts                 # Helpers de BD com SQL parametrizado
+    tempEmailUtils.ts          # GuerrillaMail/Yopmail
+  <fluxo>.spec.ts              # Specs ponta-a-ponta no topo de tests/
+playwright.config.ts
+```
+
+- **Pastas e ficheiros em português brasileiro**; manter `metodos<Dominio>.ts` e `metodos<Dominio>Api.ts` como convenção.
+- **Não criar pastas com espaço/acento** em novos domínios — usa `PascalCase` simples (`PortalAluno`, `PortalRenegociacao`, `TmbOne`). Quando tocar nas pastas legadas com espaço/acento, **não renomear** sem alinhamento (`Portal do Aluno`, `TMB One`, `Portal de Renegociação` ficam como estão; novos imports respeitam o nome existente).
+
+## Organização dos specs
+
+```ts
+import { test, expect } from '@playwright/test';
+import * as MetodosCoproducao from './Coproducao/metodosCoproducao';
+
+test.describe.configure({ mode: 'parallel' }); // Apenas quando os testes são independentes
+
+test.describe.serial('validacoes de convites de coproducao', () => {
+  test.afterAll(async () => {
+    await MetodosCoproducao.atualizarStatusCoprodutorParticipacaoCancelado();
+  });
+
+  test('enviar convite de coproducao', async ({ page }) => {
+    await MetodosCoproducao.convidarCoprodutor(page);
+    await expect(page.locator('text=Convite enviado!')).toBeVisible();
+  });
+});
+```
+
+- **Nome do teste em português brasileiro, minúsculo, sem emoji**: `'aceitar convite de coproducao'`.
+- **`describe.serial`** quando há dependência de estado entre testes (cleanup partilhado, lock de recurso); caso contrário, `mode: 'parallel'`.
+- **Cleanup obrigatório** em `afterAll`/`afterEach` para testes que criam dados (coprodutores, parceiros, produtos, pedidos). Não deixar lixo no ambiente de DEV.
+- **Tags entre colchetes** no nome do teste quando precisar de filtrar via `--grep`: `'[@coprodutor-comissionado] aceitar convite'`.
+- **Bugs conhecidos** ficam como `test.skip('...', ...)` com comentário `// BUG: <id ou descrição curta>` imediatamente acima.
+
+## Locators — preferência
+
+1. **Roles e semântica** primeiro: `page.getByRole('button', { name: /entrar/i })`, `getByLabel`, `getByPlaceholder`, `getByText`.
+2. **`data-cy` / `data-testid`** quando existir no produto (`[data-cy="nome"]`).
+3. **CSS/atributo** (`#cnpj`, `input[name="login"]`) só quando 1 e 2 não servem.
+4. **Última opção** — XPath ou seletores frágeis com classes Tailwind concatenadas. Se usar, deixar `// TODO`: substituir por role/`data-testid` em conjunto com o frontend.
+
+## Esperas — quando usar o quê
+
+- **Default**: confiar em `await expect(locator).toBeVisible()`, `.toHaveText()`, `page.waitForURL`, `waitForResponse`, `waitForSelector` com estado.
+- **`waitForTimeout`**: anti-padrão por defeito. Só é aceitável para janelas anti-fraude/anti-bot reais (ClearSale, OTP, geração assíncrona externa). Sempre que usar, comentar **porquê** acima da linha.
+- **`page.pause()`**: **proibido em código commitado**. É depuração. Antes de commit, remover.
+
+```ts
+// ❌ BAD
+await page.click('button');
+await page.waitForTimeout(5000);
+await page.click('button:has-text("Próximo")');
+
+// ✅ GOOD
+await page.getByRole('button', { name: /finalizar/i }).click();
+await expect(page.getByText('Pedido criado')).toBeVisible({ timeout: 30_000 });
+```
+
+## Variáveis de ambiente
+
+- Lidas em `playwright.config.ts` via `dotenv`. **Nunca** ler `.env` directamente nos testes.
+- **Sempre** com fallback defensivo: `process.env.url_portal_produtor ?? ''`. Nunca `!` para silenciar `undefined`.
+- **Nada de URLs/credenciais hardcoded** num spec. Se a variável não existir, criar no `.env.example` (sem valor real).
+- **Não logar** valores de `process.env` que possam conter token/segredo (`token_CRM`, `conexao_bd`, `api_key_asaas`).
+- Convenção do projeto: nomes em `snake_case` minúsculo (`url_portal_produtor`); aceitar `SCREAMING_SNAKE_CASE` quando já existir (`URL_TMBone`, `URL_SIMULACAO_PARCERIA`) e **alinhar** ao padrão do `.env`.
+
+## Tipagem
+
+- **Sem `any` implícito** em código novo. Parâmetros tipados — em especial `page: Page`, `request: APIRequestContext`, `context: BrowserContext`.
+- **Exportar tipos** de payloads para `tests/types/<dominio>.ts` quando uma função devolver estrutura reaproveitada (ex.: `pedidoCheckoutFinalizado`).
+- Helpers que devolvem coleções tipam o retorno: `Promise<Coprodutor[]>` em vez de `Promise<any[]>`.
+
+## Anti-padrões a corrigir / não introduzir
+
+- `page.pause()` em código commitado.
+- `test.only` deixado no spec — o config já tem `forbidOnly: !!process.env.CI`, mas remove no commit.
+- Caminhos absolutos a Windows (`C:\Users\Suporte\...`) para screenshots. Usar caminhos relativos a `playwright-report/` ou `test-results/`, que já estão no `.gitignore`.
+- `console.log` espalhado **fora** de fluxos de diagnóstico (assinatura de contrato, OTP, polling de BD). Em specs novos, evitar a menos que ajude a triar falha em DEV.
+- Duplicar geradores (`gerarCPF`, `gerarCnpj`, `gerarTelefoneValido`) em múltiplos ficheiros — reutilizar de `tests/utils/utils.ts` ou `tests/Checkout/metodosCheckout.ts`.
+- Ficheiros duplicados com sufixo ` copy` (`package copy.json`, `tests-examples copy/`). **Não criar mais**; quando tocar, remover ou movê-los para fora do repositório.
+- Misturar aspas simples e duplas no mesmo ficheiro sem critério; alinhar ao ficheiro existente.
+- Selectores Tailwind concatenados (`'h3.text-tmb-branco.text-2xl.xl\\:text-3xltext-2xl'`) — extremamente frágeis. Marcar com `// TODO` para virar `data-cy`.
+
+## Configuração — alterações sensíveis
+
+`playwright.config.ts` é partilhado entre toda a equipa:
+
+- **Não baixar** `timeout`/`expect.timeout` para tornar um teste verde — investigar a flakiness.
+- **Não desligar** `forbidOnly`, `retries` no CI, ou `trace`.
+- **Não introduzir** novos projetos (Firefox/WebKit) sem necessidade documentada.
+- Mudanças em `use.userAgent`, `permissions`, `geolocation` afectam todos os testes — exige justificação.
+
+## Testes (TDD aplicado a E2E)
+
+- E2E **não substitui** unitário — não cria função utilitária complexa só com cobertura de E2E. Para `gerarCPF`, `ordenarCampanhas`, etc., uma `*.spec.ts` simples a chamar a função e validar a saída já chega.
+- Cada `test` deve ter **uma asserção principal clara** (o que estamos a validar). Asserções secundárias são apoio, não distração.
+- **Não dependa** de dados de outro teste salvo em `describe.serial`. Caso contrário, gerar/cancelar o próprio dado no teste.

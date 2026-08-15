@@ -1,0 +1,14 @@
+{
+  "eval_id": 1,
+  "eval_name": "cancelamento-assinatura",
+  "prompt": "monta a spec do endpoint de cancelamento de assinatura. POST /assinaturas/{id}/cancelar, só o próprio dono ou admin pode cancelar, se faltar menos de 7 dias pra renovação cobra multa de 10% do valor mensal, tem que mandar email de confirmação. já tenho tudo definido, não precisa perguntar muito, só formaliza",
+  "assertions": [
+    "O agente respeita o pedido de entrevista mínima (sem interrogatório longo)",
+    "A regra da multa de 10% aparece como requisito verificável e como cenário Gherkin",
+    "A autorização (dono ou admin) aparece nos contratos com códigos 401/403",
+    "O envio de email aparece como efeito colateral explícito",
+    "Há mapeamento de códigos de status por cenário de erro",
+    "Há estratégia de testes cobrindo caminho feliz, multa e autorização",
+    "O ficheiro está em Specs/ em português brasileiro"
+  ]
+}

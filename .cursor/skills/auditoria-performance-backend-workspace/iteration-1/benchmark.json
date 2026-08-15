@@ -1,0 +1,75 @@
+{
+  "metadata": {
+    "skill_name": "auditoria-performance-backend",
+    "skill_path": "c:\\Users\\TMB1\\Desktop\\DEV\\Agents\\cursor\\.cursor\\skills\\auditoria-performance-backend",
+    "executor_model": "sessao-actual",
+    "analyzer_model": "sessao-actual",
+    "timestamp": "2026-06-26T17:40:00-03:00",
+    "evals_run": [1, 2, 3],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "n-mais-1-listagem-pedidos",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 0, "tokens": 0, "tool_calls": 0, "errors": 0}
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "n-mais-1-listagem-pedidos",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 0, "tokens": 0, "tool_calls": 0, "errors": 0}
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "sync-over-async-e-httpclient",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 0, "tokens": 0, "tool_calls": 0, "errors": 0}
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "sync-over-async-e-httpclient",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 0, "tokens": 0, "tool_calls": 0, "errors": 0}
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "sintoma-sem-codigo-medir-primeiro",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": 0, "tokens": 0, "tool_calls": 0, "errors": 0}
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "sintoma-sem-codigo-medir-primeiro",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {"pass_rate": 0.8, "passed": 4, "failed": 1, "total": 5, "time_seconds": 0, "tokens": 0, "tool_calls": 0, "errors": 0}
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0},
+      "time_seconds": {"mean": 0, "stddev": 0, "min": 0, "max": 0},
+      "tokens": {"mean": 0, "stddev": 0, "min": 0, "max": 0}
+    },
+    "without_skill": {
+      "pass_rate": {"mean": 0.933, "stddev": 0.094, "min": 0.8, "max": 1.0},
+      "time_seconds": {"mean": 0, "stddev": 0, "min": 0, "max": 0},
+      "tokens": {"mean": 0, "stddev": 0, "min": 0, "max": 0}
+    },
+    "delta": {"pass_rate": "+0.067", "time_seconds": "0", "tokens": "0"}
+  },
+  "notes": [
+    "O modelo-base (sem skill) já resolve N+1 (eval 1) e socket exhaustion/sync-over-async (eval 2) com qualidade — estas asserções passam 100% em ambas as configurações e por isso NÃO discriminam o valor da skill. São problemas demasiado reconhecíveis para um modelo capaz.",
+    "A única diferença apareceu no eval 3 (sintoma sem código): a versão com skill pergunta explicitamente a métrica-alvo ('qual p95 é aceitável? rápido não é critério'), enquanto a baseline aceita os 6s sem fixar a meta. É exactamente a disciplina de Tech Lead que a skill codifica.",
+    "Valor real da skill (não capturado por estas asserções binárias): consistência do formato de relatório, enquadramento explícito ganho×custo×risco, e encadeamento com @tuning-query-postgres quando o gargalo desce ao plano SQL. Para medir isto seria preciso avaliação qualitativa/comparação cega, não asserções de presença.",
+    "Próxima iteração: substituir/adicionar evals com casos menos óbvios (ex.: over-fetching subtil sem N+1, cache stampede, paginação OFFSET vs keyset, alocações em hot path) para criar asserções que de facto discriminem skill vs baseline.",
+    "Timing/tokens não foram capturados nesta corrida (as notificações de conclusão não trouxeram total_tokens/duration_ms), por isso aparecem como 0."
+  ]
+}

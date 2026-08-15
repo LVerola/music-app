@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "sync-over-async-e-httpclient",
+  "prompt": "Na Black Friday esse serviço de câmbio fez a aplicação inteira travar — a latência subia em escada e começaram a aparecer erros de socket/conexão. Funciona normal com pouca gente. O que tem de errado aqui e como deixo isso pronto pra carga?",
+  "assertions": [
+    "Identifica o sync-over-async (.Result/.Wait()) e relaciona com threadpool starvation sob carga",
+    "Identifica o new HttpClient() por chamada e relaciona com socket/port exhaustion",
+    "Propõe IHttpClientFactory (ou HttpClient reutilizado correctamente)",
+    "Propõe tornar a cadeia async até ao topo e propagar CancellationToken",
+    "Sugere paralelizar as chamadas independentes (Task.WhenAll para as duas cotações)",
+    "Explica por que o problema só se manifesta sob carga (e não com pouca gente)"
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "skill_name": "plano-refatoracao",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "preciso planejar a extração do módulo de pagamentos do nosso monolito atual. ele responde por uns 30% do código, processa cerca de 50k transações/dia, e tem integrações com 4 gateways. equipa de 5 devs, podemos dedicar 2 sprints (4 semanas) iniciais a isso enquanto continuamos com 60% de capacidade nas outras entregas. não pode ter downtime. cobertura de testes do módulo actual é uns 40%.",
+      "expected_output": "Plano de strangler fig: testes de caracterização primeiro, criação de fachada/proxy, migração gradual por feature flag, métricas de progresso, plano de rollback por etapa, riscos mapeados",
+      "expectations": [
+        "A estratégia escolhida é Strangler Fig (justificada explicitamente)",
+        "Plano contempla escrita de testes de caracterização ANTES do refactor (porque cobertura é 40%)",
+        "Plano divide em etapas releasable, nenhuma com >2 sprints estimadas",
+        "Cada etapa tem critério de saída observável",
+        "Há plano de rollback por etapa",
+        "Há feature flag prevista para migração gradual de tráfego",
+        "Há métricas concretas de progresso (% de tráfego no novo, linhas no antigo, etc.)",
+        "Riscos mapeados em tabela com probabilidade, impacto e mitigação"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "tô achando que precisamos refatorar toda a camada de acesso a dados. faz aí um plano de big bang, 1 sprint, vamos de uma vez",
+      "expected_output": "A skill deve recusar/desafiar o big bang, explicando porquê é arriscado, perguntar mais contexto e propor abordagem incremental com branch by abstraction",
+      "expectations": [
+        "A skill recusa explicitamente o big bang ou pelo menos questiona se é apropriado",
+        "A skill pergunta cobertura de testes actual antes de aceitar qualquer plano",
+        "A skill explica que branch by abstraction é mais seguro para troca de ORM/biblioteca",
+        "A skill pergunta o sintoma concreto (por que querem refatorar) antes de planear",
+        "A skill aponta riscos específicos do big bang (sem rollback fácil, conflitos longos, etc.)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "preciso renomear a coluna 'data_criacao' para 'criado_em' em uma tabela de 80M de linhas que é usada por 12 microsserviços diferentes. alguns sob nosso controle, outros não",
+      "expected_output": "Plano expand & contract: adicionar coluna nova mantendo antiga, sincronizar com trigger ou aplicação, migrar consumidores um a um, contrair ao final. inclui sequência exacta de migrations e plano para serviços fora de controle direto",
+      "expectations": [
+        "Identifica explicitamente que a estratégia é Expand & Contract (Parallel Change)",
+        "Plano NÃO usa rename direto da coluna (que quebraria todos os consumidores)",
+        "Plano contempla manter ambas as colunas durante a migração",
+        "Há mecanismo para manter ambas em sincronia (trigger, aplicação dual-write, ou ambos)",
+        "Há estratégia explícita para serviços fora do controle (negociação, prazo, suporte temporário a ambos os nomes)",
+        "Plano contempla migration de backfill da coluna nova",
+        "Há critério para fase de Contract: só remove a coluna antiga quando todos os consumidores migraram (com verificação)"
+      ]
+    }
+  ]
+}

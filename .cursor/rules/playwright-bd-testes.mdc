@@ -1,0 +1,139 @@
+---
+description: Acesso a PostgreSQL dentro de testes Playwright — prepared statements, conexões, helpers e cleanup.
+globs: tests/**/dbUtils.ts,tests/**/utils.ts,tests/**/metodos*.ts,tests/**/*.spec.ts
+alwaysApply: false
+---
+
+# Playwright + PostgreSQL — uso de BD em testes
+
+Complementa `database-postgresql.mdc` e `playwright-pom.mdc`. Foco em **como** os testes E2E falam com o Postgres (validação de estado, manipulação de dados para forçar cenários, cleanup) sem repetir abertura/fecho de conexões nem abrir buracos de segurança.
+
+## Regra de ouro — usar o helper central
+
+**Todas** as queries SQL em testes passam por `executarComandoBancoDeDados<T>` em `tests/utils/utils.ts`. Não abrir `new Client(...)` directo no spec/método salvo justificação clara.
+
+```ts
+import { executarComandoBancoDeDados } from '../utils/utils';
+
+// ✅ GOOD — helper central, parametrizado
+const linhas = await executarComandoBancoDeDados<{ id: number }>(
+  'SELECT id FROM pedidos WHERE cliente_id = $1 ORDER BY id DESC LIMIT 1',
+  [clienteId],
+);
+```
+
+O helper já trata de:
+
+- `connectionString` a partir de `process.env.conexao_bd` (com `ssl.rejectUnauthorized: false` para Azure).
+- `client.connect()` e `client.end()` em `finally`, mesmo em erro.
+- Tipo genérico `T` para a linha (`rows`).
+
+## Prepared statements — sem excepções
+
+```sql
+-- ❌ BAD — concatenação directa com input/dado do teste (SQL injection)
+SELECT codigo_convite FROM coprodutor_participacao
+WHERE coprodutor_email = '${emailCriado}'
+```
+
+```ts
+// ✅ GOOD — sempre parametrizado
+const rows = await executarComandoBancoDeDados<{ codigo_convite: string }>(
+  'SELECT codigo_convite FROM coprodutor_participacao WHERE coprodutor_email = $1',
+  [emailCriado],
+);
+const codigoConvite = rows[0]?.codigo_convite;
+```
+
+- Mesmo que o valor venha do próprio teste, **prepared statement** é a regra — protege contra dados gerados por faker que contenham aspas/símbolos e mantém o padrão consistente para revisão.
+- Identificadores dinâmicos (nome de tabela/coluna) **não vão como parâmetro** — se precisar mesmo, usar lista branca explícita.
+
+## Helpers de domínio — onde vivem
+
+| Tipo de query | Localização |
+|---|---|
+| Operação genérica (executor) | `tests/utils/utils.ts` |
+| Helpers de pedido/cliente/parcela reutilizáveis | `tests/utils/dbUtils.ts` |
+| Query muito específica de um domínio (1 spec) | Inline no `metodos<Dominio>.ts` correspondente |
+
+Se a mesma query aparece em **2+ ficheiros**, promove a função para `tests/utils/dbUtils.ts` com nome verbo+objeto: `obterClienteIdPorPedido`, `aguardarPedidoPorDocumento`, `tornarPedidoInadimplente`.
+
+## Naming dos helpers de BD
+
+- `obter<Coisa>Por<Critério>` para leitura única (`obterClienteIdPorCpf`).
+- `aguardar<Coisa>` para polling com timeout (`aguardarPedidoPorDocumento`).
+- `tornar<Estado>` ou `atualizar<Coisa>` para mutação (`tornarPedidoInadimplente`, `atualizarClienteParaBlocklist`).
+- `validar<Regra>` quando devolve `boolean` (`validarRenegociacaoNaViewExclusao`).
+- **Retorno** explícito: `Promise<number | null>` para id que pode não existir; **lançar erro** quando o teste depende daquele dado existir.
+
+## Polling assíncrono — padrão do projeto
+
+Quando o sistema gera dados em background (pedido criado por job, contrato emitido por integração), use o padrão:
+
+```ts
+export async function aguardarPedidoPorDocumento(
+  documento: string,
+  opcoes?: { timeoutMs?: number; intervaloMs?: number },
+): Promise<number> {
+  const documentoLimpo = documento.replace(/\D/g, '');
+  const timeoutMs = opcoes?.timeoutMs ?? 60_000;
+  const intervaloMs = opcoes?.intervaloMs ?? 5_000;
+  const inicio = Date.now();
+
+  while (Date.now() - inicio < timeoutMs) {
+    const rows = await executarComandoBancoDeDados<{ id: number }>(
+      `SELECT p.id FROM pedidos p
+       INNER JOIN clientes c ON c.id = p.cliente_id
+       WHERE c.documento = $1 ORDER BY p.id DESC LIMIT 1`,
+      [documentoLimpo],
+    );
+    if (rows?.length > 0) return rows[0].id;
+    await new Promise(r => setTimeout(r, intervaloMs));
+  }
+  throw new Error(`Pedido não encontrado no banco para documento ${documentoLimpo} após ${timeoutMs}ms`);
+}
+```
+
+- **Sempre** com timeout total e intervalo configuráveis (default razoável).
+- **Sempre** lançar erro descritivo ao esgotar — não retornar silenciosamente `null` quando o teste depende daquele estado.
+- Logar a entrada/saída com prefixo `[DB]` (`[DB] Pedido 123 encontrado para documento 12345678900`).
+
+## Mutações para forçar cenários
+
+Atualizar dados directamente (vencimentos, flags) é prática válida para reproduzir cenários (inadimplência, blocklist) — mas:
+
+- **Restringir o `WHERE`**: sempre incluir o id mais específico possível (`pedido_id = $1 AND parcela = 1`). Nunca `UPDATE ... WHERE status = 'OVERDUE'` (afecta todos os ambientes partilhados).
+- **`RETURNING`** sempre que precisar confirmar — facilita log do efeito:
+
+```ts
+const result = await executarComandoBancoDeDados<{ id: number; parcela: number; vencimento_parcela: string }>(
+  `UPDATE pedido_parcelas
+     SET vencimento_parcela = NOW() - INTERVAL '5 days'
+   WHERE pedido_id = $1 AND parcela = 1
+   RETURNING id, parcela, vencimento_parcela`,
+  [pedidoId],
+);
+```
+
+- **Não escrever em produção**: a `conexao_bd` aponta para DEV; se a regra de ambiente mudar, parar imediatamente. Antes de qualquer `UPDATE/DELETE`, considere se é mesmo necessário ou se existe API para o mesmo efeito.
+
+## Limpeza (cleanup)
+
+- Specs que criam dados (coprodutores, parceiros, produtos, pedidos) precisam de `afterAll` ou `afterEach` que **chame API** (preferível) ou execute `UPDATE`/`DELETE` direccionado.
+- **Não usar `TRUNCATE`** nem deletar por critério amplo. Apaga só **o que o teste criou**, identificado por id ou email único.
+
+## Segurança e segredos
+
+- `process.env.conexao_bd` é uma connection string com senha — **nunca logar**. O helper já evita.
+- **Nada de** `console.log(client)` ou `JSON.stringify(rows)` sem antes filtrar campos sensíveis (token, hash, dados de cartão).
+- Se um helper devolve `cliente_id_asaas` ou similar e o teste só precisa do id, não imprima o objeto inteiro.
+
+## Anti-padrões
+
+- Concatenar SQL com template string (`` `WHERE email = '${email}'` ``).
+- Abrir `new Client(...)` em vez de usar `executarComandoBancoDeDados`.
+- Esquecer `client.end()` (causa fugas de conexão e flakiness no CI). O helper central elimina isto — outra razão para o usar.
+- `SELECT *` quando o teste só precisa de 1-2 colunas — explicita as colunas.
+- Polling sem timeout (`while(true)`) — sempre delimitar.
+- `await page.waitForTimeout(5000)` "para o BD acabar" — usa polling com query, é determinístico.
+- Update sem `WHERE` específico (`UPDATE pedidos SET status = ...`) — risco enorme num BD partilhado.

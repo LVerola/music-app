@@ -1,0 +1,11 @@
+{
+  "expectations": [
+    {"text": "Identifica o sync-over-async (.Result/.Wait()) e relaciona com threadpool starvation sob carga", "passed": true, "evidence": "Gargalo 2: '.Result... a fila do threadpool cresce, a latência sobe em escada'"},
+    {"text": "Identifica o new HttpClient() por chamada e relaciona com socket/port exhaustion", "passed": true, "evidence": "Gargalo 1: 'new HttpClient() por chamada... socket em TIME_WAIT... portas efémeras esgotam'"},
+    {"text": "Propõe IHttpClientFactory (ou HttpClient reutilizado correctamente)", "passed": true, "evidence": "Opção A: services.AddHttpClient(...) + CreateClient('cambio')"},
+    {"text": "Propõe tornar a cadeia async até ao topo e propagar CancellationToken", "passed": true, "evidence": "Opção A: métodos async Task, ct propagado; nota 'async tem de subir até o controller'"},
+    {"text": "Sugere paralelizar as chamadas independentes (Task.WhenAll para as duas cotações)", "passed": true, "evidence": "MontarResumoAsync usa Task.WhenAll para USD/EUR/limite"},
+    {"text": "Explica por que o problema só se manifesta sob carga (e não com pouca gente)", "passed": true, "evidence": "Causa-raiz: 'com pouca gente nenhum dos dois limites é atingido... sob carga da Black Friday ambos saturam'"}
+  ],
+  "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}
+}

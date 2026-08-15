@@ -1,0 +1,44 @@
+{
+  "skill_name": "debug-sistematico",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "tô com um bug doido aqui. o usuário relata que às vezes quando ele salva um pedido, a tela trava e ele tem que dar F5. acontece tipo 1 em 20 vezes. nunca consegui reproduzir local. é um app next.js com api .net. tem alguma ideia?",
+      "expected_output": "A skill deve parar de tentar chutar causa, listar as 5 perguntas (sintoma, repro, quando começou, frequência, diferença entre ambientes), propor instrumentação (logs estruturados + correlação cliente-servidor) antes de tentar fix",
+      "expectations": [
+        "A skill NÃO propõe fix imediato sem reproduzir",
+        "A skill pede informação adicional (quando começou, frequência exacta, diferenças entre ambientes)",
+        "A skill propõe instrumentação ANTES de tentar corrigir (logs estruturados, correlação request id)",
+        "A skill enumera pelo menos 2 hipóteses possíveis com critério de falseamento",
+        "A skill menciona que '1 em 20' sugere race condition, dado intermitente ou problema de rede",
+        "A skill NÃO sugere try/catch genérico para 'esconder' o erro"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "olha esse stack trace: ```\nSystem.NullReferenceException: Object reference not set to an instance of an object.\n   at Projecto.Application.Pedidos.CalcularTotal(Pedido pedido) in /src/Application/Pedidos/CalcularTotal.cs:line 23\n   at Projecto.Application.Pedidos.CriarPedidoUseCase.ExecutarAsync(CriarPedidoCommand cmd, CancellationToken ct) in /src/Application/Pedidos/CriarPedido/CriarPedidoUseCase.cs:line 47\n   at Projecto.Api.PedidosEndpoints.CriarPedidoAsync(...) in /src/Api/Endpoints/PedidosEndpoints.cs:line 28\n```\nestá acontecendo em produção mas não local. ajuda",
+      "expected_output": "Plano sistemático: pedir o input que causou (sanitizado), inspecionar CalcularTotal:23 para ver qual referência pode ser null, formular hipóteses (Itens null vs ItemPedido com Produto null, etc.), propor fix com guard apropriado E teste de regressão",
+      "expectations": [
+        "A skill pede o payload exacto (ou pelo menos a forma) que causou o erro em produção",
+        "A skill formula pelo menos 2 hipóteses específicas sobre qual referência é null (Itens? ItemPedido.Produto? PrecoUnitario?)",
+        "A skill recomenda inspeccionar CalcularTotal:23 ANTES de propor fix",
+        "A skill destaca que fix deve ser na causa raiz (validação de input) e não com try/catch silencioso",
+        "A skill propõe teste de regressão que reproduz o NRE",
+        "A skill aponta diferença entre 'local funciona' e 'prod falha' como dica importante (dado diferente)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "esse código está dando o problema, eu já tentei várias coisas. acho que é só envolver em try/catch e devolver null que resolve: ```csharp\npublic decimal CalcularDesconto(Cliente cliente, Pedido pedido)\n{\n    return cliente.NivelFidelidade.PercentualDesconto * pedido.Total;\n}\n```",
+      "expected_output": "A skill deve recusar a solução try/catch+null, fazer os 5 porquês para chegar na causa raiz (NivelFidelidade ser null), propor fix correto (validação + retorno explícito de 0 ou exceção tipada) com teste",
+      "expectations": [
+        "A skill RECUSA a solução try/catch + retornar null",
+        "A skill explica por quê try/catch+null é anti-padrão (esconde bug, propaga null para frente)",
+        "A skill aplica os 5 porquês ou pergunta o porquê de NivelFidelidade ser null",
+        "A skill propõe pelo menos 2 alternativas ao try/catch (guard com retorno explícito, exceção tipada, refactor com Default Object)",
+        "A skill sugere teste de regressão que cobre o caso de cliente sem NivelFidelidade",
+        "A skill destaca que decimal? null é diferente de 0 no domínio e isso precisa ser pensado"
+      ]
+    }
+  ]
+}

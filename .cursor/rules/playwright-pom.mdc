@@ -1,0 +1,134 @@
+---
+description: Convenções dos "metodos<Dominio>.ts" e "metodos<Dominio>Api.ts" — POM funcional, tipagem e reutilização.
+globs: tests/**/metodos*.ts
+alwaysApply: false
+---
+
+# Playwright — POM funcional (`metodos<Dominio>.ts`)
+
+Complementa `playwright.mdc`. Este repositório usa **POM funcional**: em vez de classes, cada domínio expõe **funções nomeadas** que recebem `page`/`request`/`token` e executam acções.
+
+## Convenção de nomes
+
+- **UI (Page Object)**: `tests/<Dominio>/metodos<Dominio>.ts`
+  - Funções devolvem dados úteis quando aplicável (`Promise<string>` para email criado, `Promise<number>` para id).
+  - Verbos no infinitivo: `cadastrarCoprodutor`, `convidarCoprodutor`, `aceitarConviteCoprodutorSemUsuario`.
+- **API**: `tests/<Dominio>/metodos<Dominio>Api.ts`
+  - Sufixo `Api` no método quando há ambiguidade entre UI e API: `editarCnpjCoprodutorApi`, `obterCoprodutorAPI`.
+  - Centralizam `BASE_URL` num `const` no topo do ficheiro ou em `process.env`.
+
+## Tipagem das assinaturas
+
+```ts
+// ❌ BAD — page sem tipo, retorno implícito, parâmetro any
+export async function convidarCoprodutor(page) { ... }
+
+// ✅ GOOD
+import { Page } from '@playwright/test';
+
+export async function convidarCoprodutor(page: Page): Promise<string> {
+  // ... devolve o email criado
+}
+```
+
+- **Sempre** tipar `page: Page`, `request: APIRequestContext`, `context: BrowserContext`, `response: APIResponse`.
+- **Retornos explícitos** em funções públicas — facilita reuso em specs.
+- Estruturas de retorno com múltiplos campos viram **tipo nomeado** em `tests/types/<dominio>.ts`:
+
+```ts
+export type CoprodutorCriado = { id: number; email: string; cnpj: string };
+export async function cadastrarCoprodutor(page: Page, email: string): Promise<CoprodutorCriado> { ... }
+```
+
+## Separação UI vs API
+
+- **Métodos UI** só falam com a página (`page.click`, `page.fill`, `page.locator`). Quando precisar de obter um token, **delega** para o método API correspondente.
+- **Métodos API** não chamam `page.click`; quando precisarem de um token autenticado, recebem-no como parâmetro (`token: string`) — não fazem login UI por dentro.
+- **Cleanup** ao final dos testes prefere chamar a **API** (mais rápido, mais determinístico) em vez de navegar pela UI.
+
+```ts
+// ❌ BAD — método API faz login UI
+export async function cancelarConviteApi(page: Page, request: APIRequestContext) {
+  await loginPortalProdutor(page, '...');
+  const token = await getTestToken(...);
+  // ...
+}
+
+// ✅ GOOD — recebe o token de quem chamou
+export async function cancelarConviteApi(request: APIRequestContext, token: string, conviteId: number) {
+  // ...
+}
+```
+
+## Reutilização — não duplicar helpers
+
+Já existem implementações canónicas. **Importar**, não recriar:
+
+| Helper | Origem | Quando usar |
+|---|---|---|
+| `gerarCPF` | `tests/Checkout/metodosCheckout.ts` | Geração de CPF para clientes/checkout |
+| `gerarCnpj` | `tests/utils/utils.ts` | Geração de CNPJ formatado |
+| `executarComandoBancoDeDados` | `tests/utils/utils.ts` | Qualquer query SQL (ver `playwright-bd-testes.mdc`) |
+| `getTestToken` | `tests/PortalProdutor/metodosApiPortalProdutor.ts` | Token para APIs do Portal Produtor |
+| `criarEmailTemporario`, `aguardarCodigoVerificacao` | `tests/utils/tempEmailUtils.ts` | OTP / link de email |
+| `DADOS_TESTE_PADRAO`, `CARTAO_TESTE`, `TIMEOUTS` | `tests/constants/testConstants.ts` | Constantes partilhadas |
+
+Se precisar de variação (ex.: CPF com último dígito específico para forçar fluxo ClearSale), **encapsule num wrapper** no domínio (`gerarCpfSemClearSale()`), não copie o algoritmo inteiro.
+
+## Logs em métodos
+
+Logging em métodos POM é aceitável (e útil) **com prefixo de contexto**:
+
+```ts
+console.log(`[DB] Pedido ${pedidoId} encontrado para documento ${documentoLimpo}`);
+console.log('[CONTRATO] Assinatura DocuSeal concluída.');
+console.log('[LOGIN] Tentativa 2 falhou: ...');
+```
+
+- Prefixo entre colchetes (`[DB]`, `[LOGIN]`, `[CONTRATO]`, `[CHECKOUT]`) — facilita filtrar saída.
+- **Nunca** logar tokens, senhas, OTP, ou linha completa de connection string.
+- Para mensagens de erro previsíveis (timeout de polling, conta sem saldo), usar `throw new Error(...)` em vez de `console.error` + `return`.
+
+## Esperas explícitas e timeouts
+
+- **Constantes em `tests/constants/testConstants.ts`** (`TIMEOUTS.AGUARDAR_API`, `TIMEOUTS.CHECKOUT_COMPLETO`). Não espalhar `30_000`, `60000`, etc. pelos métodos.
+- Polling de BD/API deve sempre ter **timeout total e intervalo** explícitos, e lançar erro claro ao esgotar:
+
+```ts
+// ✅ GOOD — padrão de polling do projeto
+for (let tentativa = 1; tentativa <= 6; tentativa++) {
+  const contratos = await executarComandoBancoDeDados<{ id: number }>(
+    'SELECT id FROM contratos_produtores WHERE produtor_id = $1 ORDER BY id DESC LIMIT 1',
+    [produtorId],
+  );
+  if (contratos.length > 0) return contratos[0];
+  await new Promise(r => setTimeout(r, 10_000));
+}
+throw new Error(`Contrato não gerado para o produtor ${produtorId} após 60s.`);
+```
+
+## Rotas e network — bloqueio
+
+`page.route` pode mudar comportamento global da página — restaurar quando não for mais necessário e isolar por método:
+
+```ts
+// ❌ BAD — rota bloqueada para sempre, capturando tudo
+await page.route('**/*', async route => { /* ... */ });
+
+// ✅ GOOD — bloqueio específico, ciente do escopo
+await page.route('**/api/receitaws**', route => route.abort());
+```
+
+## Mensagens de erro próprias
+
+- Erros de polling/BD devem mencionar o **identificador** e o **timeout**:
+  - ✅ `Pedido não encontrado no banco para documento ${doc} após ${timeoutMs}ms`
+  - ❌ `Falha ao buscar pedido`
+- **Não** `try/catch` vazio em métodos — ou propagar, ou logar `[CONTEXTO] ...` com detalhe.
+
+## Anti-padrões específicos
+
+- `page.pause()` dentro de método POM — proibido em commits (vale também para o spec).
+- Função que recebe `page` mas faz tudo em API (ou vice-versa) — divide em dois métodos.
+- Métodos que tomam decisão sobre **qual ambiente** (DEV/HML) — leitura de `process.env` cabe ao método, mas a **lógica de fluxo** deve ser igual em todos os ambientes.
+- Funções com mais de **~80 linhas** ou que tocam 3+ telas — sinal de partir em métodos menores (`preencherDadosCliente`, `confirmarPagamento`, `aguardarConfirmacao`).

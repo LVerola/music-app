@@ -1,0 +1,133 @@
+---
+description: Convenções de backend em .NET (C#, ASP.NET Core, EF Core). Aplica-se a ficheiros .cs e projetos .NET.
+globs: **/*.{cs,csproj,sln,cshtml}
+alwaysApply: false
+---
+
+# Backend — .NET / C# / ASP.NET Core
+
+Complementa `AGENTS.md` com convenções específicas para o ecossistema .NET. **Nomes de classes, métodos públicos e *records* em inglês quando expostos a frameworks/contratos externos; lógica de domínio interna pode (e deve, quando viável) usar português brasileiro** — alinhar ao módulo.
+
+## Stack assumida
+
+- **.NET LTS atual** (8/9), `Nullable enable`, `ImplicitUsings enable`
+- **ASP.NET Core** (Minimal APIs ou Controllers conforme padrão do projeto)
+- **EF Core** para persistência
+- **xUnit** + **FluentAssertions** + **Moq/NSubstitute** para testes
+- **Serilog** ou logging nativo com contexto estruturado
+
+## Arquitetura
+
+Preferir separação clara de camadas (Clean Architecture / Onion):
+
+- **Domain** — entidades, *value objects*, regras puras. Sem dependência de framework.
+- **Application** — *use cases*, *handlers*, DTOs, interfaces de repositório.
+- **Infrastructure** — EF Core, integrações externas, implementações concretas.
+- **Api/Presentation** — controllers/endpoints, validação de modelo, mapeamento.
+
+**Controllers/endpoints são finos**: validam, chamam o caso de uso, devolvem `IActionResult`/`Results.*`. Sem regra de negócio.
+
+## Convenções de C\#
+
+### Nomes
+
+- `PascalCase` para classes, métodos públicos, propriedades, enums, ficheiros.
+- `camelCase` para parâmetros e variáveis locais; `_camelCase` para campos privados.
+- Interfaces começam com `I` (`IRepositorioCliente`).
+- Métodos assíncronos terminam em `Async` (`ObterClienteAsync`).
+- Constantes em `PascalCase` (`MaxTentativas`), não em `UPPER_SNAKE`.
+
+### Imutabilidade e tipos
+
+- `record` / `record struct` para DTOs e *value objects*.
+- `readonly` para campos que não mudam após construção.
+- `IReadOnlyList<T>` / `IReadOnlyCollection<T>` em assinaturas públicas; `List<T>` apenas internamente.
+- **Nullable reference types** sempre activos (`<Nullable>enable</Nullable>`). Tratar `?` com seriedade — não usar `!` (null-forgiving) para silenciar warnings.
+
+### Async/await
+
+- Métodos que fazem I/O **são** `async Task` (ou `ValueTask` quando justificado).
+- **Nunca** misturar `.Result` ou `.Wait()` em código assíncrono (deadlock).
+- Propagar `CancellationToken` por toda a cadeia até EF Core / HttpClient.
+- **Não** usar `async void` salvo *event handlers*.
+
+### Exceções
+
+- Lançar exceções **tipadas e de domínio** (`PedidoInvalidoException : DomainException`).
+- `try/catch` com propósito claro: ou converte (ex.: `DbUpdateException` → `ConflitoConcorrenciaException`), ou enriquece com contexto, ou faz *fallback*.
+- **Nunca** engolir exceção; **nunca** `catch (Exception)` sem relançar com `throw;` ou converter.
+- Erros previsíveis (validação, regra de negócio) **não** devem ser exceções — preferir `Result<T>` ou *problem details*.
+
+## ASP.NET Core
+
+- **Validação** com FluentValidation ou `DataAnnotations` + `ModelState`.
+- **Versionar APIs** quando houver clientes externos.
+- **ProblemDetails** (`RFC 7807`) para erros HTTP.
+- **DI**: registar lifetimes corretos (`AddSingleton` para *stateless* puro, `AddScoped` para EF/repos, `AddTransient` para *handlers* leves). Evitar capturar `Scoped` dentro de `Singleton`.
+- **Configuração** via `IOptions<T>` tipado, **nunca** `IConfiguration` espalhado pelo código.
+- **Logs** com `ILogger<T>`; estruturados (`LogInformation("Pedido {PedidoId} criado", id)`) — nunca interpolar com `$"..."`.
+
+## EF Core
+
+- Migrations versionadas e revisadas em PR — **nunca** editar uma migration já aplicada.
+- `AsNoTracking()` em queries só de leitura.
+- Atenção a **N+1**: usar `Include`/`ThenInclude` ou projeções `Select`.
+- **Transações** explícitas (`await using var tx = await ctx.Database.BeginTransactionAsync();`) quando há múltiplas escritas relacionadas.
+- Nunca expor `DbContext` para fora de Infrastructure; encapsular em repositórios/UoW.
+- Cuidado com `SaveChangesAsync` em loops — preferir uma única chamada ao fim.
+
+## Testes (TDD)
+
+- **xUnit** + `[Fact]`/`[Theory]`; nomes em português brasileiro descrevendo comportamento:
+  - `DeveRejeitarPedidoQuandoClienteEstiverBloqueado()`
+- **AAA** (Arrange–Act–Assert) explícito.
+- **Testes de unidade** para domínio e *use cases* (sem BD, sem HTTP).
+- **Testes de integração** com `WebApplicationFactory` + BD em contentor (Testcontainers) ou InMemory para casos simples.
+- Mockar **fronteiras** (repositórios, gateways HTTP), **não** o sistema sob teste.
+
+## Performance e robustez
+
+- `IAsyncEnumerable<T>` para *streaming* de grandes coleções.
+- `HttpClientFactory` (nunca `new HttpClient()` repetidamente).
+- *Retry* + *circuit breaker* (Polly) para chamadas externas críticas.
+- Validar inputs no topo do endpoint/*handler*; falhar cedo.
+
+## Exemplos
+
+```csharp
+// ❌ BAD — controller com regra de negócio, sem async, captura exceção genérica
+[HttpPost]
+public IActionResult Criar(PedidoDto dto) {
+    try {
+        if (dto.Itens.Count == 0) return BadRequest();
+        var pedido = new Pedido { ... };
+        _ctx.Pedidos.Add(pedido);
+        _ctx.SaveChanges();
+        return Ok(pedido.Id);
+    } catch (Exception) { return StatusCode(500); }
+}
+
+// ✅ GOOD — endpoint fino, async, caso de uso, erro tipado
+public async Task<IResult> Criar(
+    CriarPedidoCommand comando,
+    ICriarPedidoUseCase useCase,
+    CancellationToken ct)
+{
+    var resultado = await useCase.ExecutarAsync(comando, ct);
+    return resultado.Match(
+        sucesso => Results.Created($"/pedidos/{sucesso.Id}", sucesso),
+        erro    => Results.Problem(erro.Mensagem, statusCode: erro.Status));
+}
+```
+
+```csharp
+// ❌ BAD — N+1
+var pedidos = await ctx.Pedidos.ToListAsync();
+foreach (var p in pedidos) { var cliente = await ctx.Clientes.FindAsync(p.ClienteId); ... }
+
+// ✅ GOOD
+var pedidos = await ctx.Pedidos
+    .AsNoTracking()
+    .Include(p => p.Cliente)
+    .ToListAsync(ct);
+```

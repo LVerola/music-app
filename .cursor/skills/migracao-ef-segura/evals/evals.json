@@ -1,0 +1,48 @@
+{
+  "skill_name": "migracao-ef-segura",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "preciso adicionar uma coluna 'limite_credito' (int não-nulo, default 0) na tabela clientes. são 5M de linhas em produção, postgres 16, equipa pequena (3 devs). me ajuda a fazer essa migration com segurança",
+      "expected_output": "Plano em 3 migrations: 1) adicionar coluna nullable, 2) backfill com UPDATE em batches, 3) alterar para NOT NULL. Comandos EF Core e SQL gerados. Inspeccionar SQL antes de aplicar. Backup prévio.",
+      "expectations": [
+        "A skill propõe dividir em pelo menos 2 migrations separadas (não tudo de uma vez)",
+        "A primeira migration adiciona a coluna como nullable",
+        "Há etapa explícita de backfill antes do NOT NULL",
+        "Para 5M de linhas, propõe backfill em batches (não um UPDATE single-shot)",
+        "Propõe inspeccionar o SQL gerado com dotnet ef migrations script antes de aplicar",
+        "Menciona janela combinada ou monitoramento durante a aplicação",
+        "Menciona que o backup deve ser recente antes de aplicar",
+        "Considera o caso de aplicação rodando durante a migration (dual write)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "vou criar um índice composto em (status, criado_em desc) na tabela pedidos. tem 12M de linhas em produção. ajuda",
+      "expected_output": "Migration usando CREATE INDEX CONCURRENTLY com suppressTransaction=true, com Down() correspondente, justificativa do uso de CONCURRENTLY",
+      "expectations": [
+        "Usa CREATE INDEX CONCURRENTLY (porque é uma tabela grande em produção)",
+        "Explica que CONCURRENTLY não funciona dentro de transação",
+        "Usa suppressTransaction: true no migrationBuilder.Sql",
+        "Tem Down() funcional com DROP INDEX",
+        "Sugere índice IF NOT EXISTS para idempotência da migration",
+        "Explica o trade-off: CONCURRENTLY é mais lento mas não bloqueia escritas"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "ó, a coluna 'documento' da tabela clientes hoje é varchar(20) e o pessoal usa lá pra guardar tanto cpf quanto cnpj com pontuação. queremos limpar isso e ter 2 colunas: cpf (varchar(11), só dígitos) e cnpj (varchar(14), só dígitos). depois remover a coluna documento. tem 800k clientes",
+      "expected_output": "Plano Expand & Contract em múltiplas migrations: adicionar cpf e cnpj, escrever em ambos, backfill com parsing/limpeza, migrar leituras, depois remover documento. Considerar consumidores externos.",
+      "expectations": [
+        "Identifica explicitamente que é Expand & Contract (não rename direto)",
+        "Plano tem múltiplas migrations (pelo menos 3: expand, backfill, contract)",
+        "Considera que a aplicação precisa escrever em ambas as colunas durante a transição",
+        "Backfill faz parsing/limpeza dos valores existentes (remove pontuação, separa CPF de CNPJ)",
+        "Tem etapa de validação dos dados antes do contract",
+        "Não propõe remover a coluna 'documento' antes de TODOS os consumidores terem migrado",
+        "Aponta riscos do parsing (dados inválidos, edge cases)",
+        "Inclui Down() para cada migration"
+      ]
+    }
+  ]
+}

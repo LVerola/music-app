@@ -1,0 +1,95 @@
+---
+description: Convenções de frontend (Next.js, React, TypeScript, Tailwind). Aplica-se quando estiver a trabalhar em ficheiros TS/TSX/JSX/CSS.
+globs: **/*.{ts,tsx,jsx,js,css,scss}
+alwaysApply: false
+---
+
+# Frontend — Next.js / React / TypeScript / Tailwind
+
+Complementa `AGENTS.md` com convenções específicas de UI.
+
+## Stack assumida
+
+- **Runtime**: Node.js `^22.x`
+- **Framework**: Next.js 15 com App Router (build/dev com **Turbopack**)
+- **UI**: React 19, Tailwind CSS 4, Radix UI, padrões tipo shadcn
+- **Dados**: TanStack Query, TanStack Table, TanStack Virtual; **axios** para HTTP
+- **Formulários**: React Hook Form + Zod
+- **Testes**: Jest + Testing Library (unit), Playwright (E2E)
+
+## Estrutura de pastas (referência)
+
+- `src/app/` — rotas App Router; área autenticada em `(portal)`; API routes em `src/app/api/**`
+- `src/components/ui/` — primitivos (button, input, dialog, etc.)
+- `src/components/commons/` — blocos transversais
+- `src/components/portal/<dominio>/` — UI específica de um fluxo
+- `src/services/` — chamadas HTTP e *server actions* por domínio
+- `src/context/` — contextos React
+- `src/lib/` — utilitários (`apiRequest`, `cn`, helpers puros)
+- `src/types/` — DTOs, entidades, enums, declarações
+- **Alias**: `@/*` → `src/*`
+
+## Componentização
+
+- **Componentes funcionais** apenas; **props tipadas** com `interface` ou `type`.
+- Componente faz **uma coisa**: lista, formulário, modal, toolbar — cada um em ficheiro próprio.
+- Evitar `page.tsx` com centenas de linhas: delegar a subcomponentes na mesma pasta ou em `components/portal/...`.
+- **Custom hooks** (`use<Nome>`) para qualquer lógica reutilizável (estado, efeitos, chamadas a serviços).
+- **Server components** por defeito no App Router; marcar com `"use client"` só quando precisar de interatividade/estado/efeitos.
+
+## Estado e dados
+
+- **TanStack Query** para dados remotos: chaves consistentes, `staleTime`/`gcTime` definidos por domínio; nunca colocar fetch em `useEffect` quando uma query resolve.
+- **React Hook Form + Zod** para qualquer formulário com mais de 2 campos ou validação não trivial.
+- **Estado global** (Context) só quando há partilha real entre subárvores distantes; preferir composição/props quando possível.
+
+## Tailwind CSS
+
+- Estilizar com **utilitários Tailwind**; respeitar tokens já definidos em `globals.css`.
+- Combinar classes condicionais com **`cn()` / `tailwind-merge`** (helper já existente em `src/lib`).
+- **Não** introduzir CSS-in-JS, *styled-components* ou CSS por componente, salvo módulos legados já assim.
+- Manter consistência de espaçamento, tipografia e cores com o restante do produto.
+
+## Padrões de chamada HTTP
+
+- Chamadas HTTP centralizadas em `src/services/<dominio>/` — nunca dentro de componentes.
+- Usar o `apiRequest` (axios) existente em `src/lib`; respeitar interceptors de auth/erro.
+- Erros de rede tratados pelo serviço (lançar erro tipado); UI mostra toast/feedback amigável.
+
+## Acessibilidade (mínimos)
+
+- Botões reais (`<button>`) para acções; `<a>` apenas para navegação.
+- `label` ligado a `input` (via `htmlFor`/`id` ou aninhamento).
+- Imagens com `alt`; ícones decorativos com `aria-hidden`.
+- Contraste verificado quando criar variantes de cor novas.
+
+## Testes (TDD)
+
+- **Unidade**: helpers, hooks, serviços, validações Zod — Jest + Testing Library.
+- Testar **comportamento observável**, não detalhes internos.
+- **Playwright** para fluxos críticos ponta-a-ponta (login, formulários longos, integrações).
+- Não substituir testes unitários por E2E quando a lógica é isolável.
+
+## Exemplos
+
+```tsx
+// ❌ BAD — fetch dentro do componente, sem hook/serviço
+function ListaParceiros() {
+  const [parceiros, setParceiros] = useState([]);
+  useEffect(() => { fetch("/api/parceiros").then(r => r.json()).then(setParceiros); }, []);
+  return <ul>{parceiros.map(p => <li>{p.nome}</li>)}</ul>;
+}
+
+// ✅ GOOD — query + serviço + componentização
+const { data: parceiros, isLoading } = useParceiros();
+if (isLoading) return <Skeleton />;
+return <ListaParceirosView parceiros={parceiros} />;
+```
+
+```ts
+// ❌ BAD
+const x: any = obterDados();
+
+// ✅ GOOD
+const parceiro: Parceiro = await obterParceiroPorId(id);
+```

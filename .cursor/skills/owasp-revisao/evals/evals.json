@@ -1,0 +1,48 @@
+{
+  "skill_name": "owasp-revisao",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "audita esse endpoint pra mim do ponto de vista de segurança: ```csharp\n[HttpGet(\"pedidos/{id}\")]\n[AllowAnonymous]\npublic async Task<IActionResult> Get(Guid id) {\n    var pedido = await _ctx.Pedidos.FindAsync(id);\n    if (pedido == null) return NotFound();\n    return Ok(pedido);\n}\n```",
+      "expected_output": "Identificar pelo menos 3 problemas: [AllowAnonymous] em endpoint sensível, IDOR (não valida ownership), expor objeto completo (talvez com dados sensíveis), retornar 404 vs 401 não diferenciados",
+      "expectations": [
+        "Identifica explicitamente o [AllowAnonymous] como problema (deve ser autenticado)",
+        "Identifica o IDOR (não valida que o pedido pertence ao user autenticado)",
+        "Classifica os findings na nomenclatura OWASP (A01 Broken Access Control)",
+        "Propõe correção com filtro por ClienteId do current user",
+        "Considera o vazamento de informação (NotFound vs Unauthorized)",
+        "Sugere usar DTO em vez de retornar a entidade inteira para evitar over-exposure"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "olha esse código de cadastro de senha. tô usando sha256 com salt fixo. funciona em prod há 2 anos. tem algum problema? ```csharp\npublic string HashSenha(string senha) {\n    var salt = \"meuSaltSecreto2024\";\n    var bytes = Encoding.UTF8.GetBytes(senha + salt);\n    using var sha = SHA256.Create();\n    return Convert.ToBase64String(sha.ComputeHash(bytes));\n}\n```",
+      "expected_output": "Identificar todos os problemas críticos: hash criptográfico genérico (SHA256) em vez de password hashing (BCrypt/Argon2id), salt fixo único compartilhado, sem stretching/work factor. Recomendar BCrypt com migração gradual (rehash no próximo login).",
+      "expectations": [
+        "Identifica SHA256 como inadequado para senhas (não é password hashing function)",
+        "Identifica que salt fixo elimina o propósito do salt (rainbow tables ainda funcionam para todas as senhas)",
+        "Identifica ausência de work factor / stretching",
+        "Recomenda BCrypt, Argon2id ou PBKDF2 com cost factor adequado",
+        "Considera o caso de migração: como rehashar senhas existentes sem forçar reset",
+        "Estima a severidade como crítica (A02 Cryptographic Failures)",
+        "Sugere flag/coluna para indicar formato do hash (versionamento)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "vou fazer um endpoint que recebe uma url do usuário e busca uma imagem dessa url pra usar como avatar. é mais simples deixar o backend baixar pra evitar problemas de CORS. já estou validando que termina em .jpg, .png ou .gif",
+      "expected_output": "Alerta crítico de SSRF. Explicar que validar só extensão é insuficiente. Propor: protocolo HTTPS only, allow-list de domínios, bloqueio de IPs privados (incluindo metadata IPs cloud como 169.254.169.254), timeout curto, não-seguir redirects automático.",
+      "expectations": [
+        "Identifica explicitamente como SSRF (A10 Server-Side Request Forgery)",
+        "Explica que validar só extensão não previne SSRF",
+        "Recomenda allow-list de domínios em vez de validação de extensão",
+        "Recomenda bloquear IPs privados (RFC 1918)",
+        "Menciona especificamente 169.254.169.254 (metadata cloud)",
+        "Recomenda timeout curto na requisição",
+        "Recomenda não seguir redirects automaticamente ou validar o destino do redirect",
+        "Sugere usar HTTPS only",
+        "Fornece exemplo de código com a validação correcta"
+      ]
+    }
+  ]
+}

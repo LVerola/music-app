@@ -1,0 +1,49 @@
+{
+  "skill_name": "feature-backend-completa",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "implementa pra mim o endpoint POST /pedidos no backend .NET. ele recebe clienteId (guid) e uma lista de itens (produtoId, quantidade, precoUnitario). validação: precisa ter pelo menos 1 item, quantidade > 0, preço >= 0. quando confirmar tem que persistir no banco. devolve 201 com o id e o total. usa nossa arquitetura padrão (clean architecture com domain/application/infra/api)",
+      "expected_output": "Estrutura completa em 4 projetos: entidade de domínio com regras, use case com interface de repositório, FluentValidation, endpoint minimal API, EF Configuration, migration, testes de unidade do domínio e use case + teste de integração do endpoint",
+      "expectations": [
+        "Foi criada uma entidade Pedido no projecto Domain sem dependências de framework",
+        "Foi criado um use case (CriarPedidoUseCase) no projecto Application que depende de interfaces (IRepositorioPedido, IRelogio)",
+        "Foi criado um validator com FluentValidation cobrindo todas as regras pedidas",
+        "O endpoint é minimal API e é fino (delega tudo para o use case)",
+        "Erros de validação retornam 400, erros de domínio retornam 422 (não 500)",
+        "Há um teste unitário do domínio (xUnit) cobrindo pelo menos uma regra de negócio",
+        "Há um teste de integração do endpoint cobrindo sucesso e erro de validação",
+        "CancellationToken é propagado em toda a cadeia até SaveChangesAsync",
+        "decimal é usado para dinheiro (não double ou float)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "revisa esse controller aqui ó: ```csharp\n[HttpPost(\"clientes\")]\npublic IActionResult Criar(ClienteDto dto) {\n  try {\n    if (string.IsNullOrEmpty(dto.Email)) return BadRequest();\n    var cliente = new Cliente { Nome = dto.Nome, Email = dto.Email, CriadoEm = DateTime.Now };\n    _ctx.Clientes.Add(cliente);\n    _ctx.SaveChanges();\n    return Ok(cliente.Id);\n  } catch (Exception ex) {\n    return StatusCode(500, ex.Message);\n  }\n}\n```",
+      "expected_output": "Refatoração completa apontando: ausência de async/await, validação ad-hoc, DbContext acoplado, DateTime.Now sem testabilidade, catch genérico que vaza mensagem de exceção, sem CancellationToken, deveria ser 201 Created não 200 Ok",
+      "expectations": [
+        "A skill aponta a ausência de async/await como problema",
+        "A skill aponta o uso de DbContext directamente no controller como violação de camadas",
+        "A skill aponta DateTime.Now como problema de testabilidade",
+        "A skill aponta catch (Exception) que vaza mensagem como risco de segurança",
+        "A skill aponta que deveria ser 201 Created, não 200 Ok",
+        "A skill aponta a ausência de CancellationToken",
+        "A versão refatorada usa FluentValidation ou DataAnnotations explícitos",
+        "A versão refatorada chama um use case e não toca em DbContext directamente"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "preciso de um endpoint PATCH /pedidos/{id}/cancelar que cancela o pedido. regra: só pode cancelar se status for 'Confirmado' e se tiver menos de 24h desde a confirmação. se já estiver cancelado retorna idempotência (sucesso silencioso). se passou do prazo retorna 422. quem chama é o cliente dono do pedido (precisa validar isso)",
+      "expected_output": "Caso de uso com regras de negócio claras na entidade, idempotência tratada (cancelar já cancelado = 204/200), 422 para regra violada, 403 para cliente diferente, teste de unidade cobrindo cada caminho",
+      "expectations": [
+        "A regra das 24h está na entidade Pedido (no domínio), não no use case",
+        "Há tratamento de idempotência: cancelar já cancelado retorna sucesso e não falha",
+        "Cliente diferente do dono retorna 403, não 401",
+        "Passou das 24h retorna 422 com mensagem clara em PT-BR",
+        "Há pelo menos 3 testes de unidade cobrindo: caminho feliz, idempotência, regra das 24h",
+        "Usa IRelogio injectado em vez de DateTime.Now"
+      ]
+    }
+  ]
+}

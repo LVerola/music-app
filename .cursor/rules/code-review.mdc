@@ -1,0 +1,161 @@
+---
+description: Faz revisão de código minuciosa das alterações actuais — padrões, bugs silenciosos, segurança, performance. Invocar com @code-review ou "faz o code review".
+alwaysApply: false
+---
+
+# Agente de Code Review
+
+Activa-te quando o utilizador pedir revisão de código (`@code-review`, "revê as minhas alterações", "faz o code review desta branch"). O objectivo é **não validar** — é **encontrar problemas**. Aborda o código com olhar crítico, como um revisor sénior cético.
+
+## Local e nome do ficheiro
+
+- Pasta de destino: **`CodeReview/`** na raiz do projeto (criar se não existir).
+- Nome do ficheiro: `CR-<data>-<branch-ou-us>.md`.
+  - Ex.: `CR-2026-05-15-feature-cadastro-parceiros.md`.
+- **Não sobrescrever** um review anterior; criar versão `-v2`, `-v3`, etc.
+
+## Antes de escrever — recolha de evidência
+
+1. Identifica o conjunto a rever:
+   - `git status` para *unstaged* e *untracked*.
+   - `git diff <base>...HEAD` para alterações da branch (pergunta a `<base>` se não for óbvio — normalmente `main` ou `develop`).
+2. **Lê o código real** dos ficheiros alterados — o diff sozinho engana. Vê o contexto à volta.
+3. Mapeia camadas afectadas (frontend, backend, BD, infra) — aplica a regra correspondente (`frontend.mdc`, `backend-dotnet.mdc`, `database-postgresql.mdc`) durante a análise.
+
+## O que procurar (checklist mental)
+
+### Bugs silenciosos
+- **Null/undefined** não tratado (especialmente após `?.`, `??`, *optional chains*).
+- **Igualdades** suspeitas: `==` vs `===` (JS/TS); comparação de `decimal` com `==` em C#.
+- **Off-by-one** em índices, paginação, slicing.
+- **Race conditions**: `async` sem `await`, *promises* perdidas, `Task` sem `await` em C#, *state* lido antes de actualizado.
+- **Mutação partilhada**: arrays/objectos passados por referência e modificados.
+- **Datas e fusos**: `DateTime` (sem `Kind`) vs `DateTimeOffset`; `Date` em JS sem cuidado de UTC; `timestamp` vs `timestamptz` no Postgres.
+- **Conversões implícitas** (numéricas, string ↔ number, parsing de JSON).
+- **Erros engolidos** (`catch {}` vazio, `.catch(() => {})` sem log, *swallowing* genérico).
+
+### Padrões de projeto e arquitectura
+- Componente/controller com **regra de negócio** que devia estar em serviço/use case.
+- **Acoplamento** indevido entre camadas (UI a chamar BD, domínio a depender de framework).
+- **Violação de SRP/DRY/YAGNI**: classe-deus, lógica duplicada, abstração prematura.
+- **Inversão de dependência** ignorada (`new` directo em vez de DI).
+- **Imutabilidade** quebrada onde fazia sentido manter.
+- **Naming** que esconde intenção (variáveis genéricas, métodos com nome enganador).
+- Funções enormes com múltiplos níveis de abstração misturados.
+
+### Tratamento de erros
+- Exceções genéricas (`Exception`, `Error`) capturadas sem distinguir tipos.
+- Erros de validação a virar 500 em vez de 400.
+- Mensagens de erro com dados sensíveis.
+- Falta de *logging* com contexto.
+
+### Performance
+- **N+1** em ORMs (loops com lazy loading).
+- **Queries sem índice** em colunas filtradas/ordenadas.
+- `SELECT *` em produção.
+- Operações `O(n²)` óbvias em coleções grandes.
+- *Re-renders* desnecessários em React (refs/keys/memo).
+- *Fetch* duplicado, falta de *cache* (TanStack Query), `useEffect` mal dependido.
+
+### Segurança
+- **SQL injection** (concatenação em vez de parâmetros).
+- **XSS** (HTML inserido sem escape, `dangerouslySetInnerHTML`).
+- Tokens/segredos em código, em logs, ou em mensagens de erro.
+- Autorização ausente em endpoint — qualquer utilizador pode chamar?
+- *Mass assignment* (DTO de entrada com mais campos do que devia).
+- Dependências novas com más reputações ou inativas.
+
+### Testes
+- Lógica nova **sem testes**.
+- Testes que não testam comportamento (apenas chamam o método e expect verdadeiro).
+- Mocks excessivos que escondem bugs reais.
+- Testes desactivados/`skip` sem justificação.
+
+### Higiene
+- Código morto (imports, variáveis, funções, ficheiros).
+- `console.log` / `Console.WriteLine` / `print` deixados no código.
+- Comentários `TODO`/`FIXME` sem dono ou referência.
+- Formatação inconsistente, linhas gigantes, ficheiros sem newline final.
+- Ficheiros gerados versionados por engano (`bin/`, `obj/`, `node_modules/`, `.DS_Store`).
+
+## Estrutura obrigatória do ficheiro gerado
+
+```markdown
+# Code Review — <branch ou US>
+
+> **Base**: `<branch-base>` → **HEAD**: `<branch-actual>`
+> **Commits analisados**: <N>
+> **Ficheiros alterados**: <N>
+> **Data**: <YYYY-MM-DD>
+
+## Resumo executivo
+
+<Parágrafo curto: o quê está bom, o quê precisa atenção, severidade global (🟢 leve / 🟡 atenção / 🔴 bloqueador).>
+
+---
+
+## Achados
+
+> Cada achado segue o template abaixo. Ordena do mais grave para o mais leve.
+
+### 🔴 / 🟡 / 🟢 [<categoria>] <Título curto do problema>
+
+- **Onde**: `caminho/do/ficheiro.ext:linha` (ou função/componente)
+- **O quê está**:
+  ```<linguagem>
+  <trecho relevante, curto>
+  ```
+- **Porque é problema**: <explicação clara — o impacto real: bug, performance, segurança, manutenção; "porque importa">
+- **Sugestão**:
+  ```<linguagem>
+  <como ficaria>
+  ```
+- **Referências (opcional)**: <link a docs, regra, padrão>
+
+---
+
+## Pontos positivos
+
+<Curto: 2–5 bullets do que está bem feito — não para encher linguiça, apenas se houver mesmo coisa boa a destacar.>
+
+---
+
+## Itens menores / nitpicks
+
+<Lista compacta de pequenos ajustes — formatação, naming, comentários. Sem template, em bullets.>
+
+---
+
+## Sugestões de testes adicionais
+
+<O que vale a pena cobrir e não está coberto.>
+
+---
+
+## Veredicto
+
+- [ ] 🔴 Bloqueador — não dar *merge* até resolver
+- [ ] 🟡 Pode mergear após ajustes
+- [ ] 🟢 Pronto para *merge*
+```
+
+## Severidade — como classificar
+
+- **🔴 Bloqueador**: bug funcional, regressão, falha de segurança, perda de dados, quebra de contrato externo.
+- **🟡 Atenção**: padrão a corrigir, performance ruim mas funcional, falta de teste em fluxo importante, dívida que cresce.
+- **🟢 Sugestão**: melhoria de legibilidade, naming, nitpick. Não bloqueia.
+
+## Estilo da revisão
+
+- **Português brasileiro**, tom directo e respeitoso. Aponta o problema, **explica o porquê**, propõe a correcção.
+- Não diz "isto está mal" sem mostrar **o quê**, **onde** e **como melhorar**.
+- Não comenta estilo se já há *linter*/formatador — confia na ferramenta.
+- Não inventa achados para encher; melhor um review curto e cirúrgico do que longo e ruidoso.
+- Cita o ficheiro com `caminho:linha` — facilita ir directo ao ponto.
+
+## Ao terminar
+
+Confirma que a pasta `CodeReview/` existe (cria se necessário), salva o ficheiro e **resume ao utilizador** com:
+- Caminho do ficheiro gerado.
+- Contagem por severidade (`🔴 X, 🟡 Y, 🟢 Z`).
+- Veredicto final.

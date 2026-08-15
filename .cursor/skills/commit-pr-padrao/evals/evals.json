@@ -1,0 +1,49 @@
+{
+  "skill_name": "commit-pr-padrao",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "git status mostra que mudei 14 arquivos: 5 do caso de uso CancelarPedido (Domain + Application + Api), 3 testes novos para esse caso, 1 migration para adicionar coluna 'cancelado_em', 2 ficheiros de formatação do prettier que sobraram, e o README com instruções de como rodar localmente. ajuda a montar os commits",
+      "expected_output": "Divisão em 4-5 commits atómicos: style/formatação primeiro, migration separada, código + testes da feature, e docs do README. Comandos PowerShell exactos para cada commit.",
+      "expectations": [
+        "São propostos pelo menos 4 commits separados",
+        "O commit de formatação (style:) está isolado dos demais",
+        "A migration tem commit próprio ou está agrupada com a feature de forma explícita",
+        "Os testes estão junto com o código de produção da mesma feature (não separados)",
+        "O commit do README usa tipo docs:",
+        "Todas as mensagens estão em PT-BR, no imperativo, em minúsculas",
+        "Comandos git fornecidos usam sintaxe PowerShell (não bash-only)",
+        "Todas as mensagens têm escopo entre parênteses (ex: pedidos, ci, db)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "monta o título e a descrição completa do PR pra essa branch. ela tem 6 commits: feat(auth): adiciona endpoint de refresh token; feat(auth): adiciona expiração configurável; test(auth): adiciona testes do refresh; fix(auth): corrige race condition no token atual; docs(auth): documenta novos endpoints; refactor(auth): extrai constantes de tempo. relacionada à US-201",
+      "expected_output": "Título conventional commit no escopo auth, mencionando US, e descrição do PR completa preenchendo o template (resumo, contexto, mudanças, como testar, impacto, checklist)",
+      "expectations": [
+        "Título segue Conventional Commits, em PT-BR, com escopo auth",
+        "Título referencia a US-201",
+        "Título tem no máximo 72 caracteres",
+        "Descrição tem secção Resumo (1-3 linhas)",
+        "Descrição tem secção 'Como testar' com passos numerados",
+        "Descrição tem secção 'Impacto e riscos' tratando segurança (porque é auth)",
+        "Descrição tem checklist de revisão",
+        "Descrição menciona que o PR contém um fix (race condition) — não esconder mudanças importantes no meio do PR"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "vê o que tu acha desse commit que tô prestes a fazer: ```bash\ngit commit -m 'Update User.cs and other files - fixes login and adds logout button #441'\n```",
+      "expected_output": "Crítica detalhada apontando: mistura de fix com feature, descrição em inglês, formato fora do conventional commits, menciona ficheiro em vez de intenção, falta escopo, formato de issue não-padronizado. Sugere divisão em commits separados com mensagens corretas.",
+      "expectations": [
+        "Aponta explicitamente que a mensagem mistura duas intenções (fix + feat)",
+        "Aponta que está em inglês (deveria ser PT-BR)",
+        "Aponta que menciona ficheiro (User.cs) em vez de intenção",
+        "Aponta que não segue Conventional Commits",
+        "Sugere divisão em dois commits separados (fix e feat)",
+        "As mensagens sugeridas estão em PT-BR no imperativo",
+        "Mantém a referência à issue #441 mas no rodapé (Closes #441 ou Refs #441)"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "eval_id": 1,
+  "eval_name": "login-teclado",
+  "prompt": "implementa o fluxo de login do app com email e senha. depois de logar guarda o token e vai pra home. atenção que no iphone o teclado tá cobrindo o botão de entrar, isso não pode acontecer. app é expo com expo router",
+  "assertions": [
+    "O token é guardado em expo-secure-store, não em AsyncStorage",
+    "Há tratamento de teclado (KeyboardAvoidingView com behavior por plataforma ou equivalente)",
+    "Há validação de email e senha com mensagens em PT-BR",
+    "Inputs usam keyboardType e returnKeyType apropriados (email-address, foco encadeado)",
+    "Elementos interativos têm accessibilityRole/accessibilityLabel",
+    "O estado de submissão é tratado (botão desabilitado/loading durante o login)",
+    "Erro de credenciais inválidas tem tratamento explícito na UI",
+    "A navegação pós-login usa Expo Router"
+  ]
+}
