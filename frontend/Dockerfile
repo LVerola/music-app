@@ -11,7 +11,11 @@ COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN corepack enable pnpm && pnpm build
+# O standalone do Next com pnpm deixa @swc/helpers só com cjs/; o server.js pede esm/.
+RUN corepack enable pnpm && pnpm build \
+  && origem="$(dirname "$(find node_modules/.pnpm -path '*/node_modules/@swc/helpers/package.json' | head -n 1)")" \
+  && destino="$(dirname "$(find .next/standalone -path '*/node_modules/@swc/helpers/package.json' | head -n 1)")" \
+  && cp -a "$origem/." "$destino/"
 
 FROM node:${NODE_VERSION} AS runner
 WORKDIR /app
