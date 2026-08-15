@@ -1,0 +1,51 @@
+name: music-app
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-musicapp}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-musicapp}
+      POSTGRES_DB: ${POSTGRES_DB:-musicapp}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-musicapp} -d ${POSTGRES_DB:-musicapp}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__BancoDeDados: Host=postgres;Port=5432;Database=${POSTGRES_DB:-musicapp};Username=${POSTGRES_USER:-musicapp};Password=${POSTGRES_PASSWORD:-musicapp}
+      Cors__Origens__0: http://localhost:${FRONTEND_PORT:-3000}
+    ports:
+      - "${API_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

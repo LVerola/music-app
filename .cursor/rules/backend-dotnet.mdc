@@ -1,5 +1,5 @@
 ---
-description: Convenções de backend em .NET (C#, ASP.NET Core, EF Core). Aplica-se a ficheiros .cs e projetos .NET.
+description: Convenções de backend em .NET (C#, ASP.NET Core, EF Core). Aplica-se a arquivos .cs e projetos .NET.
 globs: **/*.{cs,csproj,sln,cshtml}
 alwaysApply: false
 ---
@@ -31,7 +31,7 @@ Preferir separação clara de camadas (Clean Architecture / Onion):
 
 ### Nomes
 
-- `PascalCase` para classes, métodos públicos, propriedades, enums, ficheiros.
+- `PascalCase` para classes, métodos públicos, propriedades, enums, arquivos.
 - `camelCase` para parâmetros e variáveis locais; `_camelCase` para campos privados.
 - Interfaces começam com `I` (`IRepositorioCliente`).
 - Métodos assíncronos terminam em `Async` (`ObterClienteAsync`).
@@ -82,7 +82,7 @@ Preferir separação clara de camadas (Clean Architecture / Onion):
   - `DeveRejeitarPedidoQuandoClienteEstiverBloqueado()`
 - **AAA** (Arrange–Act–Assert) explícito.
 - **Testes de unidade** para domínio e *use cases* (sem BD, sem HTTP).
-- **Testes de integração** com `WebApplicationFactory` + BD em contentor (Testcontainers) ou InMemory para casos simples.
+- **Testes de integração** com `WebApplicationFactory` + BD em contêiner (Testcontainers) ou InMemory para casos simples.
 - Mockar **fronteiras** (repositórios, gateways HTTP), **não** o sistema sob teste.
 
 ## Performance e robustez

@@ -1,6 +1,6 @@
 ---
 name: debug-sistematico
-description: Conduz debug com método científico — reproduz o bug, isola, formula hipótese, testa hipótese, corrige causa-raiz (não sintoma), adiciona regressão. Use SEMPRE que o utilizador relatar bug, erro, falha intermitente, comportamento estranho, "às vezes não funciona", "está dando erro X", stack trace, exception, exception aleatória, race condition, memory leak, ou pedir @debug-sistematico. Aplique também quando o utilizador descrever sintoma sem causa identificada.
+description: Conduz debug com método científico — reproduz o bug, isola, formula hipótese, testa hipótese, corrige causa-raiz (não sintoma), adiciona regressão. Use SEMPRE que o usuário relatar bug, erro, falha intermitente, comportamento estranho, "às vezes não funciona", "está dando erro X", stack trace, exception, exception aleatória, race condition, memory leak, ou pedir @debug-sistematico. Aplique também quando o usuário descrever sintoma sem causa identificada.
 ---
 
 # Debug Sistemático
@@ -18,8 +18,8 @@ Skill para resolver bugs de forma **disciplinada**, em vez de "tentar coisas at�
 
 Antes de abrir qualquer arquivo:
 
-1. **Sintoma exacto**: o que **você** observa? (Erro? Tela em branco? Valor errado? Lentidão?)
-2. **Como reproduzir**: passos exactos, do início (idealmente da abertura do navegador / da chamada). Faltam dados? Pergunte.
+1. **Sintoma exato**: o que **você** observa? (Erro? Tela em branco? Valor errado? Lentidão?)
+2. **Como reproduzir**: passos exatos, do início (idealmente da abertura do navegador / da chamada). Faltam dados? Pergunte.
 3. **Quando começou**: hoje? Após qual deploy? Após qual mudança no ambiente? Sempre foi assim?
 4. **Frequência**: 100% das vezes? Intermitente? Só em produção?
 5. **Diferenças entre ambientes que funcionam e o que falha**: versão, dados, sistema operativo, navegador, hora do dia.
@@ -42,12 +42,12 @@ Estratégias:
 
 - **Bug em produção, não local**: aproximar dados (export de produção sanitizado), versão, configuração, latência da rede (dev tools throttling).
 - **Bug intermitente**: rodar em loop (100 iterações). Se 5% reproduzem, é race condition / dado mau.
-- **Bug específico de utilizador**: pegar payload exacto da request dele (sanitizado).
+- **Bug específico de usuário**: pegar payload exato da request dele (sanitizado).
 - **Bug visual**: pedir screenshot/print, comparar com tela esperada.
 
 **Reproduzido = "consigo fazer o bug aparecer 10 em 10 tentativas".**
 
-> Se não conseguir reproduzir mas o bug é real, vá direto para "instrumentar com logs" (secção 6).
+> Se não conseguir reproduzir mas o bug é real, vá direto para "instrumentar com logs" (seção 6).
 
 ---
 
@@ -105,7 +105,7 @@ Use os **"5 Porquês"**:
 > - Por quê? → request HTTP 500.
 > - Por quê? → exceção `NullReferenceException` no `Pedido.Itens`.
 > - Por quê? → `Itens` veio `null` do client.
-> - Por quê? → frontend envia `null` quando o utilizador não adiciona itens.
+> - Por quê? → frontend envia `null` quando o usuário não adiciona itens.
 > - Por quê? → form não valida campos obrigatórios.
 >
 > **Causa-raiz**: form sem validação. Sintoma: 500.
@@ -142,7 +142,7 @@ Após colher dado por X dias, **remova** os logs especiais ou mude para nível D
 | Memory leak | Listener não removido, ref no closure, cache sem TTL | Heap snapshot |
 | CPU 100% em loop | Loop sem break / `useEffect` sem deps correctas | Inspecionar; profiler |
 | Erro só em produção sob carga | Pool exausto, deadlock no BD, *thread starvation* | Métricas de pool, locks |
-| Funciona com 1 utilizador, falha com 100 | Concorrência, estado partilhado, race | Stress test local |
+| Funciona com 1 usuário, falha com 100 | Concorrência, estado partilhado, race | Stress test local |
 | Timezone errado | `DateTime.Now` vs `DateTimeOffset.UtcNow`, *server* != *client* | Sempre UTC + convert na exibição |
 
 ---
@@ -177,13 +177,13 @@ Quando achar a causa raiz:
 
 ## 10. Relatório de debug
 
-Quando o utilizador pedir ajuda com bug, devolva no formato:
+Quando o usuário pedir ajuda com bug, devolva no formato:
 
 ```markdown
 ## Análise do bug
 
 ### 1. Sintoma observado
-<o que está acontecendo, palavras do utilizador + tradução técnica>
+<o que está acontecendo, palavras do usuário + tradução técnica>
 
 ### 2. Reprodução
 - Status: ✅ Reproduzido / ❌ Não reproduzido ainda / ⚠️ Reprodução intermitente
@@ -222,12 +222,12 @@ Quando o utilizador pedir ajuda com bug, devolva no formato:
 
 ---
 
-## 11. Quando pedir ajuda do utilizador
+## 11. Quando pedir ajuda do usuário
 
 - Reprodução exige passos que você não tem (UI/produção): peça vídeo/screenshots.
 - Bug em ambiente sem acesso: peça logs, métricas, *stack trace*.
 - Suspeita de dados específicos: peça um exemplo sanitizado.
-- Múltiplas hipóteses possíveis: peça para o utilizador testar uma e reportar.
+- Múltiplas hipóteses possíveis: peça para o usuário testar uma e reportar.
 
 ---
 

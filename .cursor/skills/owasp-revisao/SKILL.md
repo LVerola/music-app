@@ -1,6 +1,6 @@
 ---
 name: owasp-revisao
-description: Revisa código procurando vulnerabilidades do OWASP Top 10 — controle de acesso quebrado, falhas criptográficas, injeção (SQL/XSS/SSRF), design inseguro, configuração defeituosa, dependências vulneráveis, falhas de autenticação, integridade, log/monitoramento, falsificação de requisições. Use SEMPRE que o utilizador pedir auditoria de segurança, security review, pentest ad-hoc, OWASP, XSS, SQL injection, CSRF, SSRF, autorização, autenticação, hash de senha, criptografia, segredo no código, JWT, ou pedir @owasp-revisao.
+description: Revisa código procurando vulnerabilidades do OWASP Top 10 — controle de acesso quebrado, falhas criptográficas, injeção (SQL/XSS/SSRF), design inseguro, configuração defeituosa, dependências vulneráveis, falhas de autenticação, integridade, log/monitoramento, falsificação de requisições. Use SEMPRE que o usuário pedir auditoria de segurança, security review, pentest ad-hoc, OWASP, XSS, SQL injection, CSRF, SSRF, autorização, autenticação, hash de senha, criptografia, segredo no código, JWT, ou pedir @owasp-revisao.
 ---
 
 # Revisão OWASP — Segurança Aplicacional
@@ -9,7 +9,7 @@ Skill para revisar código procurando as vulnerabilidades mais comuns na web em 
 
 ## Princípio orientador
 
-> Cada utilizador é potencialmente malicioso. Cada *input* externo é potencialmente envenenado. Cada secret precisa ter dono e rotação. Cada erro precisa ser logado **sem vazar segredo**.
+> Cada usuário é potencialmente malicioso. Cada *input* externo é potencialmente envenenado. Cada secret precisa ter dono e rotação. Cada erro precisa ser logado **sem vazar segredo**.
 
 ---
 
@@ -18,7 +18,7 @@ Skill para revisar código procurando as vulnerabilidades mais comuns na web em 
 1. **Escopo da revisão**: feature nova / módulo inteiro / app completo?
 2. **Superfície de ataque**: público na internet? Internal? Multi-tenant?
 3. **Dados sensíveis envolvidos**: PII (LGPD), financeiro, saúde, autenticação?
-4. **Autenticação/autorização actual**: como funciona?
+4. **Autenticação/autorização atual**: como funciona?
 5. **Já houve incidente de segurança nesta área?**
 6. **Há SAST/DAST no CI?** Ferramentas activas?
 7. **Compliance aplicável** (LGPD, PCI-DSS, ISO 27001)?
@@ -32,7 +32,7 @@ Skill para revisar código procurando as vulnerabilidades mais comuns na web em 
 **O que verificar:**
 
 - [ ] Toda rota privada tem `[Authorize]` ou middleware equivalente.
-- [ ] **Object-level access**: utilizador acessa só seus próprios recursos (ex.: `GET /pedidos/{id}` valida que o pedido é dele).
+- [ ] **Object-level access**: usuário acessa só seus próprios recursos (ex.: `GET /pedidos/{id}` valida que o pedido é dele).
 - [ ] **Role/permissão** verificada server-side, nunca só client-side.
 - [ ] Sem **IDOR** (Insecure Direct Object Reference) — IDs sequenciais sem checagem.
 - [ ] *Default deny*: rotas sem `[AllowAnonymous]` rejeitam não-autenticados.
@@ -92,7 +92,7 @@ var hash = BCrypt.Net.BCrypt.HashPassword(senha, workFactor: 12);
 **SQL Injection:**
 
 - [ ] Nenhuma string concatenada construindo SQL.
-- [ ] EF Core LINQ usado correctamente (mas atenção a `FromSqlRaw` com interpolação).
+- [ ] EF Core LINQ usado corretamente (mas atenção a `FromSqlRaw` com interpolação).
 - [ ] Procedures stored sempre com parâmetros.
 
 ```csharp
@@ -109,7 +109,7 @@ ctx.Pedidos.Where(p => p.Numero == numero);
 **XSS:**
 
 - [ ] React/Next.js renderiza por padrão escapado — **mas** `dangerouslySetInnerHTML` é vetor.
-- [ ] Conteúdo vindo do utilizador renderizado em HTML server-side passou por sanitização (DOMPurify).
+- [ ] Conteúdo vindo do usuário renderizado em HTML server-side passou por sanitização (DOMPurify).
 - [ ] CSP (Content-Security-Policy) configurada.
 
 ```tsx
@@ -122,12 +122,12 @@ ctx.Pedidos.Where(p => p.Numero == numero);
 
 **Command Injection:**
 
-- [ ] Nenhum `Process.Start(...)` com input do utilizador concatenado.
+- [ ] Nenhum `Process.Start(...)` com input do usuário concatenado.
 - [ ] Bibliotecas de manipulação de arquivos validam path (sem path traversal).
 
 **SSRF:**
 
-- [ ] Chamadas HTTP feitas pela aplicação para URL fornecida pelo utilizador são **negadas por padrão** — usar allow-list ou validação rígida.
+- [ ] Chamadas HTTP feitas pela aplicação para URL fornecida pelo usuário são **negadas por padrão** — usar allow-list ou validação rígida.
 - [ ] Bloquear IPs internos (`127.0.0.0/8`, `169.254.0.0/16`, `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`).
 
 ### A04: Insecure Design
@@ -148,7 +148,7 @@ ctx.Pedidos.Where(p => p.Numero == numero);
 - [ ] Páginas de erro genéricas em produção (sem stack trace).
 - [ ] Headers de segurança: `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer-when-downgrade`, `X-Frame-Options: DENY` ou `Content-Security-Policy: frame-ancestors 'none'`.
 - [ ] CORS configurado restritivamente (não `*` em rotas autenticadas).
-- [ ] Banner/server header não expõe versão exacta do framework.
+- [ ] Banner/server header não expõe versão exata do framework.
 - [ ] Modo `Development` desligado em produção.
 - [ ] Permissões mínimas no BD (aplicação não usa `superuser`).
 - [ ] Endpoints de debug/swagger fora de produção (ou autenticados).
@@ -159,7 +159,7 @@ ctx.Pedidos.Where(p => p.Numero == numero);
 **O que verificar:**
 
 - [ ] `npm audit`, `dotnet list package --vulnerable`, `pip audit` rodando em CI.
-- [ ] Política de actualização de dependências (Renovate/Dependabot).
+- [ ] Política de atualização de dependências (Renovate/Dependabot).
 - [ ] Vulnerabilidades críticas resolvidas dentro de 7 dias; altas em 30 dias.
 - [ ] Sem dependências abandonadas (sem release > 18 meses sem motivo).
 - [ ] Lockfiles versionados.
@@ -181,7 +181,7 @@ dotnet list package --vulnerable
 - [ ] Sessões: expirar, regenerar ID em login/logout, suportar logout em todos os dispositivos.
 - [ ] JWT: usar `HS256`/`RS256`, validar `iss`/`aud`/`exp`/`nbf`; refresh token armazenado seguro.
 - [ ] *Bot/credential stuffing protection* (rate limit + captcha em login).
-- [ ] Login não revela se utilizador existe ("e-mail ou senha incorrectos", não "e-mail não cadastrado").
+- [ ] Login não revela se usuário existe ("e-mail ou senha incorretos", não "e-mail não cadastrado").
 
 ### A08: Software & Data Integrity Failures
 
@@ -208,7 +208,7 @@ dotnet list package --vulnerable
 
 **O que verificar:**
 
-- [ ] URL fornecida pelo utilizador para fetch server-side passa por:
+- [ ] URL fornecida pelo usuário para fetch server-side passa por:
   - Validação de protocolo (só `https`).
   - Allow-list de domínios.
   - Bloqueio de IPs privados / metadata cloud (`169.254.169.254`).
@@ -288,8 +288,8 @@ public async Task<HttpResponseMessage> BuscarSeguro(string url) {
 #### CRIT-01: IDOR em GET /pedidos/{id}
 - **OWASP**: A01 — Broken Access Control
 - **Arquivo**: `src/Api/Endpoints/PedidosEndpoints.cs:42`
-- **Descrição**: O endpoint não verifica se o pedido pertence ao utilizador autenticado. Qualquer utilizador autenticado consegue ler pedidos de qualquer outro.
-- **Reprodução**: 1. Logar como utilizador A. 2. Obter ID de pedido do utilizador B (sequencial). 3. `GET /pedidos/{idB}` retorna dados.
+- **Descrição**: O endpoint não verifica se o pedido pertence ao usuário autenticado. Qualquer usuário autenticado consegue ler pedidos de qualquer outro.
+- **Reprodução**: 1. Logar como usuário A. 2. Obter ID de pedido do usuário B (sequencial). 3. `GET /pedidos/{idB}` retorna dados.
 - **Correcção**:
   ```csharp
   // ver código
@@ -340,7 +340,7 @@ Para cada correcção, sugiro:
 
 ## 6. Quando pedir ajuda
 
-- Sem acesso a sandbox/staging para validar exploit → pedir ao utilizador.
+- Sem acesso a sandbox/staging para validar exploit → pedir ao usuário.
 - Sem clareza sobre fluxo de autenticação → pedir documentação/diagrama.
 - Suspeita de vulnerabilidade em biblioteca → consultar CVE.
 
@@ -352,4 +352,4 @@ Para cada correcção, sugiro:
 - Issues no tracker com label `security`.
 - Considere SAST permanente (SonarQube, Snyk, GitHub Advanced Security).
 - Para findings críticos em produção: **trate como incidente** (hotfix + comunicação).
-- Eduque a equipa: cada finding é oportunidade de treinamento.
+- Eduque a equipe: cada finding é oportunidade de treinamento.

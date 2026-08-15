@@ -1,11 +1,11 @@
 ---
 name: auditoria-performance-web
-description: Audita performance de aplicação web Next.js/React — Core Web Vitals (LCP, INP, CLS), bundle size, server vs client components, lazy loading, prefetch, cache HTTP, imagens otimizadas. Diagnostica gargalos com Lighthouse, Web Vitals e análise estática. Use SEMPRE que o utilizador mencionar página lenta, LCP alto, CLS, INP, TTFB, Core Web Vitals, bundle grande, hydration, performance frontend, Lighthouse, ou pedir @auditoria-performance-web.
+description: Audita performance de aplicação web Next.js/React — Core Web Vitals (LCP, INP, CLS), bundle size, server vs client components, lazy loading, prefetch, cache HTTP, imagens otimizadas. Diagnostica gargalos com Lighthouse, Web Vitals e análise estática. Use SEMPRE que o usuário mencionar página lenta, LCP alto, CLS, INP, TTFB, Core Web Vitals, bundle grande, hydration, performance frontend, Lighthouse, ou pedir @auditoria-performance-web.
 ---
 
 # Auditoria de Performance Web
 
-Skill que faz auditoria sistemática de performance num app Next.js / React, partindo das **métricas que importam ao utilizador** (Core Web Vitals) e descendo até a causa.
+Skill que faz auditoria sistemática de performance num app Next.js / React, partindo das **métricas que importam ao usuário** (Core Web Vitals) e descendo até a causa.
 
 ## Quando aplicar
 
@@ -20,11 +20,11 @@ Skill que faz auditoria sistemática de performance num app Next.js / React, par
 ## 1. Antes de auditar — colher contexto
 
 1. **Página/rota específica** ou app inteiro?
-2. **Métrica que dói** — número actual e número alvo.
+2. **Métrica que dói** — número atual e número alvo.
 3. **Ambiente** — staging, produção, dispositivo (desktop / mobile / 3G)?
 4. **Versão Next.js** e configuração (`next.config.js`, App Router, output).
 5. **Quando piorou?** (deploy específico, dependência nova, dado novo)
-6. **% de utilizadores afectados** se for métrica de campo (RUM).
+6. **% de usuários afetados** se for métrica de campo (RUM).
 
 ---
 
@@ -50,7 +50,7 @@ Skill que faz auditoria sistemática de performance num app Next.js / React, par
 5. Re-medir    → confirmar com 3 execuções, ver variação
 ```
 
-> Sempre meça em **modo incógnito** (sem extensões) e em **mobile throttled** (Slow 4G + 4x CPU) — é onde o utilizador real está.
+> Sempre meça em **modo incógnito** (sem extensões) e em **mobile throttled** (Slow 4G + 4x CPU) — é onde o usuário real está.
 
 ---
 
@@ -102,7 +102,7 @@ CLS > 0.1 significa que algo entra na página depois e empurra conteúdo.
 
 **Acções**:
 - `next/image` sempre que possível (preenche `width/height`).
-- `font-display: swap` + `next/font` (já optimiza).
+- `font-display: swap` + `next/font` (já otimiza).
 - Reservar espaço para banners (`min-height`).
 
 ### TTFB
@@ -146,7 +146,7 @@ $env:ANALYZE='true'; npm run build
 |---|---|---|
 | `moment` | 70 KB minified | `date-fns` ou `dayjs` |
 | `lodash` (full) | 70 KB | `lodash-es` + tree shaking; ou função própria |
-| `material-ui` v4 sem tree-shake | Bundle gigante | v5 ou `@mui/material` com imports correctos |
+| `material-ui` v4 sem tree-shake | Bundle gigante | v5 ou `@mui/material` com imports corretos |
 | Ícones inteiros | KB acima da necessidade | Importar ícone a ícone |
 | `chart.js` em rota não-gráfica | Carregado para todos | `dynamic(import())` lazy |
 | Polyfill desnecessário em browsers modernos | KB inútil | `browserslist` ajustado |
@@ -171,7 +171,7 @@ Padrão Next.js 15 App Router:
 
 **Anti-padrão**: `"use client"` no topo da `page.tsx` → arrasta árvore inteira para o cliente.
 
-**Padrão correcto**:
+**Padrão correto**:
 ```tsx
 // page.tsx (server)
 import { ListaPedidos } from "./lista-pedidos";          // server
@@ -204,7 +204,7 @@ export default async function Pagina() {
 ```tsx
 <Image
   src="/hero.jpg"
-  alt="Equipa em reunião sobre o lançamento"
+  alt="Equipe em reunião sobre o lançamento"
   width={1200}
   height={600}
   sizes="(max-width: 768px) 100vw, 50vw"
@@ -247,7 +247,7 @@ export const revalidate = 60;       // ISR a cada 60s
 
 ## 10. Hydration
 
-Hydration cara = INP/LCP afectados.
+Hydration cara = INP/LCP afetados.
 
 - Reduzir **árvore client**: começar com server, descer para client onde precisa.
 - **Streaming** RSC: `<Suspense>` para que partes lentas não bloqueiem o resto.
@@ -278,9 +278,9 @@ Relatório estruturado:
 ```markdown
 ## Auditoria de Performance — <rota/app>
 
-### 1. Estado actual (medições)
+### 1. Estado atual (medições)
 
-| Métrica | Actual | Alvo | Status |
+| Métrica | Atual | Alvo | Status |
 |---|---|---|---|
 | LCP | 4.2s | 2.5s | ❌ |
 | INP | 180ms | 200ms | ✅ |
@@ -290,7 +290,7 @@ Relatório estruturado:
 
 ### 2. Gargalos identificados
 
-#### Gargalo 1: LCP afectado por imagem hero sem `priority`
+#### Gargalo 1: LCP afetado por imagem hero sem `priority`
 - **Evidência**: Lighthouse aponta `<img src="/hero.jpg">` como LCP element, sem `priority`.
 - **Causa**: imagem é a maior do *viewport* e bloqueia LCP.
 
@@ -324,13 +324,13 @@ Relatório estruturado:
 |---|---|---|
 | `useEffect(() => fetch())` em vez de RSC ou Query | Bloqueio + waterfall | RSC com `fetch` server-side ou TanStack Query |
 | `"use client"` no topo de `page.tsx` | Tudo vira client bundle | Marcar só os subcomponentes interactivos |
-| `<img>` em vez de `next/image` | Sem optimização | `next/image` |
+| `<img>` em vez de `next/image` | Sem otimização | `next/image` |
 | `dangerouslySetInnerHTML` com HTML grande | Bloqueia parsing | Render React real |
 | `import * as Lib from 'lib'` | Sem tree-shake | `import { fn } from 'lib'` |
 | Polyfill global de tudo | KB inúteis | `browserslist` ajustado |
 | `JSON.stringify` enorme no client | CPU bloqueada | Server-side ou Web Worker |
 | 50 ícones de uma biblioteca | KB enormes | Importar individualmente |
-| `setInterval` para "actualizar" UI | Loop infinito | `useQuery` com `refetchInterval` (e cleanup) |
+| `setInterval` para "atualizar" UI | Loop infinito | `useQuery` com `refetchInterval` (e cleanup) |
 
 ---
 

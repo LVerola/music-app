@@ -1,11 +1,11 @@
 ---
 name: discovery-frontend
-description: Discovery de domínio frontend (Next.js/React). Use SEMPRE depois de @discovery e antes de editar UI, rotas, componentes, hooks, services HTTP no cliente, formulários ou estados de ecrã. Cobre feature-first, estados loading/empty/error/success, camada de dados e reuso. Pular só em perguntas read-only sobre frontend. Também @discovery-frontend.
+description: Discovery de domínio frontend (Next.js/React). Use SEMPRE depois de @discovery e antes de editar UI, rotas, componentes, hooks, services HTTP no cliente, formulários ou estados de tela. Cobre feature-first, estados loading/empty/error/success, camada de dados e reuso. Pular só em perguntas read-only sobre frontend. Também @discovery-frontend.
 ---
 
 # Discovery frontend
 
-Corre **depois** de @discovery, **antes** de qualquer edição de frontend no projecto-alvo.
+Corre **depois** de @discovery, **antes** de qualquer edição de frontend no projeto-alvo.
 
 ## Layout esperado (stack desta biblioteca)
 
@@ -14,7 +14,7 @@ Corre **depois** de @discovery, **antes** de qualquer edição de frontend no pr
 - Primitivos em `components/ui/` (ou equivalente do design system)
 - HTTP **só** em `features/*/services/` — nunca `fetch`/`axios` directo em componentes
 
-Adapta caminhos se o projecto usar outra convenção documentada — **lê o código** antes de assumir.
+Adapta caminhos se o projeto usar outra convenção documentada — **lê o código** antes de assumir.
 
 ## Escopo
 
@@ -24,13 +24,13 @@ Adapta caminhos se o projecto usar outra convenção documentada — **lê o có
 
 ## Reuso
 
-4. Ecrã similar já existe na feature?
+4. Tela similar já existe na feature?
 5. Primitivos reutilizáveis no design system?
 6. Estender/compor o existente ou componente novo justificado?
 
 ## Estados (obrigatórios)
 
-7. Quais dos quatro estão definidos? Recusa implementar se faltar algum sem adiamento explícito do utilizador:
+7. Quais dos quatro estão definidos? Recusa implementar se faltar algum sem adiamento explícito do usuário:
 
    - [ ] Loading
    - [ ] Empty
@@ -40,7 +40,7 @@ Adapta caminhos se o projecto usar outra convenção documentada — **lê o có
 ## Camada de dados
 
 8. Chamadas HTTP só na camada de service da feature?
-9. Hook de dados (TanStack Query ou padrão do projecto) — qual query key / cache?
+9. Hook de dados (TanStack Query ou padrão do projeto) — qual query key / cache?
 10. Endpoint novo no backend? → invoca também @discovery-backend.
 
-Não implementes até cada item estar respondido ou explicitamente adiado pelo utilizador.
+Não implementes até cada item estar respondido ou explicitamente adiado pelo usuário.

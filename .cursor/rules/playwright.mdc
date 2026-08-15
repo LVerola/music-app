@@ -39,7 +39,7 @@ tests/
 playwright.config.ts
 ```
 
-- **Pastas e ficheiros em português brasileiro**; manter `metodos<Dominio>.ts` e `metodos<Dominio>Api.ts` como convenção.
+- **Pastas e arquivos em português brasileiro**; manter `metodos<Dominio>.ts` e `metodos<Dominio>Api.ts` como convenção.
 - **Não criar pastas com espaço/acento** em novos domínios — usa `PascalCase` simples (`PortalAluno`, `PortalRenegociacao`, `TmbOne`). Quando tocar nas pastas legadas com espaço/acento, **não renomear** sem alinhamento (`Portal do Aluno`, `TMB One`, `Portal de Renegociação` ficam como estão; novos imports respeitam o nome existente).
 
 ## Organização dos specs
@@ -112,19 +112,19 @@ await expect(page.getByText('Pedido criado')).toBeVisible({ timeout: 30_000 });
 - `test.only` deixado no spec — o config já tem `forbidOnly: !!process.env.CI`, mas remove no commit.
 - Caminhos absolutos a Windows (`C:\Users\Suporte\...`) para screenshots. Usar caminhos relativos a `playwright-report/` ou `test-results/`, que já estão no `.gitignore`.
 - `console.log` espalhado **fora** de fluxos de diagnóstico (assinatura de contrato, OTP, polling de BD). Em specs novos, evitar a menos que ajude a triar falha em DEV.
-- Duplicar geradores (`gerarCPF`, `gerarCnpj`, `gerarTelefoneValido`) em múltiplos ficheiros — reutilizar de `tests/utils/utils.ts` ou `tests/Checkout/metodosCheckout.ts`.
-- Ficheiros duplicados com sufixo ` copy` (`package copy.json`, `tests-examples copy/`). **Não criar mais**; quando tocar, remover ou movê-los para fora do repositório.
-- Misturar aspas simples e duplas no mesmo ficheiro sem critério; alinhar ao ficheiro existente.
+- Duplicar geradores (`gerarCPF`, `gerarCnpj`, `gerarTelefoneValido`) em múltiplos arquivos — reutilizar de `tests/utils/utils.ts` ou `tests/Checkout/metodosCheckout.ts`.
+- Arquivos duplicados com sufixo ` copy` (`package copy.json`, `tests-examples copy/`). **Não criar mais**; quando tocar, remover ou movê-los para fora do repositório.
+- Misturar aspas simples e duplas no mesmo arquivo sem critério; alinhar ao arquivo existente.
 - Selectores Tailwind concatenados (`'h3.text-tmb-branco.text-2xl.xl\\:text-3xltext-2xl'`) — extremamente frágeis. Marcar com `// TODO` para virar `data-cy`.
 
 ## Configuração — alterações sensíveis
 
-`playwright.config.ts` é partilhado entre toda a equipa:
+`playwright.config.ts` é partilhado entre toda a equipe:
 
 - **Não baixar** `timeout`/`expect.timeout` para tornar um teste verde — investigar a flakiness.
 - **Não desligar** `forbidOnly`, `retries` no CI, ou `trace`.
 - **Não introduzir** novos projetos (Firefox/WebKit) sem necessidade documentada.
-- Mudanças em `use.userAgent`, `permissions`, `geolocation` afectam todos os testes — exige justificação.
+- Mudanças em `use.userAgent`, `permissions`, `geolocation` afetam todos os testes — exige justificação.
 
 ## Testes (TDD aplicado a E2E)
 

@@ -1,11 +1,11 @@
 ---
 name: plano-refatoracao
-description: Cria plano de refatoração grande/arriscada com escopo, riscos, etapas incrementais (strangler fig, branch by abstraction, expand/contract), critérios de sucesso, rollback e métricas de progresso. Use SEMPRE que o utilizador pedir para planear refactor, refatorar módulo grande, modernizar legado, migrar de arquitetura, dividir monolito, trocar biblioteca core, ou pedir @plano-refatoracao. Aplique antes de tocar em código quando o escopo for incerto ou arriscado.
+description: Cria plano de refatoração grande/arriscada com escopo, riscos, etapas incrementais (strangler fig, branch by abstraction, expand/contract), critérios de sucesso, rollback e métricas de progresso. Use SEMPRE que o usuário pedir para planear refactor, refatorar módulo grande, modernizar legado, migrar de arquitetura, dividir monolito, trocar biblioteca core, ou pedir @plano-refatoracao. Aplique antes de tocar em código quando o escopo for incerto ou arriscado.
 ---
 
 # Plano de Refatoração
 
-Skill para transformar "vamos refatorar X" em **plano executável** com escopo, riscos mapeados, etapas reversíveis e critérios de sucesso. Salva a equipa de refactor que **começa e nunca termina**.
+Skill para transformar "vamos refatorar X" em **plano executável** com escopo, riscos mapeados, etapas reversíveis e critérios de sucesso. Salva a equipe de refactor que **começa e nunca termina**.
 
 ## Quando aplicar
 
@@ -26,9 +26,9 @@ Pergunte:
 1. **Sintoma observado**: o que está doendo agora? Bugs frequentes? Tempo de implementação cresceu? Performance? Onboarding novo dev demora?
 2. **Causa hipotética**: por que isso está a acontecer?
 3. **Custo de não-fazer**: quanto tempo/dinheiro perde-se por mês? Há risco de incidente?
-4. **Tempo disponível**: equipa inteira, 30% capacidade, fim de sprint?
+4. **Tempo disponível**: equipe inteira, 30% capacidade, fim de sprint?
 5. **Pode parar de entregar funcionalidades?**: refactor "stop the world" raramente é viável.
-6. **Cobertura de testes actual**: você tem rede de segurança ou refactor é cego?
+6. **Cobertura de testes atual**: você tem rede de segurança ou refactor é cego?
 7. **Stakeholders**: quem precisa aprovar? Quem vai sentir o impacto (suporte, ops, produto)?
 8. **Janela de regressão tolerada**: pode haver leve queda de performance/UX durante a transição?
 
@@ -42,9 +42,9 @@ Pergunte:
 2. **Sempre verde**: a *master* nunca quebra. Cada PR mantém o sistema funcional.
 3. **Reversibilidade**: cada etapa pode ser revertida sem perder dado/funcionalidade.
 4. **Comportamento preservado**: refactor não muda comportamento observável. Mudança de comportamento é **outro** PR, separado.
-5. **Testes antes**: se não houver cobertura, **escreva testes de caracterização** primeiro (que documentam o comportamento actual).
+5. **Testes antes**: se não houver cobertura, **escreva testes de caracterização** primeiro (que documentam o comportamento atual).
 6. **Mediã o progresso**: métrica concreta (linhas movidas, módulos migrados, % testes na nova abordagem).
-7. **Feature flag**: para mudanças que afectam runtime do utilizador.
+7. **Feature flag**: para mudanças que afetam runtime do usuário.
 
 ---
 
@@ -106,7 +106,7 @@ Use quando: há lógica sem testes que precisa ser refatorada.
 
 ### 3.5 Big Bang — quando aceitar
 
-**Raramente.** Aceite só se: cobertura de testes alta, módulo pequeno, equipa dedicada por janela curta, downtime aceito.
+**Raramente.** Aceite só se: cobertura de testes alta, módulo pequeno, equipe dedicada por janela curta, downtime aceito.
 
 ---
 
@@ -117,9 +117,9 @@ Salve em `Documentacao/Refactor/<slug>.md`. Use o template:
 ```markdown
 # Refactor: <título curto>
 
-> **Status**: Rascunho | Aprovado | Em execução | Concluído | Cancelado
+> **Situação**: Rascunho | Aprovado | Em execução | Concluído | Cancelado
 > **Responsável**: <nome>
-> **Equipa envolvida**: <nomes ou papéis>
+> **Equipe envolvida**: <nomes ou papéis>
 > **Data de início**: AAAA-MM-DD
 > **Data alvo**: AAAA-MM-DD
 > **Estratégia**: Strangler Fig | Branch by Abstraction | Expand & Contract | Big Bang | Mista
@@ -152,7 +152,7 @@ Salve em `Documentacao/Refactor/<slug>.md`. Use o template:
 - ...
 
 ### 2.3 Dependências
-- <equipa X precisa aprovar mudança no contrato>
+- <equipe X precisa aprovar mudança no contrato>
 - <serviço Y precisa de upgrade antes>
 - ...
 
@@ -212,10 +212,10 @@ Para cada etapa, **como reverter**:
 
 A refactor está **concluído** quando:
 - [ ] Todas as etapas com checklist em ✅.
-- [ ] Métricas da secção 5 batem o target.
+- [ ] Métricas da seção 5 batem o target.
 - [ ] Suite de testes verde com cobertura mantida ou melhorada.
-- [ ] Documentação actualizada.
-- [ ] Equipa fez retrospectiva (lições aprendidas).
+- [ ] Documentação atualizada.
+- [ ] Equipe fez retrospectiva (lições aprendidas).
 - [ ] Código antigo **removido**, não apenas desactivado.
 
 ## 8. Comunicação
@@ -226,7 +226,7 @@ A refactor está **concluído** quando:
 
 ## 9. Pós-conclusão
 
-- [ ] Retrospectiva da equipa.
+- [ ] Retrospectiva da equipe.
 - [ ] ADR (se houver decisão arquitetural não documentada).
 - [ ] Atualizar onboarding/docs.
 - [ ] Encerrar este documento (status: Concluído).
@@ -270,7 +270,7 @@ Não confunda "ocupação" com "progresso". O que importa:
 - **PR de refactor cresce >500 linhas** → quebre em sub-PRs.
 - **Etapa fica >2 sprints aberta** → escopo errado, divida.
 - **Cobertura caiu** durante refactor → você está perdendo a rede de segurança.
-- **Equipa para de entregar features** → custo está alto demais; reduzir % capacidade dedicada.
+- **Equipe para de entregar features** → custo está alto demais; reduzir % capacidade dedicada.
 - **Bugs novos começam a aparecer** → testes de caracterização insuficientes.
 - **Ninguém usa o caminho novo** → o produto não confia, reavalie.
 
@@ -291,13 +291,13 @@ Não confunda "ocupação" com "progresso". O que importa:
 
 ---
 
-## 9. Quando o utilizador tiver pressa
+## 9. Quando o usuário tiver pressa
 
 Se ouvir "mas precisamos fazer isso já":
 
 1. Confirme **qual problema imediato** justifica a urgência.
 2. Pergunte se um *band-aid* (fix pontual) cobre por agora, e o refactor depois.
-3. Se a urgência for real e a equipa pequena, **reduza o escopo** — entregue 30% do refactor que resolve 80% da dor.
+3. Se a urgência for real e a equipe pequena, **reduza o escopo** — entregue 30% do refactor que resolve 80% da dor.
 4. **Nunca** aceite "pula o teste de caracterização porque é urgente". Isso é onde o bug aparece.
 
 ---

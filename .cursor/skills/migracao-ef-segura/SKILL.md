@@ -1,6 +1,6 @@
 ---
 name: migracao-ef-segura
-description: Cria migrations EF Core seguras para PostgreSQL — sem bloqueio prolongado, sem perda de dados, zero downtime, com plano de rollback e estratégia expand/contract para alterações destrutivas. Avalia o script SQL gerado antes de aplicar. Use SEMPRE que o utilizador pedir para criar, gerar, aplicar, reverter ou revisar uma migration EF Core; quando mencionar Add-Migration, dotnet ef migrations, ALTER TABLE, DROP COLUMN, RENAME, schema, expand/contract; ou pedir @migracao-ef-segura.
+description: Cria migrations EF Core seguras para PostgreSQL — sem bloqueio prolongado, sem perda de dados, zero downtime, com plano de rollback e estratégia expand/contract para alterações destrutivas. Avalia o script SQL gerado antes de aplicar. Use SEMPRE que o usuário pedir para criar, gerar, aplicar, reverter ou revisar uma migration EF Core; quando mencionar Add-Migration, dotnet ef migrations, ALTER TABLE, DROP COLUMN, RENAME, schema, expand/contract; ou pedir @migracao-ef-segura.
 ---
 
 # Migration EF Core Segura
@@ -46,7 +46,7 @@ Skill para criar migrations EF Core (Postgres) **sem causar incidente** — cont
 |---|---|---|
 | Adicionar coluna com default **volátil** | Médio | Reescreve tabela inteira → lock prolongado |
 | Adicionar coluna `NOT NULL` sem default | Alto | Falha se houver linhas existentes; melhor fazer em 3 passos |
-| Mudar tipo de coluna compatível (varchar(N) → varchar(M) com M>N) | Médio | Pode ou não rescrever (Postgres às vezes optimiza) |
+| Mudar tipo de coluna compatível (varchar(N) → varchar(M) com M>N) | Médio | Pode ou não rescrever (Postgres às vezes otimiza) |
 | Adicionar restrição CHECK | Médio | Pode falhar; melhor com `NOT VALID` + `VALIDATE` |
 
 ### 2.3 Destrutivas (risco alto)
@@ -84,7 +84,7 @@ Skill para criar migrations EF Core (Postgres) **sem causar incidente** — cont
    └→ em janela curta, com monitoramento, com plano de reversão a postos
 
 7. Validar pós-deploy
-   └→ checar latência das queries afectadas; sem alertas
+   └→ checar latência das queries afetadas; sem alertas
 ```
 
 ---
@@ -256,7 +256,7 @@ migrationBuilder.AlterColumn<int>(
 **Sempre** gere o script antes de aplicar:
 
 ```powershell
-dotnet ef migrations script <ÚltimaAnterior> <NomeNova> -p src/Projecto.Infrastructure -s src/Projecto.Api -o migration.sql
+dotnet ef migrations script <ÚltimaAnterior> <NomeNova> -p src/Projeto.Infrastructure -s src/Projeto.Api -o migration.sql
 ```
 
 Procure no SQL:

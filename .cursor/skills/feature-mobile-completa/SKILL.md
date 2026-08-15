@@ -1,6 +1,6 @@
 ---
 name: feature-mobile-completa
-description: Implementa uma fatia vertical completa de uma feature mobile em React Native + Expo (Expo Router, TypeScript, NativeWind, TanStack Query, RHF+Zod) — tela, navegação, formulário, serviço HTTP, estados (loading/erro/vazio/offline), testes Jest + RNTL e E2E Maestro, com paridade Android e iOS. Use SEMPRE que o utilizador pedir para criar uma tela, fluxo, feature ou módulo novo no app mobile; quando mencionar React Native, Expo, Expo Router, app mobile, Android, iOS, tela do app, navegação mobile, push notification, deep link, ou pedir @feature-mobile-completa.
+description: Implementa uma fatia vertical completa de uma feature mobile em React Native + Expo (Expo Router, TypeScript, NativeWind, TanStack Query, RHF+Zod) — tela, navegação, formulário, serviço HTTP, estados (loading/erro/vazio/offline), testes Jest + RNTL e E2E Maestro, com paridade Android e iOS. Use SEMPRE que o usuário pedir para criar uma tela, fluxo, feature ou módulo novo no app mobile; quando mencionar React Native, Expo, Expo Router, app mobile, Android, iOS, tela do app, navegação mobile, push notification, deep link, ou pedir @feature-mobile-completa.
 ---
 
 # Feature Mobile Completa
@@ -11,7 +11,7 @@ Se o projeto usar outra stack (Flutter, Swift/Kotlin nativo), **mantenha os fund
 
 ## Fundamentos universais (qualquer stack mobile)
 
-Estes princípios valem independentemente do framework — são o que distingue implementação mobile sénior de "tela que compila":
+Estes princípios valem independentemente do framework — são o que distingue implementação mobile sênior de "tela que compila":
 
 - **Fatia vertical** — do contrato de dados até a tela navegável, num único entregável testável.
 - **Camadas** — rota/tela fina; lógica de negócio e HTTP fora do componente; estado de servidor com cache explícito (não `fetch` solto no `useEffect`).
@@ -21,7 +21,7 @@ Estes princípios valem independentemente do framework — são o que distingue 
 - **Dispositivo real** — teclado, safe areas, botão voltar (Android), permissões e alvos de toque são parte da feature, não polish final.
 - **Segurança** — tokens e segredos em armazenamento seguro do SO; nunca hardcoded no bundle.
 - **TDD** — regra de negócio nova nasce com teste; fluxo crítico ganha E2E (Maestro, Detox ou equivalente).
-- **Acessibilidade** — roles, labels e estados comunicados ao leitor de ecrã; não depender só de cor.
+- **Acessibilidade** — roles, labels e estados comunicados ao leitor de tela; não depender só de cor.
 
 ## Quando aplicar
 
@@ -250,7 +250,7 @@ export function ListaDespesas() {
 
   if (isLoading) return <EsqueletoLista quantidade={6} />;
   if (isError) return <EstadoErro aoTentarNovamente={refetch} />;
-  if (!despesas?.length) return <EstadoVazio mensagem="Nenhuma despesa registada" />;
+  if (!despesas?.length) return <EstadoVazio mensagem="Nenhuma despesa registrada" />;
 
   return (
     <FlatList
@@ -293,11 +293,11 @@ export default function TelaDespesas() {
 
 - Título e opções de header na própria rota via `Stack.Screen`.
 - Telas protegidas ficam no grupo `(protegido)` com verificação de sessão no `_layout.tsx` do grupo.
-- Deep links: configure `scheme` no `app.config.ts`; o caminho do ficheiro já é a rota.
+- Deep links: configure `scheme` no `app.config.ts`; o caminho do arquivo já é a rota.
 
 ### Passo 6: Formulário + teclado
 
-Todo ecrã com input precisa lidar com o teclado — no iOS ele cobre o conteúdo por defeito:
+Todo tela com input precisa lidar com o teclado — no iOS ele cobre o conteúdo por defeito:
 
 - Envolva com `KeyboardAvoidingView` (`behavior="padding"` no iOS, `undefined`/`height` no Android) ou use `react-native-keyboard-controller` se já estiver no projeto.
 - `keyboardType` correto por campo (`email-address`, `numeric`, `decimal-pad`).
@@ -315,9 +315,9 @@ appId: com.exemplo.app
 - tapOn: "Nova despesa"
 - tapOn:
     id: "campo-descricao"
-- inputText: "Almoço de equipa"
+- inputText: "Almoço de equipe"
 - tapOn: "Salvar"
-- assertVisible: "Almoço de equipa"
+- assertVisible: "Almoço de equipe"
 ```
 
 Um flow por fluxo crítico (criar, login, checkout). Rode em Android **e** iOS antes de dar a feature por pronta.
@@ -335,7 +335,7 @@ A regra é **paridade por defeito**; divergência só quando a convenção da pl
 - **Toques**: use `Pressable` com feedback (`active:opacity-*` ou ripple no Android); área mínima de toque **44×44pt (iOS) / 48×48dp (Android)** — use `hitSlop` quando o ícone for menor.
 - **Datas, moeda, fusos**: formate com `Intl`/`toLocaleString`, nunca concatenação manual.
 - **Permissões**: peça no momento do uso (não no arranque) e trate a recusa com estado próprio; textos de justificação (`infoPlist`/`permissions` no `app.config.ts`) são obrigatórios para review das lojas.
-- **`Platform.select` / ficheiros `.ios.tsx`/`.android.tsx`**: só para divergência **intencional**; se aparecer muito, é sinal de design errado.
+- **`Platform.select` / arquivos `.ios.tsx`/`.android.tsx`**: só para divergência **intencional**; se aparecer muito, é sinal de design errado.
 - **Teste real**: valide em pelo menos um device/simulador de cada SO antes de entregar — dimensões, fontes e comportamento do teclado diferem.
 
 ---
@@ -390,7 +390,7 @@ A regra é **paridade por defeito**; divergência só quando a convenção da pl
 
 - Quando a feature exigir **módulo nativo fora do Expo SDK** (exige dev build / prebuild) — sinalize o custo antes.
 - Quando houver **divergência intencional** de UX entre Android e iOS — confirme com design.
-- Quando a feature precisar de **permissão sensível** (localização em background, contactos) — confirme a justificação para as lojas.
+- Quando a feature precisar de **permissão sensível** (localização em background, contatos) — confirme a justificação para as lojas.
 - Quando o requisito de **offline** não estiver claro — cache persistido e sincronização são um projeto em si.
 
 ---
@@ -399,4 +399,4 @@ A regra é **paridade por defeito**; divergência só quando a convenção da pl
 
 - Correr `@code-review` para revisão crítica.
 - Se o fluxo é crítico, garantir que o flow Maestro entrou no pipeline.
-- Se aplicável, actualizar a documentação técnica da US via `@documentacao`.
+- Se aplicável, atualizar a documentação técnica da US via `@documentacao`.

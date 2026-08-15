@@ -14,7 +14,7 @@ Define as *evals* de uma skill. Localizado em `evals/evals.json` dentro do diret
   "evals": [
     {
       "id": 1,
-      "prompt": "Prompt de exemplo do utilizador",
+      "prompt": "Prompt de exemplo do usuário",
       "expected_output": "Descrição do resultado esperado",
       "files": ["evals/files/exemplo1.pdf"],
       "expectations": [
@@ -32,7 +32,7 @@ Define as *evals* de uma skill. Localizado em `evals/evals.json` dentro do diret
 - `evals[].id`: identificador inteiro único.
 - `evals[].prompt`: tarefa a executar.
 - `evals[].expected_output`: descrição legível do sucesso.
-- `evals[].files`: lista opcional de ficheiros de entrada (caminhos relativos à raiz da skill).
+- `evals[].files`: lista opcional de arquivos de entrada (caminhos relativos à raiz da skill).
 - `evals[].expectations`: lista de afirmações verificáveis.
 
 ---
@@ -58,12 +58,12 @@ Acompanha a progressão de versões em modo *Improve*. Localizado na raiz do *wo
 
 - `started_at`: ISO da hora em que começou a melhoria.
 - `skill_name`: nome da skill em melhoria.
-- `current_best`: identificador da versão actual com melhor performance.
+- `current_best`: identificador da versão atual com melhor performance.
 - `iterations[].version`: identificador (v0, v1, ...).
 - `iterations[].parent`: versão anterior de onde foi derivada.
 - `iterations[].expectation_pass_rate`: taxa de aprovação no *grading*.
 - `iterations[].grading_result`: `"baseline"`, `"won"`, `"lost"` ou `"tie"`.
-- `iterations[].is_current_best`: se é a melhor actual.
+- `iterations[].is_current_best`: se é a melhor atual.
 
 ---
 
@@ -88,10 +88,10 @@ Output do agente avaliador. Localizado em `<dir-do-run>/grading.json`.
   },
   "timing": {"executor_duration_seconds": 165.0, "grader_duration_seconds": 26.0, "total_duration_seconds": 191.0},
   "claims": [
-    {"claim": "O formulário tem 12 campos preenchíveis", "type": "factual", "verified": true, "evidence": "Contei 12 campos em field_info.json"}
+    {"claim": "O formulário tem 12 campos preenchíveis", "type": "fatual", "verified": true, "evidence": "Contei 12 campos em field_info.json"}
   ],
   "user_notes_summary": {
-    "uncertainties": ["Usou dados de 2023, podem estar desactualizados"],
+    "uncertainties": ["Usou dados de 2023, podem estar desatualizados"],
     "needs_review": [],
     "workarounds": ["Recorreu a sobreposição de texto para campos não-preenchíveis"]
   },
@@ -191,7 +191,7 @@ Output do modo *Benchmark*. Localizado em `benchmarks/<timestamp>/benchmark.json
         {"text": "...", "passed": true, "evidence": "..."}
       ],
       "notes": [
-        "Usou dados de 2023, podem estar desactualizados",
+        "Usou dados de 2023, podem estar desatualizados",
         "Recorreu a sobreposição de texto para campos não-preenchíveis"
       ]
     }
@@ -222,14 +222,14 @@ Output do modo *Benchmark*. Localizado em `benchmarks/<timestamp>/benchmark.json
 
 - `metadata`: informação sobre o *run* de benchmark.
 - `runs[]`: resultados individuais.
-  - `configuration`: tem de ser `"with_skill"` ou `"without_skill"` (o *viewer* usa esta string exacta para agrupar e colorir).
+  - `configuration`: tem de ser `"with_skill"` ou `"without_skill"` (o *viewer* usa esta string exata para agrupar e colorir).
   - `result`: objecto aninhado com `pass_rate`, `passed`, `total`, `time_seconds`, `tokens`, `errors`.
 - `run_summary`: agregados estatísticos por configuração.
   - `with_skill` / `without_skill`: cada um contém objectos `pass_rate`, `time_seconds`, `tokens` com `mean` e `stddev`.
   - `delta`: diferenças como `"+0.50"`, `"+13.0"`, `"+1700"`.
 - `notes`: observações do analista.
 
-**Importante:** o *viewer* lê estes campos com nomes exactos. Usar `config` em vez de `configuration`, ou pôr `pass_rate` no topo do *run* em vez de aninhado em `result`, faz o *viewer* mostrar valores vazios/zero. Referencia sempre este esquema quando gerares `benchmark.json` manualmente.
+**Importante:** o *viewer* lê estes campos com nomes exatos. Usar `config` em vez de `configuration`, ou pôr `pass_rate` no topo do *run* em vez de aninhado em `result`, faz o *viewer* mostrar valores vazios/zero. Referencia sempre este esquema quando gerares `benchmark.json` manualmente.
 
 ---
 

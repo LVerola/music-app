@@ -1,6 +1,6 @@
 ---
 name: tdd-loop-guiado
-description: Conduz desenvolvimento orientado a testes em ciclo red→green→refactor com micro-passos — escreve teste que falha, implementa o mínimo para passar, refatora, repete. Útil para lógica de negócio, helpers, validações, use cases. Use SEMPRE que o utilizador pedir TDD, test-driven, escrever teste antes, ciclo red-green-refactor, implementar com testes desde o início, ou pedir @tdd-loop-guiado.
+description: Conduz desenvolvimento orientado a testes em ciclo red→green→refactor com micro-passos — escreve teste que falha, implementa o mínimo para passar, refatora, repete. Útil para lógica de negócio, helpers, validações, use cases. Use SEMPRE que o usuário pedir TDD, test-driven, escrever teste antes, ciclo red-green-refactor, implementar com testes desde o início, ou pedir @tdd-loop-guiado.
 ---
 
 # TDD Loop Guiado
@@ -44,7 +44,7 @@ Menos útil para:
 ```
 ┌───────────────────────────────────────────┐
 │  ① Escrever o próximo teste pequeno       │  ← uma capacidade
-│       (RED — falha por motivo correcto)   │
+│       (RED — falha por motivo correto)   │
 │                                           │
 │  ② Implementar o mínimo p/ passar         │
 │       (GREEN — *qualquer* código serve)   │
@@ -64,7 +64,7 @@ Menos útil para:
   - ✅ `deveRejeitarDescontoQuandoClienteForBloqueado`
   - ❌ `testarMetodoAplicarDesconto`
 - **AAA**: Arrange, Act, Assert separados.
-- **Falha por motivo correcto**: rode o teste e veja a mensagem de falha. Ela explica o que está faltando? Se sim, o teste é útil.
+- **Falha por motivo correto**: rode o teste e veja a mensagem de falha. Ela explica o que está faltando? Se sim, o teste é útil.
 - **Mínimo necessário**: cobre **uma** asserção primária. Outras asserções secundárias podem ser confirmações, mas não a "carne" do teste.
 - **Independente de implementação**: testa comportamento observável (entrada → saída), não privados.
 
@@ -155,7 +155,7 @@ public decimal CalcularPara(Cliente c, decimal v) =>
 **Ciclo 4 — bloqueado:**
 
 ```csharp
-// RED — espera lançar excepção
+// RED — espera lançar exceção
 [Fact]
 public void DeveLancarExcecaoQuandoClienteEstiverBloqueado()
 {
@@ -206,7 +206,7 @@ Quando o comportamento varia por dado, prefira tabela:
 [InlineData(NivelFidelidade.Comum, 0.00)]
 [InlineData(NivelFidelidade.Premium, 0.05)]
 [InlineData(NivelFidelidade.Vip, 0.10)]
-public void DeveAplicarPercentualCorrectoPorNivel(NivelFidelidade nivel, decimal esperado)
+public void DeveAplicarPercentualCorretoPorNivel(NivelFidelidade nivel, decimal esperado)
 {
     var cliente = new ClienteBuilder().ComNivel(nivel).Construir();
     var calculadora = new CalculadoraDesconto();
@@ -272,7 +272,7 @@ relogio.Agora.Returns(new DateTimeOffset(2026, 1, 15, 10, 0, 0, TimeSpan.Zero));
 
 ## 9. Saída esperada da skill
 
-Quando o utilizador trouxer uma capacidade nova:
+Quando o usuário trouxer uma capacidade nova:
 
 ```markdown
 ## Plano TDD — <capacidade>

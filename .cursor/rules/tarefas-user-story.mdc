@@ -5,12 +5,12 @@ alwaysApply: false
 
 # Agente de Tarefas e Estimativas (a partir de uma User Story)
 
-Activa-te quando o utilizador colar/descrever uma User Story (US) e pedir para **quebrar em tarefas** e/ou **estimar**. O objectivo é produzir um plano accionável, dimensionado, que outro dev consiga pegar e executar.
+Ative-se quando o usuário colar/descrever uma User Story (US) e pedir para **quebrar em tarefas** e/ou **estimar**. O objetivo é produzir um plano accionável, dimensionado, que outro dev consiga pegar e executar.
 
 ## Recolha de contexto (faz antes de planear)
 
 1. Lê a US: título, descrição, **critérios de aceite**, mockups/links.
-2. Examina o repositório actual para identificar:
+2. Examina o repositório atual para identificar:
    - Stack envolvida (frontend, backend, BD).
    - Padrões e convenções já existentes (componentes, *use cases*, repositórios).
    - Pontos de integração óbvios.
@@ -42,11 +42,11 @@ Usa **dois eixos** e apresenta ambos:
 - Integração externa nova: +20–40%.
 - Sem testes prévios na área: +15–25%.
 - Migração de dados existentes em produção: +30–50%.
-- Dependência de outra equipa/serviço: +20% e marca como **risco**.
+- Dependência de outra equipe/serviço: +20% e marca como **risco**.
 
 ## Estrutura da resposta
 
-Devolve directamente no chat (sem criar ficheiro, salvo se o utilizador pedir). Estrutura:
+Devolve directamente no chat (sem criar arquivo, salvo se o usuário pedir). Estrutura:
 
 ```markdown
 ## US — <título>
@@ -57,7 +57,7 @@ Devolve directamente no chat (sem criar ficheiro, salvo se o utilizador pedir). 
 - [ ] <critério 1>
 - [ ] <critério 2>
 
-> ⚠️ **A confirmar** (se houver): <perguntas pendentes que afectam estimativa>
+> ⚠️ **A confirmar** (se houver): <perguntas pendentes que afetam estimativa>
 
 ---
 
@@ -74,7 +74,7 @@ Devolve directamente no chat (sem criar ficheiro, salvo se o utilizador pedir). 
 **1. <título da tarefa 1>** — `<estimativa>`
 - O que faz: <descrição curta>
 - Definição de pronto: <como saber que terminou — testes, *demo*, *flag* activa, etc.>
-- Notas técnicas: <padrões a seguir, ficheiros prováveis, *gotchas*>
+- Notas técnicas: <padrões a seguir, arquivos prováveis, *gotchas*>
 
 **2. ...**
 
@@ -103,9 +103,9 @@ Devolve directamente no chat (sem criar ficheiro, salvo se o utilizador pedir). 
 - **Nomes de tarefas com verbo no infinitivo** ("Criar endpoint POST /pedidos", "Adicionar formulário de cadastro com validação Zod").
 - Tarefas de **migração de BD** ficam separadas das de código que dependem delas — facilita *deploy* faseado.
 - Tarefa de **testes E2E** pode ficar separada quando exige *setup* específico (Playwright + seeds); caso contrário, integra na tarefa de funcionalidade.
-- **QA / homologação** só entra como tarefa explícita se o processo da equipa exigir.
+- **QA / homologação** só entra como tarefa explícita se o processo da equipe exigir.
 
-## Quando o utilizador pedir, também podes
+## Quando o usuário pedir, também podes
 
 - Gerar o conteúdo no formato do gestor de tarefas (Jira, Azure DevOps, Linear) — pergunta o formato.
-- Exportar para um ficheiro `.md` em pasta indicada — confirma antes de criar.
+- Exportar para um arquivo `.md` em pasta indicada — confirma antes de criar.

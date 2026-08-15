@@ -1,6 +1,6 @@
 ---
 name: feature-backend-completa
-description: Implementa uma fatia vertical completa de uma feature no backend .NET / ASP.NET Core / EF Core — endpoint, validação, use case, domínio, repositório, migration, testes de unidade e integração. Use SEMPRE que o utilizador pedir para criar um endpoint, controller, API, rota nova no backend, CRUD do back, caso de uso, regra de domínio em .NET; quando mencionar .NET, ASP.NET, EF Core, minimal API, controller, use case, CQRS, domínio, repositório; ou pedir @feature-backend-completa.
+description: Implementa uma fatia vertical completa de uma feature no backend .NET / ASP.NET Core / EF Core — endpoint, validação, use case, domínio, repositório, migration, testes de unidade e integração. Use SEMPRE que o usuário pedir para criar um endpoint, controller, API, rota nova no backend, CRUD do back, caso de uso, regra de domínio em .NET; quando mencionar .NET, ASP.NET, EF Core, minimal API, controller, use case, CQRS, domínio, repositório; ou pedir @feature-backend-completa.
 ---
 
 # Feature Backend Completa
@@ -35,12 +35,12 @@ Faça (com brevidade) estas perguntas se a US/issue não responder:
 
 ```
 src/
-├── <Projecto>.Domain/                                  # entidades, regras puras
+├── <Projeto>.Domain/                                  # entidades, regras puras
 │   └── Pedidos/
 │       ├── Pedido.cs
 │       ├── ItemPedido.cs
 │       └── Erros/PedidoInvalidoException.cs
-├── <Projecto>.Application/                             # use cases + DTOs + interfaces
+├── <Projeto>.Application/                             # use cases + DTOs + interfaces
 │   └── Pedidos/
 │       ├── CriarPedido/
 │       │   ├── CriarPedidoCommand.cs                   # input (record)
@@ -49,21 +49,21 @@ src/
 │       │   └── CriarPedidoUseCase.cs                   # orquestração
 │       └── Abstracoes/
 │           └── IRepositorioPedido.cs
-├── <Projecto>.Infrastructure/                          # EF Core, integrações
+├── <Projeto>.Infrastructure/                          # EF Core, integrações
 │   ├── Persistencia/
 │   │   ├── AppDbContext.cs
 │   │   ├── Configuracoes/PedidoConfiguracao.cs
 │   │   └── Migrations/                                 # gerar com `dotnet ef migrations add ...`
 │   └── Repositorios/
 │       └── RepositorioPedido.cs
-└── <Projecto>.Api/                                     # endpoints/controllers
+└── <Projeto>.Api/                                     # endpoints/controllers
     └── Endpoints/
         └── PedidosEndpoints.cs
 
 tests/
-├── <Projecto>.Domain.Tests/
-├── <Projecto>.Application.Tests/                       # xUnit + FluentAssertions
-└── <Projecto>.IntegrationTests/                        # WebApplicationFactory + Testcontainers
+├── <Projeto>.Domain.Tests/
+├── <Projeto>.Application.Tests/                       # xUnit + FluentAssertions
+└── <Projeto>.IntegrationTests/                        # WebApplicationFactory + Testcontainers
 ```
 
 **Princípios:**
@@ -81,7 +81,7 @@ tests/
 ### Passo 1: Modelar o domínio (Domain)
 
 ```csharp
-namespace Projecto.Domain.Pedidos;
+namespace Projeto.Domain.Pedidos;
 
 public class Pedido
 {
@@ -300,8 +300,8 @@ public class RepositorioPedido : IRepositorioPedido
 Gerar migration:
 
 ```powershell
-dotnet ef migrations add CriarPedidos -p src/Projecto.Infrastructure -s src/Projecto.Api
-dotnet ef database update -p src/Projecto.Infrastructure -s src/Projecto.Api
+dotnet ef migrations add CriarPedidos -p src/Projeto.Infrastructure -s src/Projeto.Api
+dotnet ef database update -p src/Projeto.Infrastructure -s src/Projeto.Api
 ```
 
 > Antes de aplicar: **inspeccione o `.sql` gerado** com `dotnet ef migrations script`. Se houver `DROP COLUMN`, `ALTER TYPE` ou *rename*, considere a regra `migracao-ef-segura`.
@@ -443,7 +443,7 @@ Sempre que a operação **muda estado** e o cliente pode repetir, considere idem
 
 ## 7. Checklist de entrega
 
-- [ ] Tipos de dados correctos (`Guid` para IDs, `decimal` para dinheiro, `DateTimeOffset` para tempo).
+- [ ] Tipos de dados corretos (`Guid` para IDs, `decimal` para dinheiro, `DateTimeOffset` para tempo).
 - [ ] `CancellationToken` propagado em toda cadeia até `SaveChangesAsync` e `HttpClient`.
 - [ ] Endpoint usa FluentValidation + retorna `ValidationProblem` em 400.
 - [ ] Erros de domínio são exceções tipadas (`*Exception : DomainException`) e mapeadas para 422.
@@ -452,7 +452,7 @@ Sempre que a operação **muda estado** e o cliente pode repetir, considere idem
 - [ ] Migration gerada e revisada (`dotnet ef migrations script` inspeccionado).
 - [ ] Repositório usa `AsNoTracking()` em leituras.
 - [ ] Logs estruturados com `LogInformation("... {Param}", valor)`.
-- [ ] DI registado com *lifetime* correcto.
+- [ ] DI registrado com *lifetime* correto.
 - [ ] Sem `any` (não aplicável aqui), sem `!` *null-forgiving* sem justificação, sem `.Result`/`.Wait()`.
 
 ---
@@ -468,5 +468,5 @@ Sempre que a operação **muda estado** e o cliente pode repetir, considere idem
 ## 9. Pós-entrega
 
 - Correr `@code-review` para revisão crítica.
-- Se houver mudança no contrato HTTP, actualizar OpenAPI/Swagger.
-- Se aplicável, actualizar a documentação técnica da US via `@documentacao`.
+- Se houver mudança no contrato HTTP, atualizar OpenAPI/Swagger.
+- Se aplicável, atualizar a documentação técnica da US via `@documentacao`.

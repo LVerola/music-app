@@ -1,6 +1,6 @@
 ---
 name: feature-frontend-completa
-description: Implementa uma fatia vertical completa de uma feature no frontend Next.js 15 / React 19 / TypeScript / Tailwind 4 — rota, componentes, formulário (RHF+Zod), serviço HTTP (axios + TanStack Query), estados (loading/erro/vazio), tipos e testes. Use SEMPRE que o utilizador pedir para criar uma tela, página, fluxo, feature, módulo ou funcionalidade nova no frontend; quando mencionar Next.js, React, App Router, server component, client component, página, rota, listagem, formulário, CRUD no front, ou pedir @feature-frontend-completa.
+description: Implementa uma fatia vertical completa de uma feature no frontend Next.js 15 / React 19 / TypeScript / Tailwind 4 — rota, componentes, formulário (RHF+Zod), serviço HTTP (axios + TanStack Query), estados (loading/erro/vazio), tipos e testes. Use SEMPRE que o usuário pedir para criar uma tela, página, fluxo, feature, módulo ou funcionalidade nova no frontend; quando mencionar Next.js, React, App Router, server component, client component, página, rota, listagem, formulário, CRUD no front, ou pedir @feature-frontend-completa.
 ---
 
 # Feature Frontend Completa
@@ -9,7 +9,7 @@ Skill para implementar uma **fatia vertical** completa de uma feature no fronten
 
 ## Quando aplicar
 
-Sempre que o trabalho envolver mais que um arquivo isolado — quando o entregável é "permitir o utilizador fazer X". Exemplos:
+Sempre que o trabalho envolver mais que um arquivo isolado — quando o entregável é "permitir o usuário fazer X". Exemplos:
 
 - "Cria a tela de listagem de produtos com filtro e paginação".
 - "Adiciona um wizard de cadastro de cliente em 3 etapas".
@@ -214,7 +214,7 @@ interface PropsFormularioCliente {
 }
 
 export function FormularioCliente({ valoresIniciais, aoSalvar, estaSalvando }: PropsFormularioCliente) {
-  const { register, handleSubmit, formState: { errors } } = useForm<FormCriarCliente>({
+  const { registrer, handleSubmit, formState: { errors } } = useForm<FormCriarCliente>({
     resolver: zodResolver(schemaCriarCliente),
     defaultValues: valoresIniciais,
   });
@@ -223,7 +223,7 @@ export function FormularioCliente({ valoresIniciais, aoSalvar, estaSalvando }: P
     <form onSubmit={handleSubmit(aoSalvar)} className="space-y-4">
       <div>
         <label htmlFor="nome" className="block text-sm font-medium">Nome</label>
-        <input id="nome" {...register("nome")} className="mt-1 w-full rounded-md border px-3 py-2" />
+        <input id="nome" {...registrer("nome")} className="mt-1 w-full rounded-md border px-3 py-2" />
         {errors.nome && <p role="alert" className="mt-1 text-sm text-red-600">{errors.nome.message}</p>}
       </div>
       {/* documento, email — mesmo padrão */}
@@ -261,7 +261,7 @@ export function ListaClientes() {
 }
 ```
 
-> **Sempre** trate os 4 estados: `loading`, `error`, `empty`, `success`. Não exiba "Nenhum resultado" enquanto está a carregar — confusão imediata para o utilizador.
+> **Sempre** trate os 4 estados: `loading`, `error`, `empty`, `success`. Não exiba "Nenhum resultado" enquanto está a carregar — confusão imediata para o usuário.
 
 ### Passo 8: Rotas App Router
 
@@ -337,7 +337,7 @@ Antes de dar PR, verifique:
 
 ---
 
-## 7. Quando pedir confirmação ao utilizador
+## 7. Quando pedir confirmação ao usuário
 
 - Quando o backend ainda não existir — pergunte se deve **criar mock** (MSW) ou **bloquear até endpoint**.
 - Quando o domínio for incerto (`cliente` vs `parceiro` vs `usuario`) — pergunte o nome canónico.

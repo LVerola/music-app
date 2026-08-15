@@ -5,7 +5,7 @@ description: Discovery de domínio backend (.NET/ASP.NET Core/EF Core). Use SEMP
 
 # Discovery backend
 
-Corre **depois** de @discovery, **antes** de qualquer edição de backend no projecto-alvo.
+Corre **depois** de @discovery, **antes** de qualquer edição de backend no projeto-alvo.
 
 ## Padrões esperados (stack desta biblioteca)
 
@@ -14,7 +14,7 @@ Corre **depois** de @discovery, **antes** de qualquer edição de backend no pro
 - EF Core para persistência; migrations versionadas (não scripts SQL soltos como fonte de verdade)
 - Contratos HTTP na camada Api (DTOs / records de request/response)
 
-Adapta se o projecto documentar outro padrão — **lê o código** antes de assumir.
+Adapta se o projeto documentar outro padrão — **lê o código** antes de assumir.
 
 ## Ownership
 
@@ -50,6 +50,6 @@ Adapta se o projecto documentar outro padrão — **lê o código** antes de ass
 
 ## Workers / background
 
-18. Lógica na API ou em worker/função? Qual projecto existente?
+18. Lógica na API ou em worker/função? Qual projeto existente?
 
 Não inferir respostas. Recusa e pergunta quando um item for desconhecido.

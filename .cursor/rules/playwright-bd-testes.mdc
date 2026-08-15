@@ -28,7 +28,7 @@ O helper já trata de:
 - `client.connect()` e `client.end()` em `finally`, mesmo em erro.
 - Tipo genérico `T` para a linha (`rows`).
 
-## Prepared statements — sem excepções
+## Prepared statements — sem exceções
 
 ```sql
 -- ❌ BAD — concatenação directa com input/dado do teste (SQL injection)
@@ -56,7 +56,7 @@ const codigoConvite = rows[0]?.codigo_convite;
 | Helpers de pedido/cliente/parcela reutilizáveis | `tests/utils/dbUtils.ts` |
 | Query muito específica de um domínio (1 spec) | Inline no `metodos<Dominio>.ts` correspondente |
 
-Se a mesma query aparece em **2+ ficheiros**, promove a função para `tests/utils/dbUtils.ts` com nome verbo+objeto: `obterClienteIdPorPedido`, `aguardarPedidoPorDocumento`, `tornarPedidoInadimplente`.
+Se a mesma query aparece em **2+ arquivos**, promove a função para `tests/utils/dbUtils.ts` com nome verbo+objeto: `obterClienteIdPorPedido`, `aguardarPedidoPorDocumento`, `tornarPedidoInadimplente`.
 
 ## Naming dos helpers de BD
 
@@ -102,7 +102,7 @@ export async function aguardarPedidoPorDocumento(
 
 Atualizar dados directamente (vencimentos, flags) é prática válida para reproduzir cenários (inadimplência, blocklist) — mas:
 
-- **Restringir o `WHERE`**: sempre incluir o id mais específico possível (`pedido_id = $1 AND parcela = 1`). Nunca `UPDATE ... WHERE status = 'OVERDUE'` (afecta todos os ambientes partilhados).
+- **Restringir o `WHERE`**: sempre incluir o id mais específico possível (`pedido_id = $1 AND parcela = 1`). Nunca `UPDATE ... WHERE status = 'OVERDUE'` (afeta todos os ambientes partilhados).
 - **`RETURNING`** sempre que precisar confirmar — facilita log do efeito:
 
 ```ts

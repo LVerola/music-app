@@ -16,19 +16,19 @@ Corre **depois** de @discovery, **antes** de editar este repositório de instru�
 ## Escopo
 
 4. O que muda: skill, regra, hook, script, doc, ou índice?
-5. É conteúdo **copiado para projectos-alvo** ou só governação **deste** repo?
+5. É conteúdo **copiado para projetos-alvo** ou só governação **deste** repo?
 6. Precisa de entrada em `TITLES` / `TRIGGER_HINTS` em `scripts/replicar-skills.py`?
 
 ## Naming e idioma
 
 7. Nome kebab-case alinhado às skills existentes?
-8. Textos de UI e código novo em **português brasileiro** (excepto contratos de framework/API)?
+8. Textos de UI, código novo e **qualquer Markdown gerado** em **português brasileiro** (sem PT-PT nem inglês de prosa; exceto contratos de framework/API)?
 9. `description` da skill assertiva o bastante para disparar (evitar sub-disparo)?
 
 ## Espelhamento
 
 10. Quais pastas de ferramenta têm de reflectir a mudança?
-11. Hook Claude (`claude/.claude/hooks/`) e/ou regra Cursor alwaysApply afectados?
+11. Hook Claude (`claude/.claude/hooks/`) e/ou regra Cursor alwaysApply afetados?
 12. Após editar skill: `replicar-skills.py` faz parte do DoD?
 
 ## Anti-padrões deste repo
@@ -37,4 +37,4 @@ Corre **depois** de @discovery, **antes** de editar este repositório de instru�
 - Não divergir limiar de confiança (≥90% / 70–89% / &lt;70%) entre espelhos.
 - Não copiar skills CFlow com nomes/caminhos de produto (`*-cflow`, `frontend/features/recuperacao`) para a biblioteca genérica.
 
-Não implementes até os itens relevantes estarem claros ou adiados pelo utilizador.
+Não implementes até os itens relevantes estarem claros ou adiados pelo usuário.

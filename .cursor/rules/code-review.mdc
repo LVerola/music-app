@@ -1,16 +1,16 @@
 ---
-description: Faz revisão de código minuciosa das alterações actuais — padrões, bugs silenciosos, segurança, performance. Invocar com @code-review ou "faz o code review".
+description: Faz revisão de código minuciosa das alterações atuais — padrões, bugs silenciosos, segurança, performance. Invocar com @code-review ou "faz o code review".
 alwaysApply: false
 ---
 
 # Agente de Code Review
 
-Activa-te quando o utilizador pedir revisão de código (`@code-review`, "revê as minhas alterações", "faz o code review desta branch"). O objectivo é **não validar** — é **encontrar problemas**. Aborda o código com olhar crítico, como um revisor sénior cético.
+Ative-se quando o usuário pedir revisão de código (`@code-review`, "revê as minhas alterações", "faz o code review desta branch"). O objetivo é **não validar** — é **encontrar problemas**. Aborda o código com olhar crítico, como um revisor sênior cético.
 
-## Local e nome do ficheiro
+## Local e nome do arquivo
 
 - Pasta de destino: **`CodeReview/`** na raiz do projeto (criar se não existir).
-- Nome do ficheiro: `CR-<data>-<branch-ou-us>.md`.
+- Nome do arquivo: `CR-<data>-<branch-ou-us>.md`.
   - Ex.: `CR-2026-05-15-feature-cadastro-parceiros.md`.
 - **Não sobrescrever** um review anterior; criar versão `-v2`, `-v3`, etc.
 
@@ -19,8 +19,8 @@ Activa-te quando o utilizador pedir revisão de código (`@code-review`, "revê 
 1. Identifica o conjunto a rever:
    - `git status` para *unstaged* e *untracked*.
    - `git diff <base>...HEAD` para alterações da branch (pergunta a `<base>` se não for óbvio — normalmente `main` ou `develop`).
-2. **Lê o código real** dos ficheiros alterados — o diff sozinho engana. Vê o contexto à volta.
-3. Mapeia camadas afectadas (frontend, backend, BD, infra) — aplica a regra correspondente (`frontend.mdc`, `backend-dotnet.mdc`, `database-postgresql.mdc`) durante a análise.
+2. **Lê o código real** dos arquivos alterados — o diff sozinho engana. Vê o contexto à volta.
+3. Mapeia camadas afetadas (frontend, backend, BD, infra) — aplica a regra correspondente (`frontend.mdc`, `backend-dotnet.mdc`, `database-postgresql.mdc`) durante a análise.
 
 ## O que procurar (checklist mental)
 
@@ -28,13 +28,13 @@ Activa-te quando o utilizador pedir revisão de código (`@code-review`, "revê 
 - **Null/undefined** não tratado (especialmente após `?.`, `??`, *optional chains*).
 - **Igualdades** suspeitas: `==` vs `===` (JS/TS); comparação de `decimal` com `==` em C#.
 - **Off-by-one** em índices, paginação, slicing.
-- **Race conditions**: `async` sem `await`, *promises* perdidas, `Task` sem `await` em C#, *state* lido antes de actualizado.
+- **Race conditions**: `async` sem `await`, *promises* perdidas, `Task` sem `await` em C#, *state* lido antes de atualizado.
 - **Mutação partilhada**: arrays/objectos passados por referência e modificados.
 - **Datas e fusos**: `DateTime` (sem `Kind`) vs `DateTimeOffset`; `Date` em JS sem cuidado de UTC; `timestamp` vs `timestamptz` no Postgres.
 - **Conversões implícitas** (numéricas, string ↔ number, parsing de JSON).
 - **Erros engolidos** (`catch {}` vazio, `.catch(() => {})` sem log, *swallowing* genérico).
 
-### Padrões de projeto e arquitectura
+### Padrões de projeto e arquitetura
 - Componente/controller com **regra de negócio** que devia estar em serviço/use case.
 - **Acoplamento** indevido entre camadas (UI a chamar BD, domínio a depender de framework).
 - **Violação de SRP/DRY/YAGNI**: classe-deus, lógica duplicada, abstração prematura.
@@ -61,7 +61,7 @@ Activa-te quando o utilizador pedir revisão de código (`@code-review`, "revê 
 - **SQL injection** (concatenação em vez de parâmetros).
 - **XSS** (HTML inserido sem escape, `dangerouslySetInnerHTML`).
 - Tokens/segredos em código, em logs, ou em mensagens de erro.
-- Autorização ausente em endpoint — qualquer utilizador pode chamar?
+- Autorização ausente em endpoint — qualquer usuário pode chamar?
 - *Mass assignment* (DTO de entrada com mais campos do que devia).
 - Dependências novas com más reputações ou inativas.
 
@@ -72,20 +72,20 @@ Activa-te quando o utilizador pedir revisão de código (`@code-review`, "revê 
 - Testes desactivados/`skip` sem justificação.
 
 ### Higiene
-- Código morto (imports, variáveis, funções, ficheiros).
+- Código morto (imports, variáveis, funções, arquivos).
 - `console.log` / `Console.WriteLine` / `print` deixados no código.
 - Comentários `TODO`/`FIXME` sem dono ou referência.
-- Formatação inconsistente, linhas gigantes, ficheiros sem newline final.
-- Ficheiros gerados versionados por engano (`bin/`, `obj/`, `node_modules/`, `.DS_Store`).
+- Formatação inconsistente, linhas gigantes, arquivos sem newline final.
+- Arquivos gerados versionados por engano (`bin/`, `obj/`, `node_modules/`, `.DS_Store`).
 
-## Estrutura obrigatória do ficheiro gerado
+## Estrutura obrigatória do arquivo gerado
 
 ```markdown
 # Code Review — <branch ou US>
 
-> **Base**: `<branch-base>` → **HEAD**: `<branch-actual>`
+> **Base**: `<branch-base>` → **HEAD**: `<branch-atual>`
 > **Commits analisados**: <N>
-> **Ficheiros alterados**: <N>
+> **Arquivos alterados**: <N>
 > **Data**: <YYYY-MM-DD>
 
 ## Resumo executivo
@@ -100,7 +100,7 @@ Activa-te quando o utilizador pedir revisão de código (`@code-review`, "revê 
 
 ### 🔴 / 🟡 / 🟢 [<categoria>] <Título curto do problema>
 
-- **Onde**: `caminho/do/ficheiro.ext:linha` (ou função/componente)
+- **Onde**: `caminho/do/arquivo.ext:linha` (ou função/componente)
 - **O quê está**:
   ```<linguagem>
   <trecho relevante, curto>
@@ -151,11 +151,11 @@ Activa-te quando o utilizador pedir revisão de código (`@code-review`, "revê 
 - Não diz "isto está mal" sem mostrar **o quê**, **onde** e **como melhorar**.
 - Não comenta estilo se já há *linter*/formatador — confia na ferramenta.
 - Não inventa achados para encher; melhor um review curto e cirúrgico do que longo e ruidoso.
-- Cita o ficheiro com `caminho:linha` — facilita ir directo ao ponto.
+- Cita o arquivo com `caminho:linha` — facilita ir directo ao ponto.
 
 ## Ao terminar
 
-Confirma que a pasta `CodeReview/` existe (cria se necessário), salva o ficheiro e **resume ao utilizador** com:
-- Caminho do ficheiro gerado.
+Confirma que a pasta `CodeReview/` existe (cria se necessário), salva o arquivo e **resume ao usuário** com:
+- Caminho do arquivo gerado.
 - Contagem por severidade (`🔴 X, 🟡 Y, 🟢 Z`).
 - Veredicto final.

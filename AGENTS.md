@@ -1,18 +1,18 @@
 # AGENTS — Base universal
 
-Este ficheiro contém princípios, convenções e expectativas que **valem para qualquer projeto** (frontend, backend, banco de dados, infraestrutura). Regras específicas por stack ou por workflow ficam em `.cursor/rules/*.mdc` e são carregadas automaticamente pelo Cursor conforme o contexto.
+Este arquivo contém princípios, convenções e expectativas que **valem para qualquer projeto** (frontend, backend, banco de dados, infraestrutura). Regras específicas por stack ou por workflow ficam em `.cursor/rules/*.mdc` e são carregadas automaticamente pelo Cursor conforme o contexto.
 
-> Se houver conflito entre este ficheiro e uma regra mais específica em `.cursor/rules/`, **a regra específica prevalece**.
+> Se houver conflito entre este arquivo e uma regra mais específica em `.cursor/rules/`, **a regra específica prevalece**.
 
 ---
 
 ## 0. Workflow discovery (obrigatório)
 
-Antes de **criar ou alterar ficheiros** (código, skills, regras ou docs deste repo):
+Antes de **criar ou alterar arquivos** (código, skills, regras ou docs deste repo):
 
 1. `@discovery` — classificar, desambiguar, declarar confiança, bloquear alucinação.
 2. Discovery de domínio: `@discovery-frontend` | `@discovery-backend` | `@discovery-biblioteca` (este repo Agents).
-3. `@architecture-check` antes de **criar** ficheiro novo.
+3. `@architecture-check` antes de **criar** arquivo novo.
 
 Pular só em perguntas **read-only**. Confiança: **≥ 90%** implementa; **70–89%** pergunta e implementa; **&lt; 70%** recusa.
 
@@ -22,14 +22,42 @@ Regra alwaysApply: `discovery-workflow`. Modo cosmético: `@vibe`.
 
 ## 1. Idioma
 
-- **Interface (exibição ao utilizador)**: textos de botões, labels, mensagens de erro, toasts, placeholders, títulos e e‑mails em **português brasileiro**.
-- **Código novo**: nomes de variáveis, funções, classes, hooks, componentes, métodos, comentários e documentação em **português brasileiro**.
-- **Ficheiros e pastas novos**: nomes em português brasileiro (`kebab-case` para rotas/pastas; `PascalCase`/`camelCase` conforme a stack).
-- **Excepções razoáveis**:
+Tudo o que se escreve para humanos neste repositório é **português brasileiro (pt-BR)** — sem português europeu e sem inglês de prosa.
+
+Inclui: interface, código novo, comentários, README, `.docs/`, ADRs, manuais, roadmaps, changelogs, specs, mensagens de commit/PR e qualquer Markdown gerado.
+
+**Não traduzir** (manter o nome original):
+- Produtos, frameworks, protocolos, comandos e APIs (`Docker`, `PostgreSQL`, `Next.js`, `GET /health/live`).
+- Identificadores de código já existentes.
+- Termos Git quando forem o comando ou o conceito da ferramenta (`commit`, `push`); no texto corrido preferir o equivalente em português (`ramo`, `mensagem de commit`).
+
+**Evitar português europeu.** Preferir:
+
+| Evitar (PT-PT) | Usar (PT-BR) |
+|---|---|
+| ficheiro | arquivo |
+| utilizador | usuário |
+| projecto | projeto |
+| actual / actualizar | atual / atualizar |
+| objectivo | objetivo |
+| secção | seção |
+| excepção / excepto | exceção / exceto |
+| equipa | equipe |
+| registo | registro |
+| palavra-passe | senha |
+| ecrã | tela |
+| contentor | contêiner |
+| arranque | inicialização |
+| arquitectura | arquitetura |
+| afectar / efectivo | afetar / efetivo |
+
+- **Interface**: botões, labels, erros, toasts, placeholders, títulos e e-mails em português brasileiro.
+- **Código novo**: variáveis, funções, classes, hooks, componentes, métodos, comentários e documentação em português brasileiro.
+- **Arquivos e pastas novos**: nomes em português brasileiro (`kebab-case` para rotas/pastas; `PascalCase`/`camelCase` conforme a stack).
+- **Exceções**:
   - Contratos impostos por APIs/SDKs externos (manter o nome original).
   - Convenções obrigatórias do framework (ex.: `page.tsx`, `layout.tsx`, `Program.cs`, `appsettings.json`).
-  - Módulo já inteiramente em inglês — **alinhar ao módulo** para não misturar estilos no mesmo ficheiro.
-- Em **código novo** ou módulos novos, preferir sempre **português brasileiro**.
+  - Módulo já inteiramente em inglês — **alinhar ao módulo** para não misturar estilos no mesmo arquivo.
 
 ---
 
@@ -40,7 +68,7 @@ Regra alwaysApply: `discovery-workflow`. Modo cosmético: `@vibe`.
 - Nomes **revelam intenção**: `calcularDescontoPorCategoria` é melhor que `calc` ou `processar`.
 - Evitar abreviações opacas (`info`, `dados`, `obj`, `tmp`, `aux`) e nomes genéricos sem contexto.
 - Booleans começam com `é`, `tem`, `deve`, `pode` (`éAdmin`, `temPermissao`, `deveValidar`).
-- Coleções no plural (`utilizadores`, `produtos`); item singular dentro do loop (`utilizador`, `produto`).
+- Coleções no plural (`usuários`, `produtos`); item singular dentro do loop (`usuário`, `produto`).
 - Verbos para funções/métodos (`obterCliente`, `salvarPedido`); substantivos para classes/tipos (`Cliente`, `Pedido`).
 - Evitar qualquer nomenclatura como por exemplo `ehNomeDaFuncao`; utiliza outra nomenclatura nesses casos sem o uso do prefixo `eh`.
 
@@ -85,7 +113,7 @@ Ciclo **red → green → refactor** sempre que possível.
 - Lógica de negócio nova (helpers, serviços, validações, *use cases*, regras de domínio) **deve nascer com testes**.
 - Alterações de comportamento existente: **atualizar ou acrescentar testes** na mesma alteração.
 - Testes cobrem: caminho feliz, casos limite, erros relevantes.
-- **Não desactive testes para “passar o CI”**: corrija a causa ou ajuste a especificação intencionalmente.
+- **Não desative testes para “passar o CI”**: corrija a causa ou ajuste a especificação intencionalmente.
 - **Não teste detalhes de implementação** (ex.: nomes internos, estrutura de mock); teste comportamento observável.
 - Quando o framework permitir, prefira **AAA** (Arrange–Act–Assert) e nomes descritivos:
   - `deveCalcularDescontoQuandoClienteForVip()` em vez de `test1()`.
@@ -117,9 +145,9 @@ Ciclo **red → green → refactor** sempre que possível.
 ## 5. Segurança, segredos e ambiente
 
 - Variáveis sensíveis em `.env`, *user secrets*, Key Vault, Azure App Configuration — **nunca** em código.
-- **Não commitar** ficheiros `.env*` reais; manter `.env.example` com nomes e descrições (sem valores).
+- **Não commitar** arquivos `.env*` reais; manter `.env.example` com nomes e descrições (sem valores).
 - **Não colar** valores reais de produção em issues, PRs, chat ou docs.
-- Validar e sanitizar **toda entrada externa** (HTTP, fila, ficheiro, BD).
+- Validar e sanitizar **toda entrada externa** (HTTP, fila, arquivo, BD).
 - Logs **não** podem conter: tokens, palavras‑passe, números de cartão, CPF/CNPJ completos sem mascaramento.
 - Dependências novas exigem justificação clara (impacto em bundle/imagens, manutenção, licença).
 
@@ -137,7 +165,7 @@ Ciclo **red → green → refactor** sempre que possível.
 
 ## 7. O que evitar
 
-- Alterações amplas **não solicitadas** (refactors em massa, renomeações globais, formatação de ficheiros inteiros não tocados).
+- Alterações amplas **não solicitadas** (refactors em massa, renomeações globais, formatação de arquivos inteiros não tocados).
 - Dependências novas sem necessidade clara.
 - Ignorar lint/build/testes para “entregar mais rápido”.
 - Implementar lógica nova **sem testes**.
@@ -155,13 +183,13 @@ As regras abaixo são carregadas pelo Cursor automaticamente quando o contexto b
 |---|---|---|
 | `discovery-workflow.mdc` | Sempre (`alwaysApply`) | Ordem discovery → domínio → architecture-check + limiar ≥90% |
 | `vibe.mdc` | Manual (`@vibe`) | Ajustes cosméticos pequenos sem abrir todas as skills |
-| `frontend.mdc` | Ficheiros `.ts`, `.tsx`, `.jsx`, `.css`, projetos Next.js/React | Convenções de UI, Tailwind, TanStack, componentização |
-| `backend-dotnet.mdc` | Ficheiros `.cs`, `.csproj`, soluções .NET | Convenções de .NET, SOLID, EF Core, async, exceptions |
-| `database-postgresql.mdc` | Ficheiros `.sql`, migrations, scripts de BD | Convenções de PostgreSQL, índices, transações, performance |
-| `playwright.mdc` | Ficheiros `tests/**/*.ts` e `playwright.config.ts` | Convenções base de testes E2E com Playwright (estrutura, locators, esperas, anti-padrões) |
-| `playwright-pom.mdc` | Ficheiros `tests/**/metodos*.ts` | POM funcional — assinaturas tipadas, separação UI vs API, reutilização de helpers |
-| `playwright-bd-testes.mdc` | Ficheiros `tests/**/dbUtils.ts`, `tests/**/utils.ts`, `metodos*.ts` e `*.spec.ts` com SQL | Uso seguro de PostgreSQL em testes (prepared statements, polling, cleanup) |
-| `documentacao.mdc` | Invocação manual (`@documentacao`) | Gerar documentação técnica + funcional da US em `Documentacao/` |
+| `frontend.mdc` | Arquivos `.ts`, `.tsx`, `.jsx`, `.css`, projetos Next.js/React | Convenções de UI, Tailwind, TanStack, componentização |
+| `backend-dotnet.mdc` | Arquivos `.cs`, `.csproj`, soluções .NET | Convenções de .NET, SOLID, EF Core, async, exceptions |
+| `database-postgresql.mdc` | Arquivos `.sql`, migrations, scripts de BD | Convenções de PostgreSQL, índices, transações, performance |
+| `playwright.mdc` | Arquivos `tests/**/*.ts` e `playwright.config.ts` | Convenções base de testes E2E com Playwright (estrutura, locators, esperas, anti-padrões) |
+| `playwright-pom.mdc` | Arquivos `tests/**/metodos*.ts` | POM funcional — assinaturas tipadas, separação UI vs API, reutilização de helpers |
+| `playwright-bd-testes.mdc` | Arquivos `tests/**/dbUtils.ts`, `tests/**/utils.ts`, `metodos*.ts` e `*.spec.ts` com SQL | Uso seguro de PostgreSQL em testes (prepared statements, polling, cleanup) |
+| `documentacao.mdc` | Invocação manual (`@documentacao`) | Gerar documentação técnica + funcional da US em `.docs/Documentacao/` |
 | `code-review.mdc` | Invocação manual (`@code-review`) | Revisão crítica das alterações em `CodeReview/` |
 | `tarefas-user-story.mdc` | Invocação manual (`@tarefas-user-story`) | Decompor uma US em tarefas e estimar esforço |
 
@@ -179,7 +207,7 @@ As **skills** complementam as regras: enquanto regras descrevem **convenções**
 | `discovery-frontend` | Frontend | Checklist UI/estados/camada de dados após discovery |
 | `discovery-backend` | Backend | Checklist API/domínio/persistência após discovery |
 | `discovery-biblioteca` | Meta (repo Agents) | Checklist ao editar skills/regras/pastas de ferramenta |
-| `architecture-check` | Todos | Reutilizar→estender→compor→criar antes de ficheiro novo |
+| `architecture-check` | Todos | Reutilizar→estender→compor→criar antes de arquivo novo |
 | `criador-de-skills` | Meta | Cria novas skills e itera-as com benchmark/evals (réplica do skill-creator em PT-BR) |
 | `redator-user-stories` | Product Owner | Escreve/refina User Stories no padrão INVEST + Gherkin com critérios de aceitação e DoR/DoD |
 | `feature-frontend-completa` | Frontend Dev | Implementa fatia vertical de feature em Next.js 15 / React 19 / TS / Tailwind (rota → tipos → service → query → form → testes) |
@@ -195,7 +223,7 @@ As **skills** complementam as regras: enquanto regras descrevem **convenções**
 | `owasp-revisao` | Software Engineer | Revisão de segurança OWASP Top 10 com findings priorizados |
 | `tdd-loop-guiado` | Software Engineer | Conduz desenvolvimento em ciclos `red → green → refactor` em micro-passos |
 | `arquiteto-de-projeto` | Arquiteto de Software | A partir de uma ideia/escopo, levanta stack, estilo arquitetural, padrões, NFRs, riscos e gera um manual do projeto + roadmap faseado pronto para o PO |
-| `spec-de-feature` | PO / Tech Lead | Entrevista o utilizador sobre uma feature (front ou back) e gera uma spec em `Specs/SPEC-<slug>.md` pronta para guiar a IA na implementação |
+| `spec-de-feature` | PO / Tech Lead | Entrevista o usuário sobre uma feature (front ou back) e gera uma spec em `Specs/SPEC-<slug>.md` pronta para guiar a IA na implementação |
 | `feature-mobile-completa` | Mobile Dev | Implementa fatia vertical mobile em React Native + Expo (Expo Router, NativeWind, TanStack Query, RHF+Zod, Jest+RNTL, Maestro) com paridade Android/iOS |
 
 > Para invocar uma skill durante uma conversa, mencione‑a com `@` (ex.: `@redator-user-stories`) ou descreva a tarefa pelo contexto (a skill dispara pela descrição no *frontmatter*).
@@ -204,7 +232,7 @@ As **skills** complementam as regras: enquanto regras descrevem **convenções**
 
 ## 10. Quando estiver em dúvida
 
-1. Releia este ficheiro e a regra específica da stack envolvida.
+1. Releia este arquivo e a regra específica da stack envolvida.
 2. Procure padrões já existentes no repositório atual e **siga-os**, mesmo que pessoalmente preferisse outro.
 3. Se houver conflito entre padrão existente e estas regras: **alinhe ao padrão do projeto** e **abra um TODO** se achar que vale repensar.
-4. Em mudanças com impacto arquitectural, **proponha** antes de executar.
+4. Em mudanças com impacto arquitetural, **proponha** antes de executar.

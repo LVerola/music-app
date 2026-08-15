@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MusicApp.Api/MusicApp.Api.csproj" />
+    <Project Path="src/MusicApp.Application/MusicApp.Application.csproj" />
+    <Project Path="src/MusicApp.Domain/MusicApp.Domain.csproj" />
+    <Project Path="src/MusicApp.Infrastructure/MusicApp.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MusicApp.IntegrationTests/MusicApp.IntegrationTests.csproj" />
+  </Folder>
+</Solution>

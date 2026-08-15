@@ -17,16 +17,16 @@ Ordenados do mais simples ao mais complexo. **Começa em cima e só desce com ju
 
 | Estilo | Quando encaixa | Custo/risco | Sinais de que é cedo demais |
 |---|---|---|---|
-| **Monólito modular** | Maioria dos produtos novos; equipa pequena/média; domínio ainda a estabilizar | Baixo. Exige disciplina de fronteiras entre módulos | É o default — raramente é cedo demais |
+| **Monólito modular** | Maioria dos produtos novos; equipe pequena/média; domínio ainda a estabilizar | Baixo. Exige disciplina de fronteiras entre módulos | É o default — raramente é cedo demais |
 | **Monólito + workers assíncronos** | Há tarefas pesadas/lentas (e-mail, relatórios, processamento) | Baixo-médio. Fila + idempotência | Não há trabalho assíncrono real |
 | **Serverless / FaaS** | Carga intermitente, picos imprevisíveis, glue code, eventos | Médio. Cold start, lock-in, observabilidade difícil | Carga constante e previsível |
 | **Event-driven** | Integração desacoplada, múltiplos consumidores do mesmo evento, auditoria | Médio-alto. Consistência eventual, debugging distribuído | Fluxo simples request/response |
-| **Microsserviços** | Equipas autónomas, escala independente por módulo, ciclos de release distintos | Alto. Rede, observabilidade distribuída, dados distribuídos, devops maduro | Equipa única, domínio instável, sem devops |
+| **Microsserviços** | Equipes autónomas, escala independente por módulo, ciclos de release distintos | Alto. Rede, observabilidade distribuída, dados distribuídos, devops maduro | Equipe única, domínio instável, sem devops |
 
 **Regras práticas:**
-- Microsserviços resolvem um problema **organizacional** (equipas) antes de técnico. Sem várias equipas, normalmente não compensa.
+- Microsserviços resolvem um problema **organizacional** (equipes) antes de técnico. Sem várias equipes, normalmente não compensa.
 - Podes ter um **monólito modular com fronteiras explícitas** e extrair um serviço só quando a dor aparecer (estratégia de extração tardia).
-- Consistência eventual é uma decisão de negócio, não só técnica — confirma com o utilizador antes de assumir.
+- Consistência eventual é uma decisão de negócio, não só técnica — confirma com o usuário antes de assumir.
 
 ---
 
@@ -67,13 +67,13 @@ Recomenda só os que pagam o seu custo neste projeto. Padrão a mais é dívida.
 | Concorrência massiva / tempo-real / baixa latência | Go, Elixir/Phoenix, Rust | Modelo de concorrência e footprint |
 | App mobile nativa | Swift/Kotlin, ou React Native/Flutter | Acesso a APIs nativas / partilha de código |
 | Realtime colaborativo (docs, chat) | WebSockets + Elixir/Node | Conexões persistentes em escala |
-| Equipa só domina JS/TS | Node + Nest/Express | Velocidade > pureza de stack |
+| Equipe só domina JS/TS | Node + Nest/Express | Velocidade > pureza de stack |
 
 **Decisões transversais a tratar sempre:**
 - **Base de dados:** relacional (PostgreSQL por defeito) salvo necessidade clara de documento (Mongo), chave-valor/cache (Redis), série temporal, ou grafo. Justifica qualquer NoSQL pelo padrão de acesso, não pela moda.
 - **Auth:** sessão vs JWT; provider próprio vs gerido (Auth0/Entra/Keycloak/Supabase). Gerido poupa esforço e risco de segurança.
 - **Estilo de API:** REST (default), GraphQL (clientes heterogéneos, over-fetching), gRPC (interno, alta performance).
-- **Infra:** PaaS (App Service, Render, Railway) para começar rápido; Kubernetes só com escala/equipa que o justifiquem.
+- **Infra:** PaaS (App Service, Render, Railway) para começar rápido; Kubernetes só com escala/equipe que o justifiquem.
 - **Mensageria:** RabbitMQ / SQS / Azure Service Bus para filas; Kafka só com volume/streaming real.
 
 > Qualquer destas, quando tiver peso, vira candidata a **ADR** (`@adr-decisao-arquitetura`).
@@ -85,15 +85,15 @@ Recomenda só os que pagam o seu custo neste projeto. Padrão a mais é dívida.
 Percorre esta lista na entrevista e no manual. Marca cada um como "tratado" ou "não aplicável".
 
 - **Performance:** alvos de latência (p95/p99), throughput esperado.
-- **Escala:** utilizadores/pedidos no início e horizonte; crescimento linear ou viral?
+- **Escala:** usuários/pedidos no início e horizonte; crescimento linear ou viral?
 - **Disponibilidade:** SLA, RTO/RPO, tolerância a downtime, janelas de manutenção.
 - **Segurança:** authn/authz, gestão de segredos, OWASP Top 10 (`@owasp-revisao`), superfície de ataque.
 - **Privacidade/Conformidade:** LGPD/GDPR, dados pessoais, consentimento, retenção, direito ao esquecimento, residência de dados, auditoria.
 - **Observabilidade:** logs estruturados, métricas, tracing distribuído, alertas, dashboards.
-- **Manutenibilidade:** testabilidade, CI/CD, complexidade aceitável para a equipa.
+- **Manutenibilidade:** testabilidade, CI/CD, complexidade aceitável para a equipe.
 - **Acessibilidade:** WCAG 2.2 AA para UI (`@auditoria-acessibilidade`).
 - **Internacionalização:** idiomas, fusos, moeda, formatos.
-- **Custo:** orçamento de infra, custo por utilizador/transação, FinOps.
+- **Custo:** orçamento de infra, custo por usuário/transação, FinOps.
 - **Portabilidade/lock-in:** dependência de provider, estratégia de saída.
 
 ---
@@ -102,10 +102,10 @@ Percorre esta lista na entrevista e no manual. Marca cada um como "tratado" ou "
 
 Para evitar sobre-engenharia. Números aproximados, ajusta ao contexto.
 
-- **< 10k utilizadores / baixa carga:** monólito modular + 1 BD relacional + PaaS resolve. Não precisas de cache distribuído, filas complexas, nem micro.
+- **< 10k usuários / baixa carga:** monólito modular + 1 BD relacional + PaaS resolve. Não precisas de cache distribuído, filas complexas, nem micro.
 - **Picos pontuais (ex.: campanhas):** considera serverless ou autoscaling antes de reescrever arquitetura.
 - **Leitura >> escrita:** cache (Redis) e/ou réplicas de leitura antes de CQRS pleno.
 - **Crescimento incerto:** otimiza para **reversibilidade** e para mudar de ideias barato, não para escala que talvez nunca venha.
-- **Sinal real de microsserviços:** múltiplas equipas a colidir no mesmo código/deploy, ou um módulo com perfil de escala radicalmente diferente do resto.
+- **Sinal real de microsserviços:** múltiplas equipes a colidir no mesmo código/deploy, ou um módulo com perfil de escala radicalmente diferente do resto.
 
 > A pergunta certa não é "isto escala para milhões?" mas "qual é o caminho mais barato para chegar ao próximo patamar **quando** (e se) precisarmos?".

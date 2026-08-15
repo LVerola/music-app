@@ -1,18 +1,18 @@
 ---
-description: Workflow obrigatório discovery → domínio → architecture-check antes de criar ou alterar ficheiros. Limiar de confiança ≥ 90%.
+description: Workflow obrigatório discovery → domínio → architecture-check antes de criar ou alterar arquivos. Limiar de confiança ≥ 90%.
 alwaysApply: true
 ---
 
 # Workflow discovery (obrigatório)
 
-Antes de **criar ou alterar ficheiros**, invoca nesta ordem:
+Antes de **criar ou alterar arquivos**, invoca nesta ordem:
 
 1. `@discovery` — classifica, desambigua, declara confiança, bloqueia alucinação.
-2. Discovery de domínio da área afectada:
+2. Discovery de domínio da área afetada:
    - UI / Next.js / React → `@discovery-frontend`
    - API / .NET / EF → `@discovery-backend`
    - Este repo Agents (skills, regras, pastas de ferramenta, scripts) → `@discovery-biblioteca`
-3. `@architecture-check` — antes de **criar** ficheiro novo.
+3. `@architecture-check` — antes de **criar** arquivo novo.
 
 Pular só em perguntas **read-only** (explicação, busca, status). Em dúvida se o pedido está totalmente especificado, **invoca `discovery` e deixa a skill decidir**.
 

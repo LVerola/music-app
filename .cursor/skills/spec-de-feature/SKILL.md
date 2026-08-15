@@ -1,11 +1,11 @@
 ---
 name: spec-de-feature
-description: Entrevista o utilizador sobre uma feature nova (frontend ou backend) e gera uma spec em markdown (Specs/SPEC-<slug>.md) pronta para guiar uma IA na implementação — contexto, requisitos com Gherkin, contratos técnicos, fluxo de UX, fora de escopo, plano de implementação passo a passo e estratégia de testes. Use SEMPRE que o utilizador pedir para criar uma spec, especificação, "spec para IA", documento de requisitos de uma feature/tela/endpoint antes de implementar; quando disser "quero especificar", "monta a spec", "prepara o contexto para a IA implementar", ou pedir @spec-de-feature.
+description: Entrevista o usuário sobre uma feature nova (frontend ou backend) e gera uma spec em markdown (Specs/SPEC-<slug>.md) pronta para guiar uma IA na implementação — contexto, requisitos com Gherkin, contratos técnicos, fluxo de UX, fora de escopo, plano de implementação passo a passo e estratégia de testes. Use SEMPRE que o usuário pedir para criar uma spec, especificação, "spec para IA", documento de requisitos de uma feature/tela/endpoint antes de implementar; quando disser "quero especificar", "monta a spec", "prepara o contexto para a IA implementar", ou pedir @spec-de-feature.
 ---
 
 # Spec de Feature (para IA)
 
-Skill para transformar uma ideia de feature — de frontend ou de backend — numa **spec em markdown** completa o suficiente para outra sessão de IA implementar sem voltar a perguntar o essencial. O produto final é um ficheiro `Specs/SPEC-<slug>.md`.
+Skill para transformar uma ideia de feature — de frontend ou de backend — numa **spec em markdown** completa o suficiente para outra sessão de IA implementar sem voltar a perguntar o essencial. O produto final é um arquivo `Specs/SPEC-<slug>.md`.
 
 A spec é um **contrato de intenção**: quem a lê deve conseguir implementar a feature certa mesmo sem acesso a esta conversa. Otimize para remover ambiguidade, não para volume de texto.
 
@@ -19,17 +19,17 @@ A spec é um **contrato de intenção**: quem a lê deve conseguir implementar a
 
 ## 1. Fase de entrevista — obrigatória
 
-**Não escreva a spec de primeira.** O valor desta skill está em extrair do utilizador o que ele ainda não disse. Entreviste em 1–2 rondas curtas (máx. ~7 perguntas por ronda); pergunte só o que não conseguir inferir do pedido ou do código do projeto.
+**Não escreva a spec de primeira.** O valor desta skill está em extrair do usuário o que ele ainda não disse. Entreviste em 1–2 rondas curtas (máx. ~7 perguntas por ronda); pergunte só o que não conseguir inferir do pedido ou do código do projeto.
 
-**Espere as respostas do utilizador** antes de gerar o ficheiro — não assuma respostas nem preencha lacunas com suposições silenciosas. Se o utilizador disser que já tem tudo definido e pedir formalização rápida, faça no máximo 1–2 perguntas sobre lacunas reais e avance.
+**Espere as respostas do usuário** antes de gerar o arquivo — não assuma respostas nem preencha lacunas com suposições silenciosas. Se o usuário disser que já tem tudo definido e pedir formalização rápida, faça no máximo 1–2 perguntas sobre lacunas reais e avance.
 
-Antes de perguntar, **leia o que o utilizador já trouxe** (US, issue, mockup, mensagem) e **investigue o repositório**: tipos, services, componentes, endpoints e convenções existentes respondem a muitas perguntas sozinhos — e a spec deve referenciá-los (ex.: "reutilizar `<DataTable>` de `components/ui/`").
+Antes de perguntar, **leia o que o usuário já trouxe** (US, issue, mockup, mensagem) e **investigue o repositório**: tipos, services, componentes, endpoints e convenções existentes respondem a muitas perguntas sozinhos — e a spec deve referenciá-los (ex.: "reutilizar `<DataTable>` de `components/ui/`").
 
 ### Perguntas-base (adapte ao caso)
 
 **Sempre:**
 
-1. **Problema e objetivo** — que dor do utilizador esta feature resolve? Como sabemos que ficou pronta e certa?
+1. **Problema e objetivo** — que dor do usuário esta feature resolve? Como sabemos que ficou pronta e certa?
 2. **Ator** — quem usa? Há papéis/permissões diferentes?
 3. **Escopo** — o que fica explicitamente de fora desta entrega?
 4. **Regras de negócio** — validações, limites, cálculos, casos especiais ("e se já existir?", "e se estiver vazio?").
@@ -49,7 +49,7 @@ Antes de perguntar, **leia o que o utilizador já trouxe** (US, issue, mockup, m
 8. Efeitos colaterais — eventos, notificações, integrações externas.
 9. Idempotência, concorrência, volume esperado.
 
-Se o utilizador não souber responder a algo, **registe a dúvida na spec** (secção "Questões em aberto") em vez de inventar uma resposta. Uma spec honesta sobre o que não se sabe vale mais que uma spec falsamente completa.
+Se o usuário não souber responder a algo, **registre a dúvida na spec** (seção "Questões em aberto") em vez de inventar uma resposta. Uma spec honesta sobre o que não se sabe vale mais que uma spec falsamente completa.
 
 ---
 
@@ -62,7 +62,7 @@ Grave em `Specs/SPEC-<slug>.md` (crie a pasta `Specs/` na raiz do projeto se nã
 
 > **Alvo:** frontend | backend | fullstack
 > **Data:** <AAAA-MM-DD>
-> **Status:** rascunho | aprovada
+> **Situação:** rascunho | aprovada
 
 ## 1. Contexto e objetivo
 
@@ -85,7 +85,7 @@ Um bloco por cenário, com nome descritivo.>
 
 ## 4. Fluxo de UX e estados
 
-<Só quando há UI. Passo a passo da interação do utilizador
+<Só quando há UI. Passo a passo da interação do usuário
 + tabela de estados: loading / erro / vazio / sucesso — o que cada um exibe.
 Textos de UI em PT-BR já definidos aqui (labels, mensagens de erro, botões).>
 
@@ -97,7 +97,7 @@ Textos de UI em PT-BR já definidos aqui (labels, mensagens de erro, botões).>
 ## 6. Plano de implementação
 
 <Sequência de passos concretos e ordenados que a IA deve seguir,
-cada um com os ficheiros a criar/alterar (caminhos reais do repo).
+cada um com os arquivos a criar/alterar (caminhos reais do repo).
 Siga a ordem das skills de feature do projeto quando aplicável
 (tipos → service → domínio → UI/endpoint → testes).>
 
@@ -115,27 +115,27 @@ Se vazio, escreva "Nenhuma".>
 
 ### Regras de qualidade da spec
 
-- **Verificável > vago.** "O filtro devolve resultados em menos de 2s para 10k registos" em vez de "deve ser rápido".
+- **Verificável > vago.** "O filtro devolve resultados em menos de 2s para 10k registros" em vez de "deve ser rápido".
 - **Contratos com exemplos reais.** JSON de request/response de exemplo vale mais que descrição em prosa.
 - **Referencie o código existente** com caminhos reais (`src/services/...`), para a IA reutilizar em vez de duplicar.
 - **Aponte as skills/regras do projeto** que a implementação deve seguir (ex.: "seguir @feature-frontend-completa") — a spec não repete convenções que já estão nas regras.
 - **Textos de UI decididos na spec**, não delegados à IA (evita labels inventadas fora do tom do produto).
-- Escreva a spec inteira em **português brasileiro**.
+- Escreva a spec inteira em **português brasileiro** (ver `AGENTS.md` §1). Sem português europeu e sem inglês de prosa.
 
 ---
 
 ## 3. Fecho
 
-1. Apresente um resumo da spec (5–8 linhas) e o caminho do ficheiro.
-2. Pergunte se o utilizador aprova ou quer ajustar; ao aprovar, mude `Status` para `aprovada`.
+1. Apresente um resumo da spec (5–8 linhas) e o caminho do arquivo.
+2. Pergunte se o usuário aprova ou quer ajustar; ao aprovar, mude `Situação` para `aprovada`.
 3. Sugira o próximo passo: implementar com `@feature-frontend-completa`, `@feature-backend-completa` ou `@feature-mobile-completa` conforme o alvo, anexando a spec.
 
 ## Padrões a evitar
 
 | Anti-padrão | Por quê |
 |---|---|
-| Escrever a spec sem entrevistar | O objetivo da skill é extrair o que o utilizador ainda não disse |
+| Escrever a spec sem entrevistar | O objetivo da skill é extrair o que o usuário ainda não disse |
 | Requisito não verificável ("deve ser intuitivo") | A IA implementadora não tem como cumprir nem testar |
-| Inventar contrato de endpoint que não foi confirmado | A implementação nasce errada; registe como questão em aberto |
+| Inventar contrato de endpoint que não foi confirmado | A implementação nasce errada; registre como questão em aberto |
 | Spec com >1 feature | Uma spec por fatia entregável; divida épicos |
 | Copiar convenções das regras do repo para dentro da spec | Duplicação que desatualiza; referencie a regra/skill |

@@ -54,7 +54,7 @@ Complementa `AGENTS.md` com convenções específicas para PostgreSQL. Aplica‑
 - **`JOIN` explícito** com `ON`; evitar vírgula no `FROM` (legado).
 - Funções de janela (`ROW_NUMBER()`, `RANK()`) > subqueries correlacionadas quando aplicável.
 - `EXISTS`/`NOT EXISTS` > `IN`/`NOT IN` quando há nulos possíveis.
-- **CTEs**: úteis para legibilidade; no Postgres 12+ não são *optimization fences* salvo `MATERIALIZED` explícito.
+- **CTEs**: úteis para legibilidade; no Postgres 12+ não são *otimization fences* salvo `MATERIALIZED` explícito.
 
 ## Transações e concorrência
 
@@ -75,9 +75,9 @@ Complementa `AGENTS.md` com convenções específicas para PostgreSQL. Aplica‑
 
 ## Segurança
 
-- **Princípio do menor privilégio**: a aplicação não usa `superuser`. Criar utilizador dedicado com `GRANT` mínimo.
-- **Nunca** concatenar SQL com input do utilizador — usar parâmetros (`$1`, `@param`).
-- Dados sensíveis (palavras-passe, tokens) **nunca** em texto claro — usar `pgcrypto` ou guardar fora do BD quando possível.
+- **Princípio do menor privilégio**: a aplicação não usa `superuser`. Criar usuário dedicado com `GRANT` mínimo.
+- **Nunca** concatenar SQL com input do usuário — usar parâmetros (`$1`, `@param`).
+- Dados sensíveis (senhas, tokens) **nunca** em texto claro — usar `pgcrypto` ou guardar fora do BD quando possível.
 - *Row-Level Security* quando houver multi-tenant no mesmo BD.
 
 ## Exemplos

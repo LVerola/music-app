@@ -1,13 +1,13 @@
 ---
 name: discovery
-description: Discovery pré-implementação — classifica o pedido, lista ambiguidades e impactos, aplica limiar de confiança (≥90%), bloqueia alucinação e produz questionário mínimo. Use SEMPRE antes de criar ou editar ficheiros em resposta a feature, bugfix, refactor, alteração de regras/skills ou qualquer mudança. Pular só em perguntas read-only (explicação, busca, status, "o que isso faz?"). Também @discovery.
+description: Discovery pré-implementação — classifica o pedido, lista ambiguidades e impactos, aplica limiar de confiança (≥90%), bloqueia alucinação e produz questionário mínimo. Use SEMPRE antes de criar ou editar arquivos em resposta a feature, bugfix, refactor, alteração de regras/skills ou qualquer mudança. Pular só em perguntas read-only (explicação, busca, status, "o que isso faz?"). Também @discovery.
 ---
 
 # Discovery — corre ANTES de qualquer edição
 
 ## Quando usar
 
-**Antes** de escrever ou editar qualquer ficheiro em resposta a feature, bugfix, refactor, alteração ou mudança neste repositório de instruções.
+**Antes** de escrever ou editar qualquer arquivo em resposta a feature, bugfix, refactor, alteração ou mudança neste repositório de instruções.
 
 Pular apenas em perguntas **read-only** (explicação, busca, status, "o que isso faz?").
 
@@ -18,7 +18,7 @@ Escolhe **uma**:
 - **Totalmente especificada** — entrada, saída, edge cases e restrições claros.
 - **Parcialmente especificada** — fluxo principal ok; estados/contratos/detalhes faltando.
 - **Ambígua** — várias interpretações válidas do mesmo pedido.
-- **Exploratória** — utilizador a pensar em voz alta, sem compromisso.
+- **Exploratória** — usuário a pensar em voz alta, sem compromisso.
 
 Se **não** for totalmente especificada: **PARE. Não implementes.** Produz o questionário abaixo e aguarda.
 
@@ -37,7 +37,7 @@ Depois faz o **mínimo** de perguntas para desambiguar.
 - Regras de negócio
 - Segurança
 - Performance / SLA
-- Padrões arquitecturais
+- Padrões arquiteturais
 - Estruturas de banco
 - Contratos de API
 - Comportamento de UI / UX
@@ -59,20 +59,20 @@ A % é autoavaliada com base no que está especificado e evidenciado — não é
 
 Nunca inventes: endpoints, DTOs, tabelas, regras, permissões, integrações, decisões de design, fluxos, nomes de campos, caminhos, assinaturas, conteúdo de skills/regras “de memória”.
 
-Sem evidência → **pergunta** ou **lê o código/ficheiro**. Nunca chutes.
+Sem evidência → **pergunta** ou **lê o código/arquivo**. Nunca chutes.
 
 ## 5. Rotear para discovery de domínio
 
 Depois deste discovery geral:
 
-| Área afectada | Skill a invocar |
+| Área afetada | Skill a invocar |
 |---------------|-----------------|
-| UI / Next.js / React / Tailwind (projecto-alvo) | @discovery-frontend |
-| API / .NET / EF Core (projecto-alvo) | @discovery-backend |
+| UI / Next.js / React / Tailwind (projeto-alvo) | @discovery-frontend |
+| API / .NET / EF Core (projeto-alvo) | @discovery-backend |
 | Ambos frontend e backend | as duas |
 | Este repo de instruções (`cursor/`, `claude/`, `copilot/`, `gemini/`, `windsurf/`, `generic/`, `scripts/`, `AGENTS.md`, …) | @discovery-biblioteca |
 
-Depois do discovery de domínio, se fores **criar ficheiro novo**, invoca @architecture-check.
+Depois do discovery de domínio, se fores **criar arquivo novo**, invoca @architecture-check.
 
 ## Template de saída (quando não podes implementar ainda)
 
@@ -97,7 +97,7 @@ Evidências já lidas: …
 Próximo passo: [perguntar | implementar | recusar]
 ```
 
-## Excepções
+## Exceções
 
 - **Read-only** — não invocar; responder sem editar.
 - **Modo vibe** — ajustes cosméticos pequenos (UI/copy/estilo local); ver regra vibe. Em dúvida se está especificado, **ainda** invoca discovery.

@@ -1,11 +1,11 @@
 ---
 name: auditoria-performance-backend
-description: Audita e optimiza desempenho de backend .NET / ASP.NET Core / EF Core / PostgreSQL na camada de aplicação — latência de endpoint, consultas desnecessárias (N+1, over-fetching, falta de projeção), async/await mal usado (sync-over-async, falta de paralelismo), serialização, alocações/GC, caching, connection pool e paginação. Actua com nível de Tech Lead: mede antes de mexer, ataca a causa-raiz, estima ganho e custo. Use SEMPRE que o utilizador mencionar endpoint lento, API lenta, latência alta, p95/p99, throughput baixo, timeout sob carga, N+1, EF Core lento, muitas queries, over-fetching, async lento, sync-over-async, alocação de memória, GC alto, connection pool esgotado, socket exhaustion, caching, HttpClient lento, paginação pesada, ou pedir @auditoria-performance-backend. Aplique também quando descrever sintoma de lentidão no backend sem causa identificada.
+description: Audita e otimiza desempenho de backend .NET / ASP.NET Core / EF Core / PostgreSQL na camada de aplicação — latência de endpoint, consultas desnecessárias (N+1, over-fetching, falta de projeção), async/await mal usado (sync-over-async, falta de paralelismo), serialização, alocações/GC, caching, connection pool e paginação. Atua com nível de Tech Lead: mede antes de mexer, ataca a causa-raiz, estima ganho e custo. Use SEMPRE que o usuário mencionar endpoint lento, API lenta, latência alta, p95/p99, throughput baixo, timeout sob carga, N+1, EF Core lento, muitas queries, over-fetching, async lento, sync-over-async, alocação de memória, GC alto, connection pool esgotado, socket exhaustion, caching, HttpClient lento, paginação pesada, ou pedir @auditoria-performance-backend. Aplique também quando descrever sintoma de lentidão no backend sem causa identificada.
 ---
 
 # Auditoria de Performance — Backend (.NET)
 
-Skill para diagnosticar e resolver **lentidão na camada de aplicação** de um backend .NET / ASP.NET Core / EF Core / PostgreSQL, com a postura de um **Tech Lead sénior**: nunca optimiza no escuro, mede antes e depois, ataca a causa-raiz (não o sintoma) e estima ganho × custo × risco antes de propor.
+Skill para diagnosticar e resolver **lentidão na camada de aplicação** de um backend .NET / ASP.NET Core / EF Core / PostgreSQL, com a postura de um **Tech Lead sênior**: nunca otimiza no escuro, mede antes e depois, ataca a causa-raiz (não o sintoma) e estima ganho × custo × risco antes de propor.
 
 > Esta skill cobre a **camada de aplicação** (código C#, EF Core, HTTP, serialização, cache, async, memória). Para tuning do **plano de execução SQL / índices** dentro do PostgreSQL, encadeie com `@tuning-query-postgres`. As duas são complementares: aqui decidimos *que* query fazer e *quantas*; lá decidimos *como* o banco a executa.
 
@@ -21,20 +21,20 @@ Skill para diagnosticar e resolver **lentidão na camada de aplicação** de um 
 
 ---
 
-## 1. Antes de optimizar — colher contexto e medir
+## 1. Antes de otimizar — colher contexto e medir
 
-> **Regra de ouro: não optimize sem medir.** Optimização sem medição é palpite — frequentemente piora o código e não move o número. Se o utilizador não trouxer números, o **primeiro entregável é instrumentar para obtê-los**, não um "fix".
+> **Regra de ouro: não optimize sem medir.** Optimização sem medição é palpite — frequentemente piora o código e não move o número. Se o usuário não trouxer números, o **primeiro entregável é instrumentar para obtê-los**, não um "fix".
 
 Pergunte (ou levante no código) antes de diagnosticar:
 
-1. **Qual a métrica e o alvo?** Latência média? p95/p99? Throughput (req/s)? Memória? Qual o número actual e qual o aceitável?
+1. **Qual a métrica e o alvo?** Latência média? p95/p99? Throughput (req/s)? Memória? Qual o número atual e qual o aceitável?
 2. **Onde dói?** Endpoint específico, *job* em background, *startup*, ou tudo?
 3. **Sob que condição?** Sempre, só sob carga, só com certos parâmetros (ex.: cliente com muitos pedidos)?
 4. **Quando começou?** Após qual *deploy*, mudança de volume de dados, ou mudança de dependência?
 5. **Forma da carga.** Volume de dados retornado, concorrência, tamanho do *payload*.
 6. **Ambiente.** Dev local, *staging*, produção? Há APM (Application Insights, OpenTelemetry, Datadog)?
 
-Sem o sintoma localizado, **não chute** — instrumente (secção 2).
+Sem o sintoma localizado, **não chute** — instrumente (seção 2).
 
 ---
 
@@ -53,7 +53,7 @@ Escolha a ferramenta pela **pergunta** que precisa responder:
 | Threadpool a esfomear (starvation)? | **dotnet-counters** (ThreadPool Queue Length) | Fila crescente = sync-over-async ou bloqueio |
 | Connection pool esgotado? | `pg_stat_activity` + métricas Npgsql | Conexões `idle in transaction`, espera por conexão |
 
-> **Hierarquia de medição:** comece pelo macro (trace do request inteiro) e só desça ao micro (BenchmarkDotNet) depois de localizar o gargalo. Micro-optimizar um trecho que custa 2% do tempo é desperdício — **Lei de Amdahl**.
+> **Hierarquia de medição:** comece pelo macro (trace do request inteiro) e só desça ao micro (BenchmarkDotNet) depois de localizar o gargalo. Micro-otimizar um trecho que custa 2% do tempo é desperdício — **Lei de Amdahl**.
 
 > Cache aquece. Meça o caminho quente **3 vezes** e compare a 2ª/3ª execução, nunca a 1ª (JIT, cache de plano, *connection warmup*).
 
@@ -68,7 +68,7 @@ Cliente → [Middleware/pipeline] → [Endpoint/Controller] → [Use Case]
             → [EF Core / Repositório] → [PostgreSQL] → resposta → [Serialização] → Cliente
 ```
 
-| Camada | Gargalos típicos | Secção |
+| Camada | Gargalos típicos | Seção |
 |---|---|---|
 | Acesso a dados (EF/SQL) | N+1, over-fetching, *tracking* desnecessário, falta de paginação | 4 |
 | Async / concorrência | sync-over-async, `await` em série que podia ser paralelo, `Task.Run` indevido | 5 |
@@ -201,7 +201,7 @@ var saldo   = tarefaSaldo.Result;
 |---|---|---|
 | `Task.Run` para "tornar async" | Só empurra trabalho síncrono para outra thread, não escala I/O | Use APIs `...Async` reais |
 | Faltou propagar `CancellationToken` | Trabalho continua após cliente desistir | Propague `ct` até EF/HttpClient |
-| `async void` (fora de event handler) | Excepções não capturáveis, sem await | `async Task` |
+| `async void` (fora de event handler) | Exceções não capturáveis, sem await | `async Task` |
 | `ValueTask` ignorado em hot path muito chamado | Alocação de `Task` por chamada | `ValueTask` quando frequentemente síncrono |
 
 ---
@@ -223,7 +223,7 @@ var saldo   = tarefaSaldo.Result;
 
 ## 7. Caching — não recompute o que não muda
 
-**Decida o que cachear pela tríade: custo de produzir × frequência de leitura × tolerância a staleness.** Dado caro, lido muito e que tolera estar alguns segundos desactualizado é candidato ideal.
+**Decida o que cachear pela tríade: custo de produzir × frequência de leitura × tolerância a staleness.** Dado caro, lido muito e que tolera estar alguns segundos desatualizado é candidato ideal.
 
 | Tipo | Quando | Cuidado |
 |---|---|---|
@@ -236,7 +236,7 @@ var saldo   = tarefaSaldo.Result;
 
 - **Cache-aside:** ler cache → *miss* → buscar fonte → preencher cache. Sempre com *expiration*.
 - **Anti-stampede:** sob *miss* concorrente, evitar N chamadas simultâneas à fonte (lock por chave / `HybridCache` / `GetOrCreate` com *coalescing*).
-- **Invalidação explícita:** ao escrever no dado, invalide/actualize a chave. "Os dois problemas difíceis: invalidação de cache e nomes."
+- **Invalidação explícita:** ao escrever no dado, invalide/atualize a chave. "Os dois problemas difíceis: invalidação de cache e nomes."
 - **Chave determinística** incluindo todos os parâmetros que mudam o resultado (tenant, filtros, versão).
 
 ```csharp
@@ -271,7 +271,7 @@ Registe com `services.AddHttpClient<ServicoPagamento>()`. Um `HttpClient` *singl
 
 | Item | Acção |
 |---|---|
-| `DbContext` *scoped* por request | Padrão correcto; **nunca** *singleton* (não é thread-safe) |
+| `DbContext` *scoped* por request | Padrão correto; **nunca** *singleton* (não é thread-safe) |
 | `AddDbContextPool` | Reutiliza instâncias de `DbContext` em APIs de alto throughput |
 | Pool Npgsql pequeno (`Maximum Pool Size`) | Dimensione à concorrência real; meça espera por conexão |
 | Conexão segurada por trabalho longo | Não faça I/O externo lento com transação/conexão aberta |
@@ -294,11 +294,11 @@ Importa **no caminho quente** (alto QPS) ou em *jobs* que processam muitos itens
 | Buffers/arrays grandes recriados | Pressão em Gen2 / LOH | `ArrayPool<T>`, `Span<T>`/`Memory<T>` |
 | Logar objeto serializado em hot path | Serializa mesmo com log desligado | *Log level check* / *source-gen logging* |
 
-> Confirme com `dotnet-counters` (Allocation Rate, % Time in GC) **antes e depois** — alocação é fácil de "optimizar" no escuro sem mover número nenhum.
+> Confirme com `dotnet-counters` (Allocation Rate, % Time in GC) **antes e depois** — alocação é fácil de "otimizar" no escuro sem mover número nenhum.
 
 ---
 
-## 10. Loop científico de optimização
+## 10. Loop científico de otimização
 
 ```
 1. Medir o caminho quente (trace + contar queries + tempo)  → linha de base
@@ -316,13 +316,13 @@ Importa **no caminho quente** (alto QPS) ou em *jobs* que processam muitos itens
 
 ## 11. Output esperado da skill
 
-Quando o utilizador trouxer um endpoint/cenário lento, devolva um **relatório estruturado**:
+Quando o usuário trouxer um endpoint/cenário lento, devolva um **relatório estruturado**:
 
 ```markdown
 ## Auditoria de performance — "<endpoint/cenário>"
 
 ### 1. Linha de base (medição)
-- Métrica alvo: <p95 / latência média / memória> — actual: <X> | meta: <Y>
+- Métrica alvo: <p95 / latência média / memória> — atual: <X> | meta: <Y>
 - Nº de queries por request: <N>
 - Onde o tempo se vai: <camada/trecho dominante> (~<%>)
 
@@ -355,8 +355,8 @@ Critério de sucesso: <ex.: p95 < 400ms, ≤ 2 queries por request, sem regress�
 
 | Anti-padrão | Por quê | Alternativa |
 |---|---|---|
-| Optimizar sem medir | Palpite; costuma piorar e não move número | Trace/contagem primeiro |
-| Micro-optimizar trecho de 2% do tempo | Esforço desperdiçado | Amdahl: ataque o dominante |
+| Otimizar sem medir | Palpite; costuma piorar e não move número | Trace/contagem primeiro |
+| Micro-otimizar trecho de 2% do tempo | Esforço desperdiçado | Amdahl: ataque o dominante |
 | Aumentar *timeout* para "resolver" lentidão | Esconde a causa | Achar e tratar o gargalo |
 | Adicionar cache para mascarar query ruim | Empurra o problema, serve dado stale | Corrija a query; cache depois se fizer sentido |
 | `.Result`/`.Wait()` para "simplificar" | Threadpool starvation | async até ao topo |
@@ -383,7 +383,7 @@ Critério de sucesso: <ex.: p95 < 400ms, ≤ 2 queries por request, sem regress�
 
 ---
 
-## 14. Quando pedir ajuda do utilizador
+## 14. Quando pedir ajuda do usuário
 
 - Sem acesso a *trace*/métricas reais → peça os logs do EF, números do APM, ou que rode o cenário com logging ligado.
 - Sem clareza sobre o alvo (qual número é "bom") → pergunte; "rápido" não é critério.
@@ -397,4 +397,4 @@ Critério de sucesso: <ex.: p95 < 400ms, ≤ 2 queries por request, sem regress�
 - Sugira monitorar a métrica em produção (APM/dashboards) para confirmar o ganho real.
 - Se mexeu em query/projeção, peça para correr os testes que dependem dela.
 - Se o gargalo era o plano SQL/índice, encadeie `@tuning-query-postgres`.
-- Se a mudança foi arquitectural (cache distribuído, paginação keyset), registe um ADR via `@adr-decisao-arquitetura`.
+- Se a mudança foi arquitetural (cache distribuído, paginação keyset), registre um ADR via `@adr-decisao-arquitetura`.

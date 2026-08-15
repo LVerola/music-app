@@ -1,5 +1,5 @@
 ---
-description: Convenções de frontend (Next.js, React, TypeScript, Tailwind). Aplica-se quando estiver a trabalhar em ficheiros TS/TSX/JSX/CSS.
+description: Convenções de frontend (Next.js, React, TypeScript, Tailwind). Aplica-se quando estiver a trabalhar em arquivos TS/TSX/JSX/CSS.
 globs: **/*.{ts,tsx,jsx,js,css,scss}
 alwaysApply: false
 ---
@@ -32,7 +32,7 @@ Complementa `AGENTS.md` com convenções específicas de UI.
 ## Componentização
 
 - **Componentes funcionais** apenas; **props tipadas** com `interface` ou `type`.
-- Componente faz **uma coisa**: lista, formulário, modal, toolbar — cada um em ficheiro próprio.
+- Componente faz **uma coisa**: lista, formulário, modal, toolbar — cada um em arquivo próprio.
 - Evitar `page.tsx` com centenas de linhas: delegar a subcomponentes na mesma pasta ou em `components/portal/...`.
 - **Custom hooks** (`use<Nome>`) para qualquer lógica reutilizável (estado, efeitos, chamadas a serviços).
 - **Server components** por defeito no App Router; marcar com `"use client"` só quando precisar de interatividade/estado/efeitos.

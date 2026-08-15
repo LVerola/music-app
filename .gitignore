@@ -1,0 +1,29 @@
+# Ambiente local (nunca commitar segredos)
+.env
+.env.local
+.env.*.local
+
+# .NET
+backend/**/bin/
+backend/**/obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Testes
+TestResults/
+*.trx
+coverage/
+
+# IDE
+.vs/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

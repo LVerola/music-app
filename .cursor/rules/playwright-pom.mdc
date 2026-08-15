@@ -15,7 +15,7 @@ Complementa `playwright.mdc`. Este repositório usa **POM funcional**: em vez de
   - Verbos no infinitivo: `cadastrarCoprodutor`, `convidarCoprodutor`, `aceitarConviteCoprodutorSemUsuario`.
 - **API**: `tests/<Dominio>/metodos<Dominio>Api.ts`
   - Sufixo `Api` no método quando há ambiguidade entre UI e API: `editarCnpjCoprodutorApi`, `obterCoprodutorAPI`.
-  - Centralizam `BASE_URL` num `const` no topo do ficheiro ou em `process.env`.
+  - Centralizam `BASE_URL` num `const` no topo do arquivo ou em `process.env`.
 
 ## Tipagem das assinaturas
 

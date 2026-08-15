@@ -1,6 +1,6 @@
 ---
 name: tuning-query-postgres
-description: Faz tuning sistemático de queries lentas no PostgreSQL — interpreta EXPLAIN (ANALYZE, BUFFERS), identifica gargalo (seq scan, nested loop, sort em disco, N+1, falta de índice), propõe índices/reescritas, valida ganho e estima impacto. Use SEMPRE que o utilizador mencionar query lenta, timeout no banco, performance do PostgreSQL, EXPLAIN, ANALYZE, índice, sequential scan, nested loop, lock, vacuum, autovacuum, plano de execução, ou pedir @tuning-query-postgres.
+description: Faz tuning sistemático de queries lentas no PostgreSQL — interpreta EXPLAIN (ANALYZE, BUFFERS), identifica gargalo (seq scan, nested loop, sort em disco, N+1, falta de índice), propõe índices/reescritas, valida ganho e estima impacto. Use SEMPRE que o usuário mencionar query lenta, timeout no banco, performance do PostgreSQL, EXPLAIN, ANALYZE, índice, sequential scan, nested loop, lock, vacuum, autovacuum, plano de execução, ou pedir @tuning-query-postgres.
 ---
 
 # Tuning de Query no PostgreSQL
@@ -21,14 +21,14 @@ Skill para diagnosticar e resolver **queries lentas** no PostgreSQL com método 
 
 Sem estes dados, **não diagnostique no escuro**. Pergunte:
 
-1. **A query exacta** (não uma versão simplificada).
+1. **A query exata** (não uma versão simplificada).
 2. **Parâmetros típicos** (valores reais, especialmente datas, IDs e *flags*).
 3. **Tamanho das tabelas envolvidas** (`SELECT reltuples FROM pg_class WHERE relname = '...'` ou estimativa).
 4. **Schema** das tabelas (DDL + índices existentes).
 5. **Versão do PostgreSQL** (`SELECT version();`).
 6. **Hardware/ambiente** (dev local? produção? RDS? *shared_buffers* configurado?).
 7. **Quando começou a ficar lento?** (Mudou volume, código, plano, configuração?).
-8. **É leitura, escrita ou ambas?** (Lock e vacuum afectam diferentemente.)
+8. **É leitura, escrita ou ambas?** (Lock e vacuum afetam diferentemente.)
 
 ---
 
@@ -61,10 +61,10 @@ Leia **de dentro para fora** (a folha primeiro). Para cada nó:
 
 | Campo | Significado | Sinais de problema |
 |---|---|---|
-| `actual time` | Tempo real do nó | Discrepância grande vs. `cost` estimado → estatísticas desactualizadas |
-| `rows` (estimado) | O que o planner achou | Diferente de `actual rows` em ordem de magnitude → estatísticas erradas |
-| `actual rows` | Quantas linhas saíram | Comparar com `rows` estimado |
-| `loops` | Quantas vezes o nó rodou | Loops × actual time = tempo total no nó |
+| `atual time` | Tempo real do nó | Discrepância grande vs. `cost` estimado → estatísticas desatualizadas |
+| `rows` (estimado) | O que o planner achou | Diferente de `atual rows` em ordem de magnitude → estatísticas erradas |
+| `atual rows` | Quantas linhas saíram | Comparar com `rows` estimado |
+| `loops` | Quantas vezes o nó rodou | Loops × atual time = tempo total no nó |
 | `Buffers: shared hit/read` | hit = cache; read = disco | Muito `read` → falta de cache ou *cold start* |
 | `Rows Removed by Filter` | Quantas linhas o filtro descartou | Alto → índice faltando |
 | `Rows Removed by Index Recheck` | Recheck pós-bitmap | Alto → considerar índice mais restritivo |
@@ -74,10 +74,10 @@ Leia **de dentro para fora** (a folha primeiro). Para cada nó:
 | Padrão no plano | Diagnóstico | Acção típica |
 |---|---|---|
 | `Seq Scan` numa tabela grande filtrando coluna | Falta índice na coluna | `CREATE INDEX` (avaliar selectividade) |
-| `Nested Loop` com `actual rows` enorme no externo | JOIN sem índice no interno | Índice no FK da tabela interna |
+| `Nested Loop` com `atual rows` enorme no externo | JOIN sem índice no interno | Índice no FK da tabela interna |
 | `Sort` com `Sort Method: external merge Disk` | *work_mem* insuficiente, sort em disco | Aumentar work_mem ou índice ordenado |
-| Estimativa **muito** diferente de actual | Estatísticas obsoletas ou planner enganado | `ANALYZE <tabela>` ou `default_statistics_target` |
-| `actual rows × loops` muito alto em Index Scan interno | Loops em demasia | Trocar para `Hash Join` ou `Merge Join` (geralmente índice no outro lado) |
+| Estimativa **muito** diferente de atual | Estatísticas obsoletas ou planner enganado | `ANALYZE <tabela>` ou `default_statistics_target` |
+| `atual rows × loops` muito alto em Index Scan interno | Loops em demasia | Trocar para `Hash Join` ou `Merge Join` (geralmente índice no outro lado) |
 | `Bitmap Heap Scan` com `Recheck Cond` recuperando >30% | Bitmap pouco selectivo | Índice composto ou parcial |
 | `Filter:` extenso no nó topo | Predicado não aproveita índice | Reescrever ou índice expressivo |
 | Pesquisa de função (`WHERE upper(email) = ...`) | Função invalida índice normal | Índice expressivo: `CREATE INDEX ON tab (upper(email))` |
@@ -121,7 +121,7 @@ Antes de criar índice, **avalie**:
 
 ### Regras práticas
 
-- **Composto:** ordem importa. Coluna mais selectiva geralmente primeiro, **excepto** se outra coluna for usada como `=` em quase toda query (essa vai antes).
+- **Composto:** ordem importa. Coluna mais selectiva geralmente primeiro, **exceto** se outra coluna for usada como `=` em quase toda query (essa vai antes).
 - **`ORDER BY` ajuda?** Sim, se a coluna do `ORDER BY` for sufixo do índice composto.
 - **`INCLUDE`** evita visitar a *heap* — bom para `SELECT` com poucas colunas.
 - **Índice parcial:** `WHERE status = 'Confirmado'` em tabela com 99% cancelados é ouro.
@@ -184,7 +184,7 @@ CREATE INDEX idx_pedidos_listagem
 
 | Check | Comando | Sinal |
 |---|---|---|
-| Estatísticas obsoletas | `ANALYZE <tabela>;` | Discrepância estimado/actual diminui |
+| Estatísticas obsoletas | `ANALYZE <tabela>;` | Discrepância estimado/atual diminui |
 | `default_statistics_target` baixo | `ALTER TABLE x ALTER COLUMN y SET STATISTICS 1000;` | Distribuição enviesada não vista pelo planner |
 | Inchaço (*bloat*) | `pg_stat_user_tables`, extensão `pgstattuple` | Tamanho da tabela >> linhas vivas |
 | Vacuum atrasado | `pg_stat_user_tables.n_dead_tup` | Muito *dead tuple* → `VACUUM ANALYZE` |
@@ -230,12 +230,12 @@ Sempre **mude um por vez** e remedir.
 
 ## 8. Output esperado da skill
 
-Quando o utilizador trouxer uma query lenta, devolva um **relatório estruturado**:
+Quando o usuário trouxer uma query lenta, devolva um **relatório estruturado**:
 
 ```markdown
 ## Diagnóstico — query "<descrição curta>"
 
-### 1. Plano actual
+### 1. Plano atual
 
 `<EXPLAIN ANALYZE em bloco fence>`
 
@@ -273,7 +273,7 @@ EXPLAIN (ANALYZE, BUFFERS) <query>;
 EXPLAIN (ANALYZE, BUFFERS) <query>;
 ```
 
-Critério de sucesso: <ex.: actual time < 200ms, sem seq scan em pedidos>.
+Critério de sucesso: <ex.: atual time < 200ms, sem seq scan em pedidos>.
 
 ### 6. Efeitos colaterais a monitorar
 
@@ -312,7 +312,7 @@ Critério de sucesso: <ex.: actual time < 200ms, sem seq scan em pedidos>.
 
 ---
 
-## 11. Quando pedir ajuda do utilizador
+## 11. Quando pedir ajuda do usuário
 
 - Sem acesso ao banco real → peça que ele rode os EXPLAIN e cole.
 - Sem clareza sobre frequência → pergunte (índice para query rara pode não compensar custo de manutenção).

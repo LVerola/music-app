@@ -1,6 +1,6 @@
 ---
 name: auditoria-acessibilidade
-description: Faz auditoria de acessibilidade WCAG 2.2 AA em interfaces web — semântica HTML, contraste, navegação por teclado, foco, ARIA correto, leitores de tela, alvos de toque, mensagens de erro acessíveis. Use SEMPRE que o utilizador mencionar acessibilidade, WCAG, a11y, screen reader, leitor de tela, navegação por teclado, contraste, ARIA, foco, alvo de toque, deficiência visual/motora/cognitiva, audit, ou pedir @auditoria-acessibilidade. Aplique também antes de release de feature com UI nova.
+description: Faz auditoria de acessibilidade WCAG 2.2 AA em interfaces web — semântica HTML, contraste, navegação por teclado, foco, ARIA correto, leitores de tela, alvos de toque, mensagens de erro acessíveis. Use SEMPRE que o usuário mencionar acessibilidade, WCAG, a11y, screen reader, leitor de tela, navegação por teclado, contraste, ARIA, foco, alvo de toque, deficiência visual/motora/cognitiva, audit, ou pedir @auditoria-acessibilidade. Aplique também antes de release de feature com UI nova.
 ---
 
 # Auditoria de Acessibilidade
@@ -27,8 +27,8 @@ Skill que aplica WCAG 2.2 AA em componentes/telas concretos. Foco em **encontrar
 
 Toda regra WCAG cai em uma destas:
 
-- **Perceptível** — utilizador percebe a informação (texto alternativo, contraste, legendas).
-- **Operável** — utilizador consegue operar (teclado, tempo suficiente, alvos clicáveis).
+- **Perceptível** — usuário percebe a informação (texto alternativo, contraste, legendas).
+- **Operável** — usuário consegue operar (teclado, tempo suficiente, alvos clicáveis).
 - **Compreensível** — conteúdo e operação são entendíveis (idioma declarado, mensagens claras, comportamento previsível).
 - **Robusto** — tecnologias assistivas conseguem interpretar (semântica HTML, ARIA correto).
 
@@ -42,7 +42,7 @@ Use este *checklist* em ordem. Cada item tem critério **falseável** e correcç
 
 | # | Verificar | Como detectar |
 |---|---|---|
-| S1 | Cada página tem exactamente **um** `<h1>` | `document.querySelectorAll('h1').length === 1` |
+| S1 | Cada página tem exatamente **um** `<h1>` | `document.querySelectorAll('h1').length === 1` |
 | S2 | Hierarquia de cabeçalhos sem pular nível | h1 → h2 → h3, nunca h1 → h3 |
 | S3 | Botões clicáveis usam `<button>` (não `<div>` ou `<span>` com onClick) | Inspeccionar |
 | S4 | Links que **navegam** usam `<a href>` | `<a>` sem `href` é não-link |
@@ -51,7 +51,7 @@ Use este *checklist* em ordem. Cada item tem critério **falseável** e correcç
 | S7 | Listas usam `<ul>/<ol>/<dl>` | Em vez de `<div>` empilhados |
 | S8 | Landmarks: `<header>`, `<main>`, `<nav>`, `<footer>` | Exactamente um `<main>` |
 | S9 | Tabela tem `<th scope>` e `<caption>` se aplicável | Não usar tabela para layout |
-| S10 | `<dialog>` ou padrão *modal* implementado correctamente | Foco preso, tecla Esc, restauração de foco |
+| S10 | `<dialog>` ou padrão *modal* implementado corretamente | Foco preso, tecla Esc, restauração de foco |
 
 ### 3.2 Navegação por teclado
 
@@ -141,7 +141,7 @@ npm install --save-dev eslint-plugin-jsx-a11y
 npm install -g pa11y
 pa11y https://staging.exemplo.com/pagina --standard WCAG2AA
 
-# Lighthouse → secção Accessibility
+# Lighthouse → seção Accessibility
 ```
 
 ### 4.2 Manual (apanha os outros ~60%)
@@ -259,7 +259,7 @@ import { Dialog } from "@radix-ui/react-dialog";
 ### 5.6 Carousel acessível
 
 - Botões "Anterior" e "Próximo" como `<button>`.
-- `aria-live="polite"` na region do *slide* actual.
+- `aria-live="polite"` na region do *slide* atual.
 - Possibilidade de pausar.
 - Navegação por setas do teclado.
 - Não auto-play sem controle.
@@ -284,7 +284,7 @@ import { Dialog } from "@radix-ui/react-dialog";
 #### C1: Modal sem captura de foco
 - **Arquivo**: `src/components/modal-confirmacao.tsx:42`
 - **Critério WCAG**: 2.4.3 Focus Order (A)
-- **Impacto**: Utilizador de teclado fica perdido — Tab sai do modal e vai para fundo.
+- **Impacto**: Usuário de teclado fica perdido — Tab sai do modal e vai para fundo.
 - **Reprodução**: Abrir modal → Tab. Foco sai para botões atrás.
 - **Correcção**:
   ```tsx

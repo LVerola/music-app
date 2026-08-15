@@ -1,11 +1,11 @@
 ---
 name: commit-pr-padrao
-description: Gera commits atómicos no padrão Conventional Commits em PT-BR e títulos/descrições de Pull Request seguindo template da equipa — separando refactor de mudança de comportamento, com seção de testes e impacto/riscos. Use SEMPRE que o utilizador pedir para fazer commit, criar PR, gerar mensagem de commit, abrir pull request, ou descrever mudanças para revisão; quando mencionar conventional commits, mensagem de commit, PR description, ou pedir @commit-pr-padrao. Aplique também antes de propor commit grande para sugerir divisão.
+description: Gera commits atómicos no padrão Conventional Commits em PT-BR e títulos/descrições de Pull Request seguindo template da equipe — separando refactor de mudança de comportamento, com seção de testes e impacto/riscos. Use SEMPRE que o usuário pedir para fazer commit, criar PR, gerar mensagem de commit, abrir pull request, ou descrever mudanças para revisão; quando mencionar conventional commits, mensagem de commit, PR description, ou pedir @commit-pr-padrao. Aplique também antes de propor commit grande para sugerir divisão.
 ---
 
 # Commits e PRs no Padrão
 
-Skill que actua como "filtro" entre o trabalho feito e o histórico do Git — garantindo que **cada commit conta uma história clara**, em PT-BR, e que cada PR é **revisável em 15 minutos**.
+Skill que atua como "filtro" entre o trabalho feito e o histórico do Git — garantindo que **cada commit conta uma história clara**, em PT-BR, e que cada PR é **revisável em 15 minutos**.
 
 ## Princípio orientador
 
@@ -15,7 +15,7 @@ Skill que actua como "filtro" entre o trabalho feito e o histórico do Git — g
 
 ## 1. Antes de commitar — diagnóstico rápido
 
-Pergunte ao Git, não ao utilizador:
+Pergunte ao Git, não ao usuário:
 
 ```powershell
 git status
@@ -26,9 +26,9 @@ git diff
 Se ver:
 
 - Mais de **1 intenção** misturada (refactor + feature, bugfix + lint, etc.) → **dividir**.
-- Mais de **300 linhas** mudadas em ficheiros sem relação → **dividir**.
-- Mudanças em ficheiros não tocados pela tarefa (lint automático, formatação) → **dividir** (commit de formatação separado).
-- Ficheiros sensíveis (`.env`, segredos, dumps) → **alertar e bloquear**.
+- Mais de **300 linhas** mudadas em arquivos sem relação → **dividir**.
+- Mudanças em arquivos não tocados pela tarefa (lint automático, formatação) → **dividir** (commit de formatação separado).
+- Arquivos sensíveis (`.env`, segredos, dumps) → **alertar e bloquear**.
 
 ---
 
@@ -46,7 +46,7 @@ Se ver:
 
 | Tipo | Quando usar |
 |---|---|
-| `feat` | Funcionalidade nova visível ao utilizador / consumidor da API |
+| `feat` | Funcionalidade nova visível ao usuário / consumidor da API |
 | `fix` | Correção de bug observável |
 | `refactor` | Mudança interna sem alterar comportamento observável |
 | `perf` | Melhoria de performance (mensurável) |
@@ -131,9 +131,9 @@ git add -p   # continua com o resto
 git commit -m "<próxima mensagem>"
 ```
 
-**Por ficheiro**:
+**Por arquivo**:
 ```powershell
-git add caminho/para/ficheiro-1 caminho/para/ficheiro-2
+git add caminho/para/arquivo-1 caminho/para/arquivo-2
 git commit -m "<mensagem>"
 ```
 
@@ -171,7 +171,7 @@ Toda PR usa este template (em PT-BR):
 
 ## Como testar
 
-1. <passo 1 — comando exacto ou clique a clique>
+1. <passo 1 — comando exato ou clique a clique>
 2. <passo 2>
 3. <resultado esperado>
 
@@ -186,11 +186,11 @@ Toda PR usa este template (em PT-BR):
 
 ## Impacto e riscos
 
-- **Compatibilidade**: <breaking change? quais consumidores afectados?>
+- **Compatibilidade**: <breaking change? quais consumidores afetados?>
 - **Performance**: <mensurada? estimada? sem impacto?>
 - **Segurança**: <há dado sensível? rota nova autenticada? input sanitizado?>
 - **Operações**: <precisa migration? rollback plan? feature flag?>
-- **Observabilidade**: <logs/métricas novas? dashboards a actualizar?>
+- **Observabilidade**: <logs/métricas novas? dashboards a atualizar?>
 
 ## Checklist
 
@@ -199,7 +199,7 @@ Toda PR usa este template (em PT-BR):
 - [ ] Testes de integração / E2E onde aplicável
 - [ ] Lint, build e testes verdes no CI
 - [ ] Texto da UI em PT-BR
-- [ ] Documentação actualizada (se mudou contrato/API/ADR)
+- [ ] Documentação atualizada (se mudou contrato/API/ADR)
 - [ ] Migration revisada e idempotente (se houver)
 - [ ] Sem `console.log` / `print` / código comentado
 - [ ] Sem segredos/tokens no diff (verifiquei manualmente)
@@ -261,7 +261,7 @@ Antes de clicar em "Create PR":
 |---|---|---|
 | `Update files` / `Misc changes` | Histórico inútil | Mensagem descritiva |
 | Commit gigante misturando refactor + feature | Revisão impossível | Dividir |
-| Mensagem com nome de ficheiro (`update User.cs`) | Não conta intenção | Descrever **o quê faz** |
+| Mensagem com nome de arquivo (`update User.cs`) | Não conta intenção | Descrever **o quê faz** |
 | Mensagem só com ID de ticket | Não auto-explica | Descrição **+** referência |
 | `style:` misturado com feature | Ruído na revisão | Separar |
 | Push direto em `main` sem PR | Sem revisão | PR mesmo para fix urgente |
@@ -290,13 +290,13 @@ Sempre mencione no corpo o **branch de origem** e o **branch de destino**.
 
 - **Squash** quando PR tem muitos commits "fix typo" / "WIP" / "addressing review" — vira **1 commit limpo na main**.
 - **Merge commit** quando os commits do PR já são atómicos e contam a história.
-- **Rebase + merge** se a equipa prefere história linear.
+- **Rebase + merge** se a equipe prefere história linear.
 
-> Padrão da equipa decide. Se não há padrão, **squash** é o mais seguro.
+> Padrão da equipe decide. Se não há padrão, **squash** é o mais seguro.
 
 ---
 
-## 9. Quando o utilizador pede só commit, não PR
+## 9. Quando o usuário pede só commit, não PR
 
 Output esperado:
 
@@ -331,9 +331,9 @@ git commit -m "docs(pedidos): documenta regra de cancelamento em 24h"
 
 ---
 
-## 10. Quando o utilizador pede PR
+## 10. Quando o usuário pede PR
 
-Output esperado: **mensagem de commit final** (squash) + **título** + **corpo do PR** preenchendo o template da secção 4 com base no `git diff` da branch.
+Output esperado: **mensagem de commit final** (squash) + **título** + **corpo do PR** preenchendo o template da seção 4 com base no `git diff` da branch.
 
 Comando para criar:
 

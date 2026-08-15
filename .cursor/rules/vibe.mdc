@@ -22,7 +22,7 @@ Use para tarefas **pequenas**. Não abras skill para cada mensagem.
 | UI com estados/contratos em falta | `@discovery` + `@discovery-frontend` |
 | API / domínio / migration | `@discovery` + `@discovery-backend` |
 | Skills/regras deste repo Agents | `@discovery` + `@discovery-biblioteca` |
-| Criar ficheiro novo | `@architecture-check` |
+| Criar arquivo novo | `@architecture-check` |
 | Fatia vertical front/back | `@feature-frontend-completa` / `@feature-backend-completa` |
 
 ## Regras sempre (mesmo em vibe)
